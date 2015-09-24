@@ -91,11 +91,11 @@
        (numbered-item "Write tests" #:color? #t))
 |#
 (slide #:title "The Design Recipe"
- (scale-to-fit (bitmap "pict.png")
+ (scale-to-fit (bitmap "images/recipe-table.png")
                titleless-page))
 
 (slide #:title "The Design Recipe"
- (scale-to-fit (let* ([p (bitmap "pict.png")]
+ (scale-to-fit (let* ([p (bitmap "images/recipe-table.png")]
                       [w (pict-width p)]
                       [h (pict-height p)])
                  (pin-over p (/ w 1.81)
