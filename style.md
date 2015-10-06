@@ -1,4 +1,4 @@
-# IPD Style Rules
+# IPD Style for \*SL
 
 ## Naming
 
