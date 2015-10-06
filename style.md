@@ -186,8 +186,71 @@ Note that:
 
 ### Step 2
 
-### Step 3
+  - The signature is a formal specification of the data types consumed
+    and produced by a function. Thus, the names that appear must be
+    defined in a data definition unless provided by the language.
+
+  - The primitive (built-in) data types in a signature should typically
+    be about type rather than semantics. That is, a function that takes
+    someone’s name as a string takes a `String`, not a `Name`.
+
+  - A signature is written with the type of each parameter, separated by
+    spaces, then an arrow `->` (surrounded by spaces), and then the
+    result.
+
+    Bad:
+    ```racket
+    ;; Integer, String-> Boolean
+    ```
+
+    Good:
+    ```racket
+    ;; Integer String -> Boolean
+    ```
+
+  - A purpose statement is one sentence, usually fitting on one
+    80-character line, summarizing the purpose of a function. 
+
+  - A purpose statement is *client-oriented*—it’s about what the
+    function is for, not how it works.
+
+  - If a function requires further client documentation, skip a line
+    after the purpose statement and begin the additional documentation
+    there. Do not include details of how a function works in the
+    documentation. **This should be very rare.**
 
 ### Step 4
 
+  - Templates are **only** used in the *structural decomposition* strategy.
+
+  - The design strategy must be specified right after the examples and
+    before the beginning of the function definition itself.
+
+  - Available strategies (as of Oct. 6) include:
+
+      - Structural decomposition
+
+      - Domain knowledge (*specify domain*)
+
+      - Function composition
+
+    It is common for a function design to use more than one strategy—for
+    example, you use structural decomposition to analyze a value and
+    then in some case use functional composition to produce the result.
+    In such cases, list the *main* design strategy for the function. The
+    main strategy is typically higher on the above list: structural
+    decomposition usually supersedes the other two, and domain
+    knowledge usually supersedes function composition.
+
+  - **Only** the *structural decomposition* strategy uses a template.
+
+### Step 6
+
+  - Tests must fully cover your code.
+
+  - Tests must be sufficient to show that a function uses its parameters
+    rather than being hard-coded. (One test is never enough.)
+
+  - Tests whose purpose is non-obvious must have a comment explaining
+    the reason for the test.
 
