@@ -251,7 +251,8 @@ Note that:
 
 ### Step 6
 
-  - Tests must fully cover your code.
+  - Tests must fully cover your code. One exception: a “run” function
+    that just called `big-bang`.
 
   - Tests must be sufficient to show that a function uses its parameters
     rather than being hard-coded. (One test is never enough.)
