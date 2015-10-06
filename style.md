@@ -184,6 +184,11 @@ Note that:
 
 ## Design recipe details
 
+### Step 1
+
+  - If the problem does not require new data definitions, this step may
+    not result in anything in your source code. This is okay.
+
 ### Step 2
 
   - The signature is a formal specification of the data types consumed
