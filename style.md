@@ -12,7 +12,7 @@
     write the words in uppercase and join with hyphens.
 
   - Data definition names must be in `UpperCamelCase`;
-    capitalize each word and append them.
+    capitalize the initial letter of each word and append them.
 
   - Names of things must reflect their purposes. Do not use generic
     names such as `number` or `function`.
