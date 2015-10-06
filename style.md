@@ -5,6 +5,22 @@
   - If the homework assignment specifies a function name, you *must* use
     that function name.
 
+  - Function and parameter names must be in `hyphenated-lowercase`;
+    write the words in lowercase and join with hyphens.
+
+  - Constant names must be in `HYPHENATED-UPPERCASE`;
+    write the words in uppercase and join with hyphens.
+
+  - Data definition names must be in `UpperCamelCase`;
+    capitalize each word and append them.
+
+  - Names of things must reflect their purposes. Do not use generic
+    names such as `number` or `function`.
+
+  - Names with larger scope, such as function names, should generally be
+    more descriptive (and longer) than names with smaller scope, such as
+    function parameters.
+
 ## Code formatting
 
 ### Line breaking
@@ -95,7 +111,7 @@
         must follow without space in between.
 
         Bad:
-        ```
+        ```racket
         ( cond
           [ (test? qux)
             ( cons 4 ( list 3 2 1 ) ) ]
@@ -103,7 +119,7 @@
         ```
 
         Good:
-        ```
+        ```racket
         (cond
           [(test? qux)
            (cons 4 (list 3 2 1))]
@@ -114,12 +130,12 @@
         another delimiter:
 
         Bad:
-        ```
+        ```racket
         (+(* a(+ b c)(f e))d)
         ```
 
         Good:
-        ```
+        ```racket
         (+ (* a (+ b c) (f e)) d)
         ```
 
@@ -151,13 +167,13 @@ Programs must be laid out in the following order:
 
     2.  Purpose
 
-    3.  Functional examples (optional for helpers)
+    3.  Functional examples (optional for trivial helpers)
 
     4.  Strategy
 
     5.  Code of function
 
-    6.  Tests (optional for helpers)
+    6.  Tests (optional for trivial helpers)
 
 Note that:
 
