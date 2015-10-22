@@ -79,10 +79,6 @@ small via generative recursion.
 
 
 ;;
-;; MERGE SORT
-;;
-
-;;
 ;; GRAPH ALGORITHMS
 ;;
 
