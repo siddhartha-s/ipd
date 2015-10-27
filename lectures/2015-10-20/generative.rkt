@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-advanced-reader.ss" "lang")((modname generative) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #t #t none #f ((lib "image.rkt" "teachpack" "2htdp")) #f)))
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname generative) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 #|
   Problems:
 
@@ -337,11 +337,24 @@ small via generative recursion.
       [(cons? back)
        (local [(define new-front (reverse back))]
          (make-remove-result (first new-front)
-                             (make-bankers-q new-front '())))]
+                             (make-bankers-q (rest new-front) '())))]
       [else 'empty])))
 
+(define mt-bq (make-bankers-q '() '()))
+
+(check-expect (remove-result-element (bq-dequeue (bq-enqueue 1 mt-bq))) 1)
+(check-expect (remove-result-collection (bq-dequeue (bq-enqueue 1 mt-bq))) mt-bq)
+(check-expect (remove-result-element (bq-dequeue (bq-enqueue 2 (bq-enqueue 1 mt-bq)))) 1)
+(check-expect (remove-result-element (bq-dequeue (remove-result-collection
+                                                  (bq-dequeue (bq-enqueue 2 (bq-enqueue 1 mt-bq))))))
+                                     2)
+(check-expect (remove-result-collection (bq-dequeue (bq-enqueue 1 mt-bq))) mt-bq)
+(check-expect (remove-result-collection (bq-dequeue (remove-result-collection
+                                                     (bq-dequeue (bq-enqueue 2 (bq-enqueue 1 mt-bq))))))
+              mt-bq)
+
 (define BANKERS-QUEUE-BAG
-  (make-bag-impl (make-bankers-q '() '())
+  (make-bag-impl mt-bq
                  bq-enqueue
                  bq-dequeue))
 
