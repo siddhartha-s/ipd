@@ -16,7 +16,8 @@
 ;;    the different strategies.
 ;; 4. Write down the *main* strategy that’s in your head.
 
-;; Write a function distance<? that compares distances in multiple units.
+;; Example: Write a function distance<? that compares distances in multiple
+;; units.
 
 ;; A Distance is one of:
 ;; -- (make-meters PositiveNumber)
@@ -98,13 +99,13 @@ SUMMARY OF BOOK
 
 PART I: Small data
 
-Atomic data: Number, String, Image, Boolean, Char
+Atomic data: Number, String, Image, Boolean, Char, etc.
 
 Structures: We could have a Number AND a String
 
   ;; A NumberAndString is (make-nas Number String)
 
-Enumerations: We could a Number OR a String
+Enumerations: We could have a Number OR a String
 
   ;; A NumberOrString is one of:
   ;; -- Number
@@ -112,12 +113,12 @@ Enumerations: We could a Number OR a String
 
   Special weird-ass enumerations called intervals:
 
-  ;; A WaterTemperature is one of:
-  ;; -- [-273, 0)
-  ;; -- [0, 100)
-  ;; -- [100, ∞)
+    ;; A WaterTemperature is one of:
+    ;; -- [-273, 0)
+    ;; -- [0, 100)
+    ;; -- [100, ∞)
 
-Itemizations: Enumerations of structures, or ORs of ANDs
+Itemizations: enumerations of structures, or ORs of ANDs
 
   ;; APairOfNumbersOrStringAndBoolean is one of:
   ;; -- (make-number-pair Number Number)
@@ -130,6 +131,12 @@ SELF-REFERENCE YO.
   ;; A SjfdLdfh is one of:
   ;; -- Number
   ;; -- (make-fjisoe Number Number SjfdLdfh)
+
+8
+(make-fjisoe 3 5 8)
+(make-fjisoe 9 -4 (make-fjisoe 3 5 8))
+(make-fjisoe 0 0 (make-fjisoe 9 -4 (make-fjisoe 3 5 8)))
+...and so on, as long as we like
 
 PART III: Abstraction (functions as data)
 
@@ -311,7 +318,17 @@ Our repertoire of strategies:
     ;; acc = 1
     (helper a-list0 1)))
 
+(check-expect (product '()) (product-spec '()))
+(check-expect (product '(3)) (product-spec '(3)))
+(check-expect (product '(3 4)) (product-spec '(3 4)))
+(check-expect (product '(3 4 5)) (product-spec '(3 4 5)))
+
 (define (product-spec a-list)
   (cond
     [(empty? a-list) 1]
     [(cons? a-list) (* (first a-list) (product-spec (rest a-list)))]))
+
+(check-expect (product-spec '()) 1)
+(check-expect (product-spec '(3)) 3)
+(check-expect (product-spec '(3 4)) 12)
+(check-expect (product-spec '(3 4 5)) 60)
