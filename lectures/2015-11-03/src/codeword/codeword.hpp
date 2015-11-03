@@ -1,13 +1,13 @@
 #pragma once
 
-#include <cctype>
+#include <cstddef>
 
 namespace codeword
 {
 
 struct codeword {
-    size_t length;
-    unsigned long bits;
+    size_t length      = 0;
+    unsigned long bits = 0;
 };
 
 codeword

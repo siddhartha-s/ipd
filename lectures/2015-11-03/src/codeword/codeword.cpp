@@ -15,9 +15,10 @@ extend(codeword old, bool bit)
     return codeword{old.length + 1, (old.bits << 1) + bit};
 }
 
-bool is_full(codeword word)
+bool
+is_full(codeword word)
 {
     return word.length == CHAR_BIT * sizeof word.bits;
 }
 
-} // namespace codeword
+}  // namespace codeword
