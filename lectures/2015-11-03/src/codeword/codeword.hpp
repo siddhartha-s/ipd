@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <string>
 
 namespace codeword
 {
@@ -11,9 +12,15 @@ struct codeword {
 };
 
 codeword
-extend(codeword word, bool bit);
+extend(codeword, bool);
 
 bool
-is_full(codeword word);
+is_full(codeword);
+    
+bool
+operator==(codeword, codeword);
+
+std::string
+format(codeword);
 
 }  // namespace codeword

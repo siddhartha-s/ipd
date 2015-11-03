@@ -1,4 +1,7 @@
-set(TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+macro (unit_test name)
+    add_test(${name}_test ${CMAKE_CURRENT_BINARY_DIR}/${name}_test)
+    add_executable(${name}_test ${name}.cpp)
+    target_link_libraries(${name}_test ${name} UnitTest++)
+endmacro (unit_test)
 
-add_executable(codeword_test codeword.cpp)
-target_link_libraries(codeword_test codeword UnitTest++)
+unit_test(codeword)
