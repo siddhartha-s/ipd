@@ -1,1 +1,1 @@
-add_subdirectory(codeword)
+add_subdirectory(codeword rational)
