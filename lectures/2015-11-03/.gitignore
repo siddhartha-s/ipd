@@ -1,0 +1,12 @@
+# CMake build directories
+build/
+build.*/
+
+# Windows executables
+*.exe
+
+# Object files
+*.o
+
+# Vim swap files
+.*.sw?
