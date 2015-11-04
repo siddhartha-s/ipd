@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <string>
 
-namespace codeword
+namespace codeword_struct
 {
 
 struct codeword {
@@ -23,4 +23,4 @@ operator==(codeword, codeword);
 std::string
 format(codeword);
 
-}  // namespace codeword
+}  // namespace codeword_struct

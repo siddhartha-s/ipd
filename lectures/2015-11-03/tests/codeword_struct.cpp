@@ -1,7 +1,7 @@
-#include "codeword/codeword.hpp"
+#include "codeword_struct/codeword.hpp"
 #include <UnitTest++/UnitTest++.h>
 
-namespace codeword
+namespace codeword_struct
 {
 
 TEST(Create)
@@ -88,7 +88,7 @@ TEST(FormatLeading0)
     CHECK_EQUAL("01000010", format(codeword{8, 66}));
 }
 
-} // namespace codeword
+} // namespace codeword_struct
 
 int
 main(int, const char*[])

@@ -4,4 +4,5 @@ macro (unit_test name)
     target_link_libraries(${name}_test ${name} UnitTest++)
 endmacro (unit_test)
 
-unit_test(codeword)
+unit_test(codeword_struct)
+unit_test(codeword_class)

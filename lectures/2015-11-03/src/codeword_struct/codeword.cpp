@@ -4,7 +4,7 @@
 
 #include "gsl/gsl.h"
 
-namespace codeword
+namespace codeword_struct
 {
 
 codeword
@@ -46,4 +46,4 @@ format(codeword word)
     return result;
 }
 
-}  // namespace codeword
+}  // namespace codeword_struct
