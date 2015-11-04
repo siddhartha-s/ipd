@@ -10,3 +10,6 @@ build.*/
 
 # Vim swap files
 .*.sw?
+
+# Mac Finder config crap
+.DS_Store

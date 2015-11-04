@@ -32,3 +32,6 @@
 
 # backups
 *~
+
+# Mac Finder config crap
+.DS_Store
