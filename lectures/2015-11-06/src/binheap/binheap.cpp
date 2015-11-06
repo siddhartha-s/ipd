@@ -58,7 +58,7 @@ namespace binheap
   }
 
   void binheap::swap(idx i, idx j) {
-    idx temp = heap[i];
+    int temp = heap[i];
     heap[i] = heap[j];
     heap[j] = temp;
   }
