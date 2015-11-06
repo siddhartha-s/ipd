@@ -7,7 +7,7 @@ namespace binheap_template
 { 
   
   using idx = std::size_t;
-  
+
   template<class T>
   class binheap {
   
@@ -22,9 +22,13 @@ namespace binheap_template
 
     std::vector<T> heap;
     void bubbleUp(idx);
+    void bubbleDown(idx, idx);
     void bubbleDown(idx);
     void swap(idx, idx);
     idx size();
+    
+    template<class U>
+    friend std::vector<U> heapsort(std::vector<U>);
 
   };
 
@@ -76,21 +80,26 @@ namespace binheap_template
   }
 
   template<class T>
-  void binheap<T>::bubbleDown(idx i) {
+  void binheap<T>::bubbleDown(idx i, idx size) {
     idx left_i = left(i);
     idx right_i = right(i);
-    if (right_i < size() && heap[right_i] < heap[i]) {
+    if (right_i < size && heap[right_i] < heap[i]) {
       if (heap[left_i] < heap[right_i]) {
 	swap(left_i, i);
-	bubbleDown(left_i); 
+	bubbleDown(left_i, size); 
       } else {
 	swap(right_i, i);
-	bubbleDown(right_i); 
+	bubbleDown(right_i, size); 
       }
-    } else if (left_i < size() && heap[left_i] < heap[i]) {
+    } else if (left_i < size && heap[left_i] < heap[i]) {
       swap(left_i, i);
-      bubbleDown(left_i);
+      bubbleDown(left_i, size);
     }
+  }
+
+  template<class T>
+  void binheap<T>::bubbleDown(idx i) {
+    bubbleDown(i, size());
   }
 
   template<class T>
@@ -99,5 +108,30 @@ namespace binheap_template
     heap[i] = heap[j];
     heap[j] = temp;
   }
-  
+   
+  template<class T>
+  std::vector<T> heapsort(std::vector<T> vec) 
+  {
+    binheap<T> bh;
+    bh.heap = vec;
+    // largest node that has a child:
+    idx par = bh.size()/2 - 1;
+    // make this a heap by bubbling down all parents
+    // O(n log n)
+    while (par != 0) {
+      bh.bubbleDown(par--);
+    }
+    bh.bubbleDown(0);
+    // move smallest node to end by swapping
+    // decrement the size of the implicit heap
+    // and bubble down the root
+    // O(n log n)
+    idx cur_size = bh.size();
+    while (cur_size > 0) {
+      bh.swap(--cur_size, 0);
+      bh.bubbleDown(0, cur_size);
+    }
+    return bh.heap;
+  }
+
 } // namespace binheap_template

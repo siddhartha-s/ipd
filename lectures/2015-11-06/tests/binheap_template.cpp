@@ -117,6 +117,29 @@ namespace binheap_template
     CHECK(bh.isEmpty());
   }
   
+    TEST(Sort)
+  {
+    std::vector<int> v1{3, 2, 5, 4, 1};
+    std::vector<int> v2{5, 4, 3, 2, 1};
+    CHECK(heapsort<int>(v1) == v2);
+  }
+
+  TEST(Sort2)
+  {
+    
+    std::vector<int> v1{-1, -1, -10, 22, 7};
+    std::vector<int> v2{22, 7, -1, -1, -10};
+    CHECK(heapsort<int>(v1) == v2);
+  }
+
+  TEST(Sort3)
+  {
+    
+    std::vector<int> v1{1, 7, 7, 7, 3, 3};
+    std::vector<int> v2{7, 7, 7, 3, 3, 1};
+    CHECK(heapsort<int>(v1) == v2);
+  }
+
 } // namespace binheap_template
 
 int
