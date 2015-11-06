@@ -6,7 +6,7 @@
 namespace binheap_template
 { 
   
-  typedef std::size_t idx;
+  using idx = std::size_t;
   
   template<class T>
   class binheap {

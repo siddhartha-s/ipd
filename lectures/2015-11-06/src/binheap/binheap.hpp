@@ -5,7 +5,7 @@
 namespace binheap
 {
 
-  typedef std::vector<int>::size_type idx;
+  using idx = std::vector<int>::size_type;
 
   class binheap {
   
