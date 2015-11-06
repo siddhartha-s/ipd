@@ -103,6 +103,38 @@ namespace binheap
 
   }
 
+  TEST(Sort)
+  {
+    std::vector<int> v1{3, 2, 5, 4, 1};
+    std::vector<int> v2{5, 4, 3, 2, 1};
+    /*
+    for (std::vector<int>::const_iterator i = v1.begin(); i != v1.end(); ++i)
+      std::cout << *i << ' ';
+    std::cout << "\n";
+    std::vector<int> v3 = heapsort(v1);
+    for (std::vector<int>::const_iterator i = v3.begin(); i != v3.end(); ++i)
+      std::cout << *i << ' ';
+    std::cout << "\n";
+    */
+    CHECK(heapsort(v1) == v2);
+  }
+
+  TEST(Sort2)
+  {
+    
+    std::vector<int> v1{-1, -1, -10, 22, 7};
+    std::vector<int> v2{22, 7, -1, -1, -10};
+    CHECK(heapsort(v1) == v2);
+  }
+
+  TEST(Sort3)
+  {
+    
+    std::vector<int> v1{1, 7, 7, 7, 3, 3};
+    std::vector<int> v2{7, 7, 7, 3, 3, 1};
+    CHECK(heapsort(v1) == v2);
+  }
+
 
 } // namespace binheap
 

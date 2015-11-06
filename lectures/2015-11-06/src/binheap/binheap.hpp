@@ -28,14 +28,18 @@ namespace binheap
     std::vector<int> heap;
     void bubbleUp(idx);
     void bubbleDown(idx);
+    void bubbleDown(idx, idx);
     void swap(idx, idx);
     idx size();
+
+    friend std::vector<int> heapsort(std::vector<int>);
 
   };
 
   idx parent(idx);
   idx left(idx);
   idx right(idx);
-  
+
+  std::vector<int> heapsort(std::vector<int>);
 
 }

@@ -44,22 +44,27 @@ namespace binheap
 
   // preserve the heap invariant, by moving a violating
   // parent downward
-  void binheap::bubbleDown(idx i) {
+  void binheap::bubbleDown(idx i, idx size) {
     idx left_i = left(i);
     idx right_i = right(i);
-    if (right_i < size() && heap[right_i] < heap[i]) {
+    if (right_i < size && heap[right_i] < heap[i]) {
       if (heap[left_i] < heap[right_i]) {
 	swap(left_i, i);
-	bubbleDown(left_i); 
+	bubbleDown(left_i, size); 
       } else {
 	swap(right_i, i);
-	bubbleDown(right_i); 
+	bubbleDown(right_i, size); 
       }
-    } else if (left_i < size() && heap[left_i] < heap[i]) {
+    } else if (left_i < size && heap[left_i] < heap[i]) {
       swap(left_i, i);
-      bubbleDown(left_i);
+      bubbleDown(left_i, size);
     }
   }
+
+  void binheap::bubbleDown(idx i) {
+    bubbleDown(i, size());
+  }
+
 
   // swap the values in two nodes
   void binheap::swap(idx i, idx j) {
@@ -82,6 +87,30 @@ namespace binheap
   idx right(idx n)
   {
     return 2*n + 2;
+  }
+
+  std::vector<int> heapsort(std::vector<int> vec) 
+  {
+    binheap bh;
+    bh.heap = vec;
+    // largest node that has a child:
+    idx par = bh.size()/2 - 1;
+    // make this a heap by bubbling down all parents
+    // O(n log n)
+    while (par != 0) {
+      bh.bubbleDown(par--);
+    }
+    bh.bubbleDown(0);
+    // move smallest node to end by swapping
+    // decrement the size of the implicit heap
+    // and bubble down the root
+    // O(n log n)
+    idx cur_size = bh.size();
+    while (cur_size > 0) {
+      bh.swap(--cur_size, 0);
+      bh.bubbleDown(0, cur_size);
+    }
+    return bh.heap;
   }
 
    
