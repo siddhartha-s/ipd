@@ -31,6 +31,8 @@ namespace binheap
     bubbleDown(0);
   }
 
+  // preserve the heap invariant, by moving a violating
+  // child upward
   void binheap::bubbleUp(idx i) 
   {
     idx par_i = parent(i);
@@ -40,6 +42,8 @@ namespace binheap
     }
   }
 
+  // preserve the heap invariant, by moving a violating
+  // parent downward
   void binheap::bubbleDown(idx i) {
     idx left_i = left(i);
     idx right_i = right(i);
@@ -57,6 +61,7 @@ namespace binheap
     }
   }
 
+  // swap the values in two nodes
   void binheap::swap(idx i, idx j) {
     int temp = heap[i];
     heap[i] = heap[j];
