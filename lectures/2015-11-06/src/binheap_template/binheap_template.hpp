@@ -27,7 +27,7 @@ namespace binheap_template
     void swap(idx, idx);
     idx size();
     
-    template<class U>
+    template<typename U>
     friend std::vector<U> heapsort(std::vector<U>);
 
   };
@@ -36,32 +36,32 @@ namespace binheap_template
   idx left(idx);
   idx right(idx);
   
-  template<class T>
+  template<typename T>
   T binheap<T>::getMin()
   {
     return heap[0];
   }
 
-  template<class T>
+  template<typename T>
   void binheap<T>::add(T newValue)
   {
     heap.push_back(newValue);
     bubbleUp(heap.size() - 1);
   }
 
-  template<class T>
+  template<typename T>
   bool binheap<T>::isEmpty()
   {
     return heap.empty();
   }
 
-  template<class T>
+  template<typename T>
   idx binheap<T>::size() 
   {
     return heap.size();
   }
 
-  template<class T>
+  template<typename T>
   void binheap<T>::removeMin()
   {
     heap[0] = heap[heap.size() - 1];
@@ -69,7 +69,7 @@ namespace binheap_template
     bubbleDown(0);
   }
 
-  template<class T>
+  template<typename T>
   void binheap<T>::bubbleUp(idx i) 
   {
     idx par_i = parent(i);
@@ -79,7 +79,7 @@ namespace binheap_template
     }
   }
 
-  template<class T>
+  template<typename T>
   void binheap<T>::bubbleDown(idx i, idx size) {
     idx left_i = left(i);
     idx right_i = right(i);
@@ -97,19 +97,19 @@ namespace binheap_template
     }
   }
 
-  template<class T>
+  template<typename T>
   void binheap<T>::bubbleDown(idx i) {
     bubbleDown(i, size());
   }
 
-  template<class T>
+  template<typename T>
   void binheap<T>::swap(idx i, idx j) {
     T temp = heap[i];
     heap[i] = heap[j];
     heap[j] = temp;
   }
    
-  template<class T>
+  template<typename T>
   std::vector<T> heapsort(std::vector<T> vec) 
   {
     binheap<T> bh;
