@@ -2,6 +2,7 @@
 
 #include<cstddef>
 #include<vector>
+#include<utility>
 
 namespace binheap_template
 { 
@@ -24,7 +25,6 @@ namespace binheap_template
     void bubbleUp(idx);
     void bubbleDown(idx, idx);
     void bubbleDown(idx);
-    void swap(idx, idx);
     idx size();
     
     template<typename U>
@@ -74,7 +74,7 @@ namespace binheap_template
   {
     idx par_i = parent(i);
     if (i != 0 && !(heap[par_i] < heap[i])) {
-      swap(par_i, i);
+      std::swap(heap[par_i], heap[i]);
       bubbleUp(par_i);
     }
   }
@@ -85,14 +85,14 @@ namespace binheap_template
     idx right_i = right(i);
     if (right_i < size && heap[right_i] < heap[i]) {
       if (heap[left_i] < heap[right_i]) {
-	swap(left_i, i);
+	std::swap(heap[left_i], heap[i]);
 	bubbleDown(left_i, size); 
       } else {
-	swap(right_i, i);
+	std::swap(heap[right_i], heap[i]);
 	bubbleDown(right_i, size); 
       }
     } else if (left_i < size && heap[left_i] < heap[i]) {
-      swap(left_i, i);
+      std::swap(heap[left_i], heap[i]);
       bubbleDown(left_i, size);
     }
   }
@@ -100,13 +100,6 @@ namespace binheap_template
   template<typename T>
   void binheap<T>::bubbleDown(idx i) {
     bubbleDown(i, size());
-  }
-
-  template<typename T>
-  void binheap<T>::swap(idx i, idx j) {
-    T temp = heap[i];
-    heap[i] = heap[j];
-    heap[j] = temp;
   }
    
   template<typename T>
@@ -128,7 +121,7 @@ namespace binheap_template
     // O(n log n)
     idx cur_size = bh.size();
     while (cur_size > 0) {
-      bh.swap(--cur_size, 0);
+      std::swap(bh.heap[--cur_size], bh.heap[0]);
       bh.bubbleDown(0, cur_size);
     }
     return bh.heap;

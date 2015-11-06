@@ -37,7 +37,7 @@ namespace binheap
   {
     idx par_i = parent(i);
     if (i != 0 && heap[par_i] > heap[i]) {
-      swap(par_i, i);
+      std::swap(heap[par_i], heap[i]);
       bubbleUp(par_i);
     }
   }
@@ -49,14 +49,14 @@ namespace binheap
     idx right_i = right(i);
     if (right_i < size && heap[right_i] < heap[i]) {
       if (heap[left_i] < heap[right_i]) {
-	swap(left_i, i);
+	std::swap(heap[left_i], heap[i]);
 	bubbleDown(left_i, size); 
       } else {
-	swap(right_i, i);
+	std::swap(heap[right_i], heap[i]);
 	bubbleDown(right_i, size); 
       }
     } else if (left_i < size && heap[left_i] < heap[i]) {
-      swap(left_i, i);
+      std::swap(heap[left_i], heap[i]);
       bubbleDown(left_i, size);
     }
   }
@@ -64,15 +64,6 @@ namespace binheap
   void binheap::bubbleDown(idx i) {
     bubbleDown(i, size());
   }
-
-
-  // swap the values in two nodes
-  void binheap::swap(idx i, idx j) {
-    int temp = heap[i];
-    heap[i] = heap[j];
-    heap[j] = temp;
-  }
-    
 
   idx parent(idx n)
   {
@@ -107,7 +98,7 @@ namespace binheap
     // O(n log n)
     idx cur_size = bh.size();
     while (cur_size > 0) {
-      bh.swap(--cur_size, 0);
+      std::swap(bh.heap[--cur_size], bh.heap[0]);
       bh.bubbleDown(0, cur_size);
     }
     return bh.heap;

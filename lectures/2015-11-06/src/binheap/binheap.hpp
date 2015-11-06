@@ -1,6 +1,7 @@
 #pragma once
 
 #include<vector>
+#include<utility>
 
 namespace binheap
 {
@@ -29,7 +30,6 @@ namespace binheap
     void bubbleUp(idx);
     void bubbleDown(idx);
     void bubbleDown(idx, idx);
-    void swap(idx, idx);
     idx size();
 
     friend std::vector<int> heapsort(std::vector<int>);
