@@ -1,7 +1,7 @@
 #include "g.hpp"
 
 // definition of f:
-int f(int d)
+int f(double d)
 {
-    return max(g(8, max(3.0, static_cast<double>(d))), g1(7));
+    return max(g(8, max(3.0, d)), g1(7));
 }
