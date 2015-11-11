@@ -13,20 +13,20 @@ using node = gr::node;
 TEST(Create)
 {
     graph<int> g;
-    CHECK_EQUAL(0u, g.size());
+    CHECK_EQUAL(g.not_a_node(), g.last_node());
 }
 
 TEST(CreateAlloc)
 {
     graph<int> g(100u);
-    CHECK_EQUAL(0u, g.size());
+    CHECK_EQUAL(g.not_a_node(), g.last_node());
 }
 
 TEST(AddNode)
 {
     gr g;
     g.add_node("hello");
-    CHECK_EQUAL(1u, g.size());
+    CHECK_EQUAL(1u, g.last_node());
 }
 
 TEST(AddEdge)
@@ -35,7 +35,7 @@ TEST(AddEdge)
     node n1 = g.add_node("hello");
     node n2 = g.add_node("goodbye");
 
-    CHECK_EQUAL(2u, g.size());
+    CHECK_EQUAL(2u, g.last_node());
 
     g.add_edge(n1, n2, 8);
 
@@ -52,11 +52,12 @@ TEST(Bigger)
     node n4 = g.add_node("qux");
     node n5 = g.add_node("quux");
 
-    CHECK_EQUAL(5u, g.size());
+    CHECK_EQUAL(5u, g.last_node());
 
     g.add_edge(n1, n2, 8);
     g.add_edge(n1, n3, 2);
     g.add_edge(n1, n4, 7);
+    g.add_edge(n5, n4, 7);
 
     CHECK_EQUAL(gr::INFINITY, g.get_weight(n1, n1));
     CHECK_EQUAL(8.0, g.get_weight(n1, n2));
@@ -64,7 +65,7 @@ TEST(Bigger)
     CHECK_EQUAL(7.0, g.get_weight(n1, n4));
     CHECK_EQUAL(gr::INFINITY, g.get_weight(n1, n5));
 
-    std::vector<node> succs {n2, n3, n4};
+    std::vector<node> succs{n2, n3, n4};
     CHECK(succs == g.get_successors(n1));
 }
 
