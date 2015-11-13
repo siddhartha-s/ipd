@@ -13,10 +13,6 @@ using weight = ::graph::weight;
 
 template <typename NodeInfo>
 void
-relax(
-
-template <typename NodeInfo>
-void
 sssp(graph::graph<NodeInfo> g, node start)
 {
     size_t size = g.size();
