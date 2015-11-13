@@ -1,6 +1,6 @@
 BUILD_DIR = build.make
 
-test: all
+test: clean all
 	$(MAKE) -C $(BUILD_DIR) test
 
 all:
@@ -15,4 +15,7 @@ $(BUILD_DIR):
 
 clean:
 	$(RM) -R $(BUILD_DIR)
+
+report:
+	cat build.make/Testing/Temporary/LastTest.log
 
