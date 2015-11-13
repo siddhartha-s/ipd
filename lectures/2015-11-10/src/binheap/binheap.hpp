@@ -14,29 +14,29 @@ class binheap
 {
 
 public:
-    bool isEmpty();
-    T getMin();
+    bool isEmpty() const;
+    T getMin() const;
     void removeMin();
     void add(T);
 
 private:
     std::vector<T> heap;
     void bubbleUp(idx);
-    void bubbleDown(idx, idx);
+    void bubbleDown(idx, size_t);
     void bubbleDown(idx);
-    idx size();
+    size_t size() const;
 
     template <typename U>
     friend std::vector<U> heapsort(std::vector<U>);
-};
 
-idx parent(idx);
-idx left(idx);
-idx right(idx);
+    static idx parent(idx n) { return (n - 1) / 2; }
+    static idx left(idx n) { return 2 * n + 1; }
+    static idx right(idx n) { return 2 * n + 2; }
+};
 
 template <typename T>
 T
-binheap<T>::getMin()
+binheap<T>::getMin() const
 {
     return heap[0];
 }
@@ -51,14 +51,14 @@ binheap<T>::add(T newValue)
 
 template <typename T>
 bool
-binheap<T>::isEmpty()
+binheap<T>::isEmpty() const
 {
     return heap.empty();
 }
 
 template <typename T>
 idx
-binheap<T>::size()
+binheap<T>::size() const
 {
     return heap.size();
 }
@@ -85,7 +85,7 @@ binheap<T>::bubbleUp(idx i)
 
 template <typename T>
 void
-binheap<T>::bubbleDown(idx i, idx size)
+binheap<T>::bubbleDown(idx i, size_t size)
 {
     idx left_i  = left(i);
     idx right_i = right(i);

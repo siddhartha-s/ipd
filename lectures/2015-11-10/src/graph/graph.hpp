@@ -1,18 +1,16 @@
 // Graphs
 
+#include "node.hpp"
 #include <vector>
 
-namespace graph {
+namespace graph
+{
 
-// Stands for the absence of a node.
-    constexpr node not_a_node() const { return 0; }
+using node   = node;
+using weight = double;
 
-    // The first node.
-    constexpr node first_node() const { return 1; }
-
-    size_t to_index(node n) const { return n - first_node(); }
-
-    node from_index(size_t i) const { return i + first_node(); }
+// The infinite weight.
+constexpr weight INFINITY = std::numeric_limits<weight>::infinity();
 
 // Graphs, where each node carries information of type `NodeInfo`.
 template <typename NodeInfo>
@@ -22,10 +20,10 @@ public:
     // MEMBER TYPES
 
     using info   = NodeInfo;
-    using node   = size_t;
-    using weight = double;
+    using node   = node;
+    using weight = weight;
 
-    // CONSTANTS
+    // MEMBER CONSTANTS
 
     static const weight INFINITY;
 
@@ -34,7 +32,8 @@ public:
     // Creates a new, empty graph.
     graph();
 
-    // Creates a new, empty graph, allocating for `capacity` nodes up front.
+    // Creates a new, empty graph, allocating for `capacity` nodes
+    // up front.
     graph(size_t capacity);
 
     // MUTATORS
@@ -59,8 +58,11 @@ public:
     // The weight of the edge between `src` and `dst`.
     weight get_weight(node src, node dst) const;
 
-    // The successors (reachable by non-infinite weight edge) of a node.
+    // The successors (non-infinite weight edge) of a node.
     std::vector<node> get_successors(node) const;
+
+    // The predecessors (non-infinite weight edge) of a node.
+    std::vector<node> get_predecessors(node) const;
 
 private:
     std::vector<info> nodes;
@@ -68,11 +70,11 @@ private:
 };
 
 template <typename NodeInfo>
-const double graph<NodeInfo>::INFINITY =
-    std::numeric_limits<double>::infinity();
+const weight graph<NodeInfo>::INFINITY = ::graph::INFINITY;
 
 template <typename NodeInfo>
-graph<NodeInfo>::graph() {}
+graph<NodeInfo>::graph()
+{ }
 
 template <typename NodeInfo>
 graph<NodeInfo>::graph(size_t capacity)
@@ -84,7 +86,7 @@ graph<NodeInfo>::graph(size_t capacity)
 template <typename NodeInfo>
 auto graph<NodeInfo>::last_node() const -> node
 {
-    return nodes.size();
+    return node{size()};
 }
 
 template <typename NodeInfo>
@@ -97,26 +99,42 @@ graph<NodeInfo>::size() const
 template <typename NodeInfo>
 auto graph<NodeInfo>::get_info(node n) const -> info
 {
-    return nodes[n - 1];
+    return nodes[n.to_index()];
 }
 
 template <typename NodeInfo>
 auto graph<NodeInfo>::get_weight(node src, node dst) const -> weight
 {
-    return edges[src - 1][dst - 1];
+    return edges[src.to_index()][dst.to_index()];
 }
 
 template <typename NodeInfo>
-auto graph<NodeInfo>::get_successors(node src) const
-    -> std::vector<node>
+auto graph<NodeInfo>::get_successors(node src) const -> std::vector<node>
 {
     std::vector<node> result;
 
-    node dst = 1;
+    node dst = node::FIRST;
 
-    for (auto w : edges[src - 1]) {
-        if (w != INFINITY) result.push_back(dst);
+    for (auto w : edges[src.to_index()]) {
+        if (w != INFINITY)
+            result.push_back(dst);
         ++dst;
+    }
+
+    return result;
+}
+
+template <typename NodeInfo>
+auto graph<NodeInfo>::get_predecessors(node dst) const -> std::vector<node>
+{
+    std::vector<node> result;
+
+    node src = node::FIRST;
+
+    for (const auto& row : edges) {
+        if (row[dst.to_index()] != INFINITY)
+            result.push_back(src);
+        ++src;
     }
 
     return result;
@@ -125,29 +143,28 @@ auto graph<NodeInfo>::get_successors(node src) const
 template <typename NodeInfo>
 auto graph<NodeInfo>::add_node(info v) -> node
 {
-    node new_node = last_node() + 1;
+    size_t new_size = size() + 1;
 
     for (auto& row : edges) {
-        if (row.size() < new_node) {
+        if (row.size() < new_size) {
             row.push_back(INFINITY);
         }
     }
 
     nodes.push_back(v);
 
-    if (edges.size() < new_node) {
-        edges.emplace_back(new_node, INFINITY);
+    if (edges.size() < new_size) {
+        edges.emplace_back(new_size, INFINITY);
     }
 
-    return new_node;
+    return node{new_size};
 }
 
 template <typename NodeInfo>
 void
 graph<NodeInfo>::add_edge(node src, node dst, weight w)
 {
-    edges[src - 1][dst - 1] = w;
+    edges[src.to_index()][dst.to_index()] = w;
 }
 
-
-} // namespace graph
+}  // namespace graph

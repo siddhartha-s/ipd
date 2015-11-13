@@ -8,47 +8,59 @@
 
 namespace dijkstra {
 
+using node   = ::graph::node;
+using weight = ::graph::weight;
+
 template <typename NodeInfo>
-class sssp_container
+void
+relax(
+
+template <typename NodeInfo>
+void
+sssp(graph::graph<NodeInfo> g, node start)
 {
-    using gr     = graph::graph<NodeInfo>;
-    using node   = typename gr::node;
-    using weight = typename gr::weight;
+    size_t size = g.size();
 
-    void sssp(gr g, node start)
-    {
-        size_t size = g.size();
+    // The least distance yet found from `start` to each node
+    std::vector<weight> dist(size, graph::INFINITY);
 
-        std::vector<weight> dist(size, gr::INFINITY);
-        std::vector<node> prev(size, g.not_a_node());
-        std::vector<bool> seen(size, false);
-        binheap::binheap<binheap::pair<weight, node>> prio;
+    // A priority queue for finding the node with the smallest
+    // weight
+    binheap::binheap<binheap::pair<weight, node>> prio;
 
-        dist[g.to_index(start)] = 0;
-        prio.add(start);
+    // The previous node on the shortest path from `start` to each
+    // node
+    std::vector<node> prev(size, node::INVALID);
 
-        while (! prio.isEmpty()) {
-            auto w_n = prio.getMin();
-            auto old_dist = w_n.key;
-            auto current  = w_n.value;
+    // Whether each node has been visited yet
+    std::vector<bool> visited(size, false);
 
-            prio.removeMin();
+    dist[start.to_index()] = 0;
+    prio.add({0, start});
 
-            if (! seen[g.to_index(current)]) {
-                seen[g.to_index(current)] = true;
+    while (!prio.isEmpty()) {
+        auto old_dist = prio.getMin().key;
+        auto current = prio.getMin().value;
+        prio.removeMin();
 
-                for (auto succ : g.get_successors(current)) {
-                    weight new_dist =
-                        dist[g.to_index(current)] + g.get_weight(current, succ);
-                    if (new_dist < old_dist) {
-                        dist[g.to_index(succ)] = new_dist;
-                        prev[g.to_index(succ)] = current;
-                        prio.add({ new_dist, succ });
-                    }
+        (void)old_dist;
+        (void)current;
+
+        if (!visited[current.to_index()]) {
+            visited[current.to_index()] = true;
+
+            for (auto succ : g.get_successors(current)) {
+                weight new_dist =
+                    dist[current.to_index()] + g.get_weight(current, succ);
+
+                if (new_dist < old_dist) {
+                    dist[succ.to_index()] = new_dist;
+                    prev[succ.to_index()] = current;
+                    prio.add({new_dist, succ});
                 }
             }
         }
     }
-};
+}
 
 }
