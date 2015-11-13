@@ -6,4 +6,5 @@ endmacro (unit_test)
 
 unit_test(binheap)
 unit_test(graph)
+unit_test(linked_structures)
 # unit_test(dijkstra graph binheap)
