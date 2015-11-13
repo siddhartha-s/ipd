@@ -101,7 +101,7 @@ namespace hash_table
   template<typename T>
   T hash_table<T>::get(int key)
   {
-    entry<T> e = get_entry(key);
+    auto& e = get_entry(key);
     if (e.empty) {
       throw std::invalid_argument("key not found");      
     } else {
@@ -112,18 +112,18 @@ namespace hash_table
   template<typename T>
   bool hash_table<T>::hasKey(int key)
   {
-    entry<T> e = get_entry(key);
+    auto& e = get_entry(key);
     return !e.empty;
   }
 
   template<typename T>
   void hash_table<T>::remove(int key)
   {
-    entry<T> e = get_entry(key);
+    auto& e = get_entry(key);
     if (e.empty) {
       throw std::invalid_argument("key not found");      
     } else {
-      get_entry(key).deleted = true;
+      e.deleted = true;
       num_entries--;
     }
   }
