@@ -1,5 +1,7 @@
 // Graphs
 
+#pragma once
+
 #include "node.hpp"
 #include <vector>
 
