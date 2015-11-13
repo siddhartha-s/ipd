@@ -1,0 +1,3 @@
+add_library(graph
+    graph.hpp
+    graph.cpp)
