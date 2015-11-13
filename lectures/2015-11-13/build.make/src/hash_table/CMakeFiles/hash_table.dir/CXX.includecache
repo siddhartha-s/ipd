@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/burke/Northwestern/IPD/git/eecs495/lectures/2015-11-12/src/hash_table/hash_table.cpp
+hash_table.hpp
+/Users/burke/Northwestern/IPD/git/eecs495/lectures/2015-11-12/src/hash_table/hash_table.hpp
+
+/Users/burke/Northwestern/IPD/git/eecs495/lectures/2015-11-12/src/hash_table/hash_table.hpp
+cstddef
+-
+vector
+-
+

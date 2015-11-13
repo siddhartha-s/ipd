@@ -1,0 +1,20 @@
+Start testing: Nov 13 09:28 CST
+----------------------------------------------------------
+1/1 Testing: hash_table_test
+1/1 Test: hash_table_test
+Command: "/Users/burke/Northwestern/IPD/git/eecs495/lectures/2015-11-12/build.make/tests/hash_table_test"
+Directory: /Users/burke/Northwestern/IPD/git/eecs495/lectures/2015-11-12/build.make/tests
+"hash_table_test" start time: Nov 13 09:28 CST
+Output:
+----------------------------------------------------------
+Success: 3 tests passed.
+Test time: 0.00 seconds.
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"hash_table_test" end time: Nov 13 09:28 CST
+"hash_table_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 13 09:28 CST
