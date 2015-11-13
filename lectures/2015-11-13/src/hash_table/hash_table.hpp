@@ -12,6 +12,11 @@ namespace hash_table
     T value;
     bool empty;
     bool deleted;
+
+    // default constructor makes an empty entry:
+    entry() : empty(true) {}
+    entry(int key, T value, bool empty, bool deleted) 
+      : key(key), value(value), empty(empty), deleted(deleted) {}
   };
 
   // a hash table is a vector of entries
@@ -48,7 +53,7 @@ namespace hash_table
     // given a hash code, turn it into an index into the table
     size_t hash_index(int);
     // construct an empty entry
-    entry<T> empty();
+    entry<T> empty;
     // get a reference to an entry in the table
     entry<T>& get_entry(int);
   };
@@ -61,16 +66,8 @@ namespace hash_table
 
   template<typename T>
   hash_table<T>::hash_table(size_t size)
-    : table(size, empty()), num_entries(0) 
+    : table(size), num_entries(0) 
   { }
-
-  template<typename T>
-  entry<T> hash_table<T>::empty()
-  {
-    entry<T> e;
-    e.empty = true;
-    return e;
-  }
 
   template<typename T>
   void hash_table<T>::put(int key, T val) 
@@ -89,14 +86,16 @@ namespace hash_table
   {
     size_t orig_index = hash_index(key);
     size_t i = orig_index;
-    while(!(table[i].empty || ((i + 1) != orig) {
-      if (table[i].deleted || table[i].key != key) {
+    do {
+      if (table[i].empty) {
+	return table[i];
+      } else if (table[i].deleted || table[i].key != key) {
 	i = (i + 1) % table.size(); 
       } else {
 	return table[i];
       }
-    }
-    return table[i];
+    } while (i != orig_index);
+    return empty;
   }
 
   template<typename T>
@@ -134,7 +133,7 @@ namespace hash_table
   {
     size_t newsize = table.size() * 2;
     std::vector<entry<T>> oldtable = table;
-    std::vector<entry<T>> newtable{newsize, empty()};
+    std::vector<entry<T>> newtable{newsize};
     table = newtable;
     for (auto e : oldtable) {
       if (!(e.empty || e.deleted)) {

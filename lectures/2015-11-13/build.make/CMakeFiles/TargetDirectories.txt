@@ -1,4 +1,0 @@
-/Users/burke/Northwestern/IPD/git/eecs495/lectures/2015-11-12/build.make/3rdparty/unittest-cpp/CMakeFiles/UnitTest++.dir
-/Users/burke/Northwestern/IPD/git/eecs495/lectures/2015-11-12/build.make/src/hash_table/CMakeFiles/hash_table.dir
-/Users/burke/Northwestern/IPD/git/eecs495/lectures/2015-11-12/build.make/3rdparty/unittest-cpp/CMakeFiles/TestUnitTest++.dir
-/Users/burke/Northwestern/IPD/git/eecs495/lectures/2015-11-12/build.make/tests/CMakeFiles/hash_table_test.dir
