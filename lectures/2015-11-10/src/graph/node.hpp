@@ -51,7 +51,7 @@ inline bool node::operator==(node other) const noexcept
 
 inline bool node::operator!=(node other) const noexcept
 {
-    return value_ == other.value_;
+    return value_ != other.value_;
 }
 
 std::ostream& operator<<(std::ostream& out, node n);

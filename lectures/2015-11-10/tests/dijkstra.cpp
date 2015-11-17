@@ -35,7 +35,7 @@ TEST(Dijkstra)
 
     auto result = sssp(g, a);
 
-    std::vector<weight> dist{0, 3, 1, 2, 5, ::graph::INFINITY};
+    std::vector<weight> dist{0, 3, 1, 2, 5, graph::INFINITY};
     std::vector<node> prev{node::INVALID, d, a, c, a, node::INVALID};
 
     CHECK(dist == std::get<0>(result));
