@@ -4,6 +4,8 @@
 namespace lru
 {
 
+  // a cache entry (value)
+  // holds the actual value and a pointer into a deque
   template <typename T>
   struct lru_entry
   {
@@ -11,14 +13,22 @@ namespace lru
     T val;
   };
   
+
+  // least recently used cache
+  // is a hastable and a double-ended queue
+  // once we reach max size, remove the oldest element (end of queue)
+  // gets move keys to the front of the queue
   template <typename T>
   class lru_cache
   {
 
   public:
 
+    // given an integer key, add a new value to the cache
     void put(int, T);
+    // look up a value, by the key
     T get(int);
+    // check if a key is in the cache
     bool hasKey(int);
 
     lru_cache(size_t);
@@ -28,8 +38,11 @@ namespace lru
 
     hash_table::hash_table<lru_entry<T>> table;
     deque::deque<int> dq;
+    // current number of elements
     size_t size;
+    // max number of elements
     size_t max_size;
+    // remove the least recently used element from the cache
     void evict();
 
   };

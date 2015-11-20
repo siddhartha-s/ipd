@@ -24,7 +24,7 @@ namespace deque
     pointer rest;
     link<T>* prev;
   };
-
+    
   template <typename T>
   using list = typename link<T>::pointer;
 
