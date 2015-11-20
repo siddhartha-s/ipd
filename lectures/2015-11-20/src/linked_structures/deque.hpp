@@ -85,7 +85,7 @@ namespace deque
       // if it was empty, set tail to head
       tail = head.get();
     } else {
-      // otherwise, set this prev to head
+      // otherwise, set prev of old head to head
       head->rest->prev = head.get();
     }
     return head.get();
@@ -94,17 +94,18 @@ namespace deque
   template <typename T>
   auto deque<T>::addLast(T elt) -> loc
   {
+    
+    if(isEmpty()) {
+      return addFirst(elt);
+    } 
+
     list<T> new_link = std::make_unique<link<T>>(elt, nullptr);
-    new_link->prev = tail;
     loc new_tail = new_link.get();
 
-    if (!isEmpty()) {
-      tail->rest = move(new_link);
-      tail = tail->rest.get();
-    } else {
-      head = move(new_link);
-      tail = head.get();
-    }
+    new_link->prev = tail;
+    tail->rest = move(new_link);
+    tail = tail->rest.get();
+
     return new_tail;
   }
 
@@ -124,16 +125,13 @@ namespace deque
   template <typename T>
   T deque<T>::removeLast()
   {
+    if (head.get() == tail)
+      return removeFirst();
+
     T elt = tail->first;
-    if (head.get() != tail) {
-      // more than one element
-      tail = tail->prev;
-      tail->rest = nullptr;
-    } else {
-      // one element, remove head and tail
-      head = nullptr;
-      tail = nullptr;
-    }
+    tail = tail->prev;
+    tail->rest = nullptr;
+
     return elt;
   }
   
