@@ -6,7 +6,6 @@
 namespace lru
 {
 
-   
   TEST(Create)
   {
     lru_cache<int> c;
@@ -28,6 +27,22 @@ namespace lru
     CHECK(!c.hasKey(3));
     CHECK_EQUAL(2,c.get(2));
     CHECK_EQUAL(4,c.get(4));
+  }
+
+  TEST(Medium)
+  {
+    lru_cache<int> c{10};
+    for(int i = 0; i < 20; i++)
+      c.put(i,i);
+    for(int i = 0; i < 20; i++) {
+      if (i < 10)
+	CHECK(!c.hasKey(i));
+      else
+	CHECK(c.hasKey(i));
+    }
+    CHECK_EQUAL(10, c.get(10));
+    c.put(21,21);
+    CHECK(!c.hasKey(11));
   }
 
 }  // namespace deque
