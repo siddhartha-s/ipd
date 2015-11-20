@@ -45,7 +45,24 @@ namespace lru
     CHECK(!c.hasKey(11));
   }
 
-}  // namespace deque
+  TEST(Larger)
+  {
+    lru_cache<int> c{20};
+    for(int i = 0; i <= 200; i++)
+      c.put(i,i);
+    for(int i = 200; i > 180; i--)
+      c.get(i);
+    for(int i = 200; i > 180; i--) {
+      c.put(201 - i, 201 - i);
+      CHECK(!c.hasKey(i));
+    }
+    for(int i = 1; i < 20; i ++) {
+      CHECK(c.hasKey(i));
+      CHECK_EQUAL(i, c.get(i));
+    }
+  }
+
+}  // namespace lru
 
 int
 main(int, const char* [])

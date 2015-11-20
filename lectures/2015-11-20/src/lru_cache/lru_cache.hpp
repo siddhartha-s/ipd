@@ -23,8 +23,9 @@ namespace lru
 
     lru_cache(size_t);
     lru_cache();
-
+    
   private:
+
     hash_table::hash_table<lru_entry<T>> table;
     deque::deque<int> dq;
     size_t size;
@@ -40,7 +41,7 @@ namespace lru
   }
 
   template <typename T>
-  lru_cache<T>::lru_cache(size_t size) : table{size * 2}, max_size{size}, size(0) { }
+  lru_cache<T>::lru_cache(size_t size) : table{size * 2}, max_size{size}, size{0} { }
 
   template <typename T>
   void lru_cache<T>::put(int key, T val)
@@ -78,4 +79,4 @@ namespace lru
     size--;
   }
 
-}
+} // namespace lru
