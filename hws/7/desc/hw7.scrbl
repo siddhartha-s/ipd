@@ -36,7 +36,8 @@ after this assignment is due. Again, your grade will
 be based principally on your application of the design
 recipe and your explanations in your code walk.
 
-@bold{Setup.} Download this archive:
+@bold{Setup.} You must do this assignment in C++.
+To get started, download this archive:
 @elem[#:style (style "dl" (list (link-resource "hw6.tar.gz")))]{hw6.tar.gz}.
 It contains a skeleton @link["https://cmake.org/"]{CMake} project
 that you can use to generate a projects for a number of
