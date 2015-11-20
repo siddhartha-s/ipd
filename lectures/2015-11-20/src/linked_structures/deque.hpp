@@ -8,7 +8,7 @@
 namespace deque
 {
 
-  // a liink in a doubly linked list
+  // a link in a doubly linked list
   // owns the next element, has a raw pointer to the previous one
   template <typename T>
   struct link
@@ -58,6 +58,7 @@ namespace deque
     deque();
 
   private:
+
     // pointer to the head (first link) in the list (owner)
     list<T> head;
     // pointer to the tail of the list (raw)

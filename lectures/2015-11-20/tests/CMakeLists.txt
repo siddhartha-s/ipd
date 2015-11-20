@@ -5,3 +5,5 @@ macro (unit_test name)
 endmacro (unit_test)
 
 unit_test(deque)
+unit_test(lru_cache)
+target_link_libraries(lru_cache_test deque hash_table)
