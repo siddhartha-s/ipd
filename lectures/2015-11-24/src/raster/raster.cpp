@@ -21,13 +21,13 @@ raster::raster(int width, int height, color fill)
 color& raster::operator[](coord p)
 {
     Expects(in_bounds(p));
-    return pixels_[width() * p.x + p.y];
+    return pixels_[height() * p.y + p.x];
 }
 
 const color& raster::operator[](coord p) const
 {
     Expects(in_bounds(p));
-    return pixels_[width() * p.x + p.y];
+    return pixels_[height() * p.y + p.x];
 }
 
 bool raster::in_bounds(coord p) const noexcept
