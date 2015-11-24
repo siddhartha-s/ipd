@@ -39,6 +39,7 @@ point<T> interpolate(const point<T>& p1, double weight, const point<T>& p2)
 template <typename T>
 class bounding_box
 {
+public:
     bounding_box(const point<T>& p1, const point<T>& p2) noexcept
     {
         upper_left_  = { std::min(p1.x, p2.x), std::min(p1.y, p2.y) };
