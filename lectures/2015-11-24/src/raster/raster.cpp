@@ -21,13 +21,13 @@ raster::raster(int width, int height, color fill)
 color& raster::operator[](coord p)
 {
     Expects(in_bounds(p));
-    return pixels_[height() * p.y + p.x];
+    return pixels_[width() * p.y + p.x];
 }
 
 const color& raster::operator[](coord p) const
 {
     Expects(in_bounds(p));
-    return pixels_[height() * p.y + p.x];
+    return pixels_[width() * p.y + p.x];
 }
 
 bool raster::in_bounds(coord p) const noexcept
@@ -42,8 +42,11 @@ void raster::write_out(const char* filename) const
     of << "P6\n";       // magic number
     of << width() << ' ' << height() << " 255\n";
 
-    for (const auto& pixel : pixels_) {
-        of << pixel.red() << pixel.green() << pixel.blue();
+    for (int y = 0; y < height(); ++y) {
+        for (int x = 0; x < width(); ++x) {
+            const auto pixel = operator[]({x, y});
+            of << pixel.red() << pixel.green() << pixel.blue();
+        }
     }
 }
 
