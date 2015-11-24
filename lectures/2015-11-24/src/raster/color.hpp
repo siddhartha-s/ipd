@@ -23,7 +23,7 @@ public:
 
     fcolor grayscale() const noexcept;
     fcolor overlay(const fcolor& background) const noexcept;
-    fcolor interpolate(double weight, const fcolor& background) const noexcept;
+    fcolor interpolate(double weight, const fcolor& other) const noexcept;
 
     fsample red()   const noexcept { return red_;   }
     fsample green() const noexcept { return green_; }
