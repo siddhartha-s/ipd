@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 
 namespace raster
 {
@@ -34,6 +35,14 @@ template <typename T>
 point<T> interpolate(const point<T>& p1, double weight, const point<T>& p2)
 {
     return {interpolate(p1.x, weight, p2.x), interpolate(p1.y, weight, p2.y)};
+}
+
+template <typename T>
+double distance(const point<T>& p1, const point<T>& p2)
+{
+    double dx = p1.x - p2.x;
+    double dy = p1.y - p2.y;
+    return sqrt(dx * dx + dy * dy);
 }
 
 template <typename T>
