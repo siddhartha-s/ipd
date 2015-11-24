@@ -3,7 +3,7 @@
 namespace raster
 {
 
-// An floating-point sample in the range 0.0 to 1.0.
+// A floating-point sample in the range 0.0 to 1.0.
 class fsample
 {
 public:
@@ -46,6 +46,7 @@ public:
 
 private:
     float value_;
+    // INVARIANT: 0.0 ≤ value_ ≤ 1.0
 };
 
 } // namespace raster
