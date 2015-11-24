@@ -5,3 +5,4 @@ macro (unit_test name)
 endmacro (unit_test)
 
 unit_test(raster)
+unit_test(graphics)
