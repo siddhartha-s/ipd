@@ -3,6 +3,7 @@
 #include "fsample.hpp"
 
 #include <cstdint>
+#include <cstddef>
 
 namespace raster
 {
