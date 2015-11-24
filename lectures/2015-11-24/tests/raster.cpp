@@ -16,7 +16,7 @@ TEST(RedSquare)
 
 TEST(PurpleSquare)
 {
-    raster red_square{400, 400, fcolor{.6, 0, .4}};
+    raster red_square{400, 400, fcolor{.6f, 0, .4f}};
 
     red_square.write_out("purple_square.ppm");
 }
