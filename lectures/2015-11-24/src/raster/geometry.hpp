@@ -24,6 +24,19 @@ point<T> operator+(const point<T>& p1, const point<T>& p2)
 }
 
 template <typename T>
+T interpolate(const T& t1, double weight, const T& t2)
+{
+    return static_cast<T>(weight * static_cast<double>(t1) +
+                          (1 - weight) * static_cast<double>(t2));
+}
+
+template <typename T>
+point<T> interpolate(const point<T>& p1, double weight, const point<T>& p2)
+{
+    return {interpolate(p1.x, weight, p2.x), interpolate(p1.y, weight, p2.y)};
+}
+
+template <typename T>
 class bounding_box
 {
     bounding_box(const point<T>& p1, const point<T>& p2) noexcept
