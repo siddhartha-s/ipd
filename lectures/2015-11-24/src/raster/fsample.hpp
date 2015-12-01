@@ -12,16 +12,14 @@ public:
 
     // Constructs a sample, clipping the given value into the correct
     // range.
-    explicit fsample(float) noexcept;
+    explicit fsample(double) noexcept;
 
     // Constructs the 0.0 sample
     fsample() noexcept : fsample{0.0} {};
 
-    // The float value of a sample.
-    float value() const noexcept { return value_; }
-    operator float() const noexcept { return value_; }
-
-    fsample interpolate(double weight, fsample other) const noexcept;
+    // The double value of a sample.
+    double value() const noexcept { return value_; }
+    operator double() const noexcept { return value_; }
 
     bool operator==(fsample other) const noexcept
     { return value() == other.value(); }
@@ -41,12 +39,14 @@ public:
     bool operator>=(fsample other) const noexcept
     { return value() >= other.value(); }
 
-    fsample operator*(fsample other) const noexcept;
-    fsample& operator*=(fsample) noexcept;
+    // fsample operator*(fsample other) const noexcept;
+    // fsample& operator*=(fsample) noexcept;
 
 private:
-    float value_;
+    double value_;
     // INVARIANT: 0.0 ≤ value_ ≤ 1.0
 };
+
+fsample interpolate(fsample a, double weight, fsample b) noexcept;
 
 } // namespace raster

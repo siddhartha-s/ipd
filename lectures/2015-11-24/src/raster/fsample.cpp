@@ -5,30 +5,29 @@
 namespace raster
 {
 
-fsample const fsample::ZERO {0.0f};
-fsample const fsample::ONE  {1.0f};
+fsample const fsample::ZERO {0.0};
+fsample const fsample::ONE  {1.0};
 
-fsample::fsample(float value) noexcept
-    : value_(std::min<float>(1.0, std::max<float>(0.0, value)))
+fsample::fsample(double value) noexcept
+    : value_(std::min(1.0, std::max(0.0, value)))
 {}
 
-fsample fsample::interpolate(double weight, fsample other) const noexcept
+fsample interpolate(fsample a, double weight, fsample b) noexcept
 {
-    return fsample{
-        static_cast<float>(value() * weight + other.value() * (1 - weight))};
+    return fsample{(1 - weight) * a + weight * b};
 }
 
-fsample fsample::operator*(fsample other) const noexcept
-{
-    fsample result;
-    result.value_ = value() * other.value(); // can't overflow
-    return result;
-}
+// fsample fsample::operator*(fsample other) const noexcept
+// {
+//     fsample result;
+//     result.value_ = value() * other.value(); // can't overflow
+//     return result;
+// }
 
-fsample& fsample::operator*=(fsample other) noexcept
-{
-    value_ *= other.value(); // cannot overflow
-    return *this;
-}
+// fsample& fsample::operator*=(fsample other) noexcept
+// {
+//     value_ *= other.value(); // cannot overflow
+//     return *this;
+// }
 
 } // namespace raster

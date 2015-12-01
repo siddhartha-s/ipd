@@ -1,31 +1,27 @@
 #include "color.hpp"
+#include "geometry.hpp"
 
 #include <algorithm>
 
 namespace raster
 {
 
+using byte                     = color::byte;
+static byte constexpr BYTE_MAX = color::BYTE_MAX;
+
 fcolor::fcolor(fsample red, fsample green, fsample blue, fsample alpha) noexcept
     : red_{red}, green_{green}, blue_{blue}, alpha_{alpha}
 {
-    if (alpha == 0) red_ = green_ = blue_ = fsample{0};
+    if (alpha == 0) red_ = green_ = blue_ = fsample::ZERO;
 }
 
-fcolor::fcolor(fsample red, fsample green, fsample blue) noexcept
-    : fcolor{red, green, blue, fsample::ONE}
-{}
-
-fcolor::fcolor(float red, float green, float blue, float alpha) noexcept
+fcolor::fcolor(double red, double green, double blue, double alpha) noexcept
     : fcolor{fsample{red}, fsample{green}, fsample{blue}, fsample{alpha}}
 { }
 
-fcolor::fcolor(float red, float green, float blue) noexcept
-    : fcolor{fsample{red}, fsample{green}, fsample{blue}}
-{ }
-
-static fsample to_fsample(color::byte b) noexcept
+static fsample to_fsample(byte b) noexcept
 {
-    return fsample{b / 255.0f};
+    return fsample{b / static_cast<double>(BYTE_MAX)};
 }
 
 fcolor::fcolor(color c) noexcept
@@ -39,51 +35,66 @@ fcolor const fcolor::TRANSPARENT{0, 0, 0, 0};
 fcolor const fcolor::WHITE{1, 1, 1};
 fcolor const fcolor::BLACK{0, 0, 0};
 
-fcolor fcolor::grayscale() const noexcept
+bool opaque(const fcolor& c) noexcept
 {
-    float lum = (red().value() + green().value() + blue().value()) / 3;
-    return {lum, lum, lum, alpha()};
+    return c.alpha() == 1;
 }
 
-fcolor fcolor::overlay(const fcolor& background) const noexcept
+bool transparent(const fcolor& c) noexcept
 {
-    return fcolor{red(), green(), blue(), fsample::ONE}
-             .interpolate(1 - alpha(), background);
+    return c.alpha() == 0;
 }
 
-fcolor fcolor::interpolate(double weight, const fcolor& bg)
-    const noexcept
+fcolor grayscale(const fcolor& c) noexcept
 {
-    auto pre_red = (alpha() * red()).interpolate(weight, bg.alpha() * bg.red());
+    double lum = (c.red() + c.green() + c.blue()) / 3;
+    return {lum, lum, lum, c.alpha()};
+}
+
+fcolor overlay(const fcolor& fg, const fcolor& bg) noexcept
+{
+    if (fg.alpha() == 1 || bg.alpha() == 0) return fg;
+    if (fg.alpha() == 0) return bg;
+
+    return interpolate(bg, fg.alpha(), fcolor{fg.red(), fg.green(), fg.blue()});
+}
+
+fcolor interpolate(const fcolor& a, double weight, const fcolor& b)
+    noexcept
+{
+    auto pre_red =
+        interpolate(a.alpha() * a.red(), weight, b.alpha() * b.red());
     auto pre_green =
-        (alpha() * green()).interpolate(weight, bg.alpha() * bg.green());
+        interpolate(a.alpha() * a.green(), weight, b.alpha() * b.green());
     auto pre_blue =
-        (alpha() * blue()).interpolate(weight, bg.alpha() * bg.blue());
-    auto new_alpha = alpha().interpolate(weight, bg.alpha());
+        interpolate(a.alpha() * a.blue(), weight, b.alpha() * b.blue());
+    auto new_alpha = interpolate(a.alpha(), weight, b.alpha());
 
-    return fcolor{pre_red / new_alpha, pre_green / new_alpha,
-                  pre_blue / new_alpha, new_alpha};
+    return {pre_red / new_alpha, pre_green / new_alpha, pre_blue / new_alpha,
+            new_alpha};
 }
+
+static size_t constexpr
+    RED_SHIFT   = 16,
+    GREEN_SHIFT = 8,
+    BLUE_SHIFT  = 0,
+    ALPHA_SHIFT = 24;
 
 color::color(byte red, byte green, byte blue, byte alpha) noexcept
-    : value{static_cast<uint32_t>(red   << RED_SHIFT)
-          | static_cast<uint32_t>(green << GREEN_SHIFT)
-          | static_cast<uint32_t>(blue  << BLUE_SHIFT)
-          | static_cast<uint32_t>(alpha << ALPHA_SHIFT)}
+    : value{static_cast<uint32_t>((red   << RED_SHIFT)
+                                | (green << GREEN_SHIFT)
+                                | (blue  << BLUE_SHIFT)
+                                | (alpha << ALPHA_SHIFT))}
 {
     if (alpha == 0) value = 0;
 }
 
-color::color(byte red, byte green, byte blue) noexcept
-    : color{red, green, blue, 255}
-{}
-
 color::color(uint32_t argb) noexcept : value{argb}
 {}
 
-static color::byte from_fsample(fsample fs) noexcept
+static byte from_fsample(fsample fs) noexcept
 {
-    return static_cast<color::byte>(255 * fs.value());
+    return static_cast<byte>(BYTE_MAX * fs.value());
 }
 
 color::color(const fcolor& fc) noexcept
@@ -96,25 +107,25 @@ color::color(const fcolor& fc) noexcept
 color::color() noexcept : color{0, 0, 0} {}
 
 color const color::TRANSPARENT{0, 0, 0, 0};
-color const color::WHITE{255, 255, 255};
+color const color::WHITE{BYTE_MAX, BYTE_MAX, BYTE_MAX};
 color const color::BLACK{0, 0, 0};
 
-color::byte color::red()   const noexcept
+byte color::red()   const noexcept
 {
     return static_cast<byte>((value >> RED_SHIFT) & 0xFF);
 }
 
-color::byte color::green() const noexcept
+byte color::green() const noexcept
 {
     return static_cast<byte>((value >> GREEN_SHIFT) & 0xFF);
 }
 
-color::byte color::blue()  const noexcept
+byte color::blue()  const noexcept
 {
     return static_cast<byte>((value >> BLUE_SHIFT) & 0xFF);
 }
 
-color::byte color::alpha() const noexcept
+byte color::alpha() const noexcept
 {
     return static_cast<byte>((value >> ALPHA_SHIFT) & 0xFF);
 }

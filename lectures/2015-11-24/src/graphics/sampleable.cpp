@@ -2,10 +2,16 @@
 
 #include "gsl/gsl.h"
 
+#include <utility>
+
 namespace graphics
 {
 
 using raster::fcolor;
+
+using ptr   = sampleable::ptr;
+using coord = sampleable::coord;
+using color = sampleable::color;
 
 void sample(const sampleable& scene, raster::raster& target)
 {
@@ -16,43 +22,122 @@ void sample(const sampleable& scene, raster::raster& target)
     }
 }
 
-rectangle::rectangle(coord p1, coord p2, color c)
-    : box_{p1, p2}, color_{c}
-{ }
+static const double INFTY = std::numeric_limits<double>::infinity();
+static const raster::bounding_box<double>
+EVERYTHING{-INFTY, INFTY, INFTY, -INFTY};
 
-fcolor rectangle::color_at(coord p) const
+class canvas_impl : public sampleable
 {
-    if (box_.within(p)) {
-        return color_;
-    } else {
-        return color::TRANSPARENT;
+public:
+    canvas_impl(color color)
+        : color_{color}
+    { }
+
+private:
+    color color_;
+
+    virtual const bbox_t& get_bounding_box_() const override
+    {
+        return EVERYTHING;
     }
+
+    virtual color color_at_(coord) const override { return color_; }
+};
+
+ptr canvas(color color)
+{
+    return std::make_shared<canvas_impl>(color);
 }
 
-rectangle::bbox rectangle::get_bounding_box() const
+class rectangle_impl : public bounded_sampleable
 {
-    return box_;
-}
+public:
+    rectangle_impl(coord p1, coord p2, color color)
+        : bounded_sampleable{p1, p2}
+        , color_{color}
+    { }
 
-circle::circle(coord center, double radius, fcolor color)
-    : center_{center}, radius_{radius}, color_{color}
-{
-    Expects(radius > 0);
-}
+private:
+    color color_;
 
-fcolor circle::color_at(coord p) const
-{
-    if (distance(p, center_) <= radius_) {
-        return color_;
-    } else {
-        return fcolor::TRANSPARENT;
+    virtual color color_at_(coord p) const override
+    {
+        if (get_bounding_box().contains(p)) {
+            return color_;
+        } else {
+            return color::TRANSPARENT;
+        }
     }
+};
+
+ptr rectangle(coord p1, coord p2, color color)
+{
+    return std::make_shared<rectangle_impl>(p1, p2, color);
 }
 
-rectangle::bbox circle::get_bounding_box() const
+class circle_impl : public bounded_sampleable
 {
-    return {{center_.x - radius_, center_.y - radius_},
-            {center_.x + radius_, center_.y + radius_}};
+public:
+    circle_impl(coord center, double radius, color color)
+        : bounded_sampleable{center.y - radius, center.x + radius,
+                             center.y + radius, center.x - radius}
+        , center_{center}
+        , radius_{radius}
+        , color_{color}
+    {}
+
+    virtual color color_at_(coord p) const override
+    {
+        if (distance(p, center_) <= radius_) {
+            return color_;
+        } else {
+            return color::TRANSPARENT;
+        }
+    }
+
+private:
+    coord center_;
+    double radius_;
+    color color_;
+};
+
+ptr circle(coord center, double radius, color color)
+{
+    return std::make_shared<circle_impl>(center, radius, color);
+}
+
+class overlay_impl : public bounded_sampleable
+{
+public:
+    overlay_impl(ptr fg, ptr bg)
+        : bounded_sampleable{fg->get_bounding_box(), bg->get_bounding_box()}
+        , fg_{fg}
+        , bg_{bg}
+    {}
+
+    virtual color color_at_(coord p) const override
+    {
+        bool in_fg = fg_->get_bounding_box().contains(p);
+        bool in_bg = bg_->get_bounding_box().contains(p);
+
+        if (in_fg && in_bg) {
+            return overlay(fg_->color_at(p), bg_->color_at(p));
+        } else if (in_fg) {
+            return fg_->color_at(p);
+        } else if (in_bg) {
+            return bg_->color_at(p);
+        } else {
+            return color::TRANSPARENT;
+        }
+    }
+
+private:
+    ptr fg_, bg_;
+};
+
+ptr overlay(ptr foreground, ptr background)
+{
+    return std::make_shared<overlay_impl>(foreground, background);
 }
 
 } // namespace graphics

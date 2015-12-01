@@ -11,7 +11,7 @@ namespace raster
 class raster
 {
 public:
-    using coord = point<int>;
+    using coord = posn<int>;
 
     raster(int width, int height);
     raster(int width, int height, color fill);

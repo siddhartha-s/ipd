@@ -12,42 +12,41 @@ namespace graphics
 class sampleable : public raster::boundable<double>
 {
 public:
-    using coord = raster::point<double>;
-    using bbox  = raster::bounding_box<double>;
+    using coord = raster::posn<double>;
     using color = raster::fcolor;
-    using ptr   = std::shared_ptr<sampleable>;
+    using ptr   = std::shared_ptr<const sampleable>;
 
-    virtual color color_at(coord) const = 0;
+    inline color color_at(coord p) const
+    { return color_at_(p); }
+
+protected:
+    virtual color color_at_(coord) const = 0;
 };
 
-class rectangle : public sampleable
+class bounded_sampleable : public sampleable
 {
 public:
-    rectangle(coord, coord, color);
-
-    virtual color color_at(coord) const override;
-    virtual bbox get_bounding_box() const override;
-
-private:
-    bbox box_;
-    color color_;
-};
-
-class circle : public sampleable
-{
-public:
-    circle(coord, double radius, color);
-
-    virtual color color_at(coord) const override;
-    virtual bbox get_bounding_box() const override;
+    template <typename... Params>
+    bounded_sampleable(Params... params)
+        : bbox_{std::forward<Params>(params)...}
+    { }
 
 private:
-    coord center_;
-    double radius_;
-    color color_;
+    bbox_t bbox_;
+
+    virtual const bbox_t& get_bounding_box_() const noexcept override
+    { return bbox_; }
 };
 
-void
-sample(const sampleable& scene, raster::raster& target);
+void sample(const sampleable& scene, raster::raster& target);
+
+sampleable::ptr canvas(sampleable::color);
+
+sampleable::ptr rectangle(sampleable::coord, sampleable::coord,
+                          sampleable::color);
+
+sampleable::ptr circle(sampleable::coord, double, sampleable::color);
+
+sampleable::ptr overlay(sampleable::ptr foreground, sampleable::ptr background);
 
 } // namespace graphics

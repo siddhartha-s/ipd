@@ -63,7 +63,7 @@ TEST(Gradient)
     for (int x = 0; x < be.width(); ++x) {
         for (int y = 0; y < be.height(); ++y) {
             if (y > wave_line(x)) {
-                be[{x,y}] = dark.interpolate(1.0 * x / WIDTH, light);
+                be[{x,y}] = interpolate(dark, 1.0 * x / WIDTH, light);
             } else {
                 be[{x,y}] = darkest;
             }

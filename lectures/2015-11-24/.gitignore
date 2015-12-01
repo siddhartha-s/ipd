@@ -1,3 +1,6 @@
+# rendered images
+*.png
+
 # CMake build directories
 build/
 build.*/
