@@ -56,4 +56,6 @@ sampleable::ptr overlay(sampleable::ptr foreground, sampleable::ptr background);
 
 sampleable::ptr scale(double, sampleable::ptr);
 
+sampleable::ptr transform(const raster::affinity&, sampleable::ptr);
+
 } // namespace graphics

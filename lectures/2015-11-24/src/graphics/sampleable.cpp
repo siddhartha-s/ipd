@@ -171,4 +171,27 @@ ptr scale(double factor, ptr base)
     return std::make_shared<scale_impl>(factor, base);
 }
 
+class transform_impl : public bounded_sampleable
+{
+public:
+    transform_impl(const raster::affinity& trans, ptr base)
+        : bounded_sampleable{trans(base->get_bounding_box())}
+        , inv_trans_{trans.inverse()}
+        , base_{base}
+    { }
+private:
+    raster::affinity inv_trans_;
+    ptr base_;
+
+    virtual color color_at_(coord p) const override
+    {
+        return base_->color_at(inv_trans_(p));
+    }
+};
+
+ptr transform(const raster::affinity& trans, ptr base)
+{
+    return std::make_shared<transform_impl>(trans, base);
+}
+
 } // namespace graphics

@@ -46,6 +46,16 @@ TEST(SimpleOverlay)
     render(scene, "overlay.ppm");
 }
 
+TEST(Affinity)
+{
+    auto rect = rectangle({WIDTH / 3, HEIGHT / 3},
+                          {2 * WIDTH / 3, 2 * HEIGHT / 3},
+                          fcolor{0.6, 0, 0});
+    auto trans = raster::affinity::rotation(.7);
+
+    render(transform(trans, rect), "affinity.ppm");
+}
+
 }  // namespace graphics
 
 int
