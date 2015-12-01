@@ -9,9 +9,10 @@
 namespace graphics
 {
 
-class sampleable : public raster::boundable<double>
+class sampleable
 {
 public:
+    using bbox  = raster::bounding_box<double>;
     using coord = raster::posn<double>;
     using color = raster::fcolor;
     using ptr   = std::shared_ptr<const sampleable>;
@@ -19,8 +20,12 @@ public:
     inline color color_at(coord p) const
     { return color_at_(p); }
 
+    inline const bbox& get_bounding_box() const
+    { return get_bounding_box_(); }
+
 protected:
     virtual color color_at_(coord) const = 0;
+    virtual const bbox& get_bounding_box_() const = 0;
 };
 
 class bounded_sampleable : public sampleable
@@ -32,9 +37,9 @@ public:
     { }
 
 private:
-    bbox_t bbox_;
+    bbox bbox_;
 
-    virtual const bbox_t& get_bounding_box_() const noexcept override
+    virtual const bbox& get_bounding_box_() const noexcept override
     { return bbox_; }
 };
 
@@ -48,5 +53,7 @@ sampleable::ptr rectangle(sampleable::coord, sampleable::coord,
 sampleable::ptr circle(sampleable::coord, double, sampleable::color);
 
 sampleable::ptr overlay(sampleable::ptr foreground, sampleable::ptr background);
+
+sampleable::ptr scale(double, sampleable::ptr);
 
 } // namespace graphics

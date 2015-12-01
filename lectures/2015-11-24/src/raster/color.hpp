@@ -33,6 +33,24 @@ fcolor grayscale(const fcolor&) noexcept;
 fcolor overlay(const fcolor& foreground, const fcolor& background) noexcept;
 fcolor interpolate(const fcolor& a, double weight, const fcolor& b) noexcept;
 
+class color_blender
+{
+public:
+    color_blender() noexcept;
+
+    color_blender& add(double weight, const fcolor&) noexcept;
+    operator fcolor() const noexcept;
+
+private:
+    double red_    = 0;
+    double green_  = 0;
+    double blue_   = 0;
+    double alpha_  = 0;
+    double weight_ = 0;
+};
+
+color_blender& operator<<(color_blender&, const fcolor&) noexcept;
+
 struct color
 {
     uint32_t value;

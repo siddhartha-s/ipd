@@ -32,8 +32,7 @@ const color& raster::operator[](coord p) const
 
 bool raster::in_bounds(coord p) const noexcept
 {
-    return p.x >= 0 && p.y >= 0 && p.x < static_cast<long>(width()) &&
-           p.y < static_cast<long>(height());
+    return 0 <= p.x && p.x < width() && 0 <= p.y && p.y < height();
 }
 
 void raster::write_out(const char* filename) const
@@ -42,12 +41,35 @@ void raster::write_out(const char* filename) const
     of << "P6\n";       // magic number
     of << width() << ' ' << height() << " 255\n";
 
-    for (int y = 0; y < height(); ++y) {
-        for (int x = 0; x < width(); ++x) {
-            const auto pixel = operator[]({x, y});
-            of << pixel.red() << pixel.green() << pixel.blue();
-        }
+    for (const auto& pixel : pixels_) {
+        of << pixel.red() << pixel.green() << pixel.blue();
     }
+}
+
+raster::const_row_ref::const_row_ref(const raster* raster, int y)
+    : raster_{raster}, y_{y}
+{ }
+
+raster::row_ref::row_ref(raster* raster, int y)
+    : const_row_ref{raster, y}
+{ }
+
+raster::const_row_ref raster::operator[](int y) const {
+    return raster::const_row_ref{this, y};
+}
+
+raster::row_ref raster::operator[](int y) {
+    return raster::row_ref{this, y};
+}
+
+const color& raster::const_row_ref::operator[](int x) const
+{
+    return (*raster_)[{x, y_}];
+}
+
+color& raster::row_ref::operator[](int x)
+{
+    return const_cast<raster&>(*raster_)[{x, y_}];
 }
 
 } // namespace raster

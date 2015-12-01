@@ -74,6 +74,37 @@ fcolor interpolate(const fcolor& a, double weight, const fcolor& b)
             new_alpha};
 }
 
+color_blender::color_blender() noexcept
+{ }
+
+color_blender& color_blender::add(double weight, const fcolor& color) noexcept
+{
+    double alpha = weight * color.alpha();
+
+    red_    += alpha * color.red();
+    green_  += alpha * color.green();
+    blue_   += alpha * color.blue();
+    alpha_  += alpha;
+    weight_ += weight;
+
+    return *this;
+}
+
+color_blender& operator<<(color_blender& cb, const fcolor& color) noexcept
+{
+    cb.add(1, color);
+    return cb;
+}
+
+color_blender::operator fcolor() const noexcept
+{
+    if (weight_ == 0)
+        return fcolor::TRANSPARENT;
+    else
+        return fcolor{red_ / alpha_, green_ / alpha_, blue_ / alpha_,
+                      alpha_ / weight_};
+}
+
 static size_t constexpr
     RED_SHIFT   = 16,
     GREEN_SHIFT = 8,

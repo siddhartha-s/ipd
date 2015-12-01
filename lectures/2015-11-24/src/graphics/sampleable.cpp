@@ -15,9 +15,10 @@ using color = sampleable::color;
 
 void sample(const sampleable& scene, raster::raster& target)
 {
-    for (int x = 0; x < target.width(); ++x) {
-        for (int y = 0; y < target.height(); ++y) {
-            target[{x, y}] = scene.color_at({x + 0.5, y + 0.5});
+    for (int y = 0; y < target.height(); ++y) {
+        auto row = target[y];
+        for (int x = 0; x < target.width(); ++x) {
+            row[x] = scene.color_at({x + 0.5, y + 0.5});
         }
     }
 }
@@ -36,7 +37,7 @@ public:
 private:
     color color_;
 
-    virtual const bbox_t& get_bounding_box_() const override
+    virtual const bbox& get_bounding_box_() const override
     {
         return EVERYTHING;
     }
@@ -138,6 +139,36 @@ private:
 ptr overlay(ptr foreground, ptr background)
 {
     return std::make_shared<overlay_impl>(foreground, background);
+}
+
+class scale_impl : public bounded_sampleable
+{
+public:
+    scale_impl(double factor, ptr base)
+        : bounded_sampleable{scale(factor, base->get_bounding_box())}
+        , factor_{factor}
+        , base_{base}
+    {}
+
+private:
+    double factor_;
+    ptr base_;
+
+    virtual color color_at_(coord p) const override
+    {
+        return base_->color_at(p / factor_);
+    }
+
+    static bbox scale(double factor, const bbox& original)
+    {
+        return {factor * original.top(), factor * original.right(),
+                factor * original.bottom(), factor * original.left()};
+    }
+};
+
+ptr scale(double factor, ptr base)
+{
+    return std::make_shared<scale_impl>(factor, base);
 }
 
 } // namespace graphics
