@@ -16,7 +16,7 @@ namespace expressions
   TEST(EvalNum)
   {
     unique_ptr<exp> e1{new num{1}};
-    CHECK_EQUAL(1, (e1->eval())->getValue());
+    CHECK_EQUAL(1, (e1->eval(nullptr))->getValue());
   }
   
   TEST(EvalPlus)
@@ -27,7 +27,7 @@ namespace expressions
     ln.push_back(move(n1));
     ln.push_back(move(n2));
     unique_ptr<exp> ae{new add{move(ln)}};
-    CHECK_EQUAL(3, ae->eval()->getValue());
+    CHECK_EQUAL(3, ae->eval(nullptr)->getValue());
   }
 
   TEST(EvalMult)
@@ -38,7 +38,7 @@ namespace expressions
     ln.push_back(move(n1));
     ln.push_back(move(n2));
     unique_ptr<exp> ae{new mul{move(ln)}};
-    CHECK_EQUAL(2, ae->eval()->getValue());
+    CHECK_EQUAL(2, ae->eval(nullptr)->getValue());
   }
 
   TEST(EvalNested)
@@ -59,26 +59,40 @@ namespace expressions
     ln3.push_back(move(s12));
     ln3.push_back(move(a34));
     unique_ptr<exp> muln17{new mul{move(ln3)}};
-    CHECK_EQUAL(-7, muln17->eval()->getValue());
+    CHECK_EQUAL(-7, muln17->eval(nullptr)->getValue());
   }
 
   TEST(WithParse)
   {
     Parser p{"(+ 1 2 3 4)"};
     unique_ptr<exp> e1 = p.parse();
-    CHECK_EQUAL(10, e1->eval()->getValue());
+    CHECK_EQUAL(10, e1->eval(nullptr)->getValue());
   }
 
   TEST(WithParseNested)
   {
     Parser p{"(* (/ 4 2) (- (+ 2 7) (+ 3 4)))"};
     unique_ptr<exp> e = p.parse();
-    CHECK_EQUAL(4, e->eval()->getValue());
+    CHECK_EQUAL(4, e->eval(nullptr)->getValue());
   }
-  
+
+  TEST(Run)
+  {
+    CHECK_EQUAL("10", run("(+ 1 2 3 4)"));
+  }
+
+  TEST(Lambda)
+  {
+    CHECK_EQUAL("function", run("(lambda (x) x)"));
+  }
+
+  TEST(Apply)
+  {
+    CHECK_EQUAL("1", run("((lambda (x) x) 1)"));
+  }
+
 }  // namespace parse
 
-using namespace expressions;
 int
 main(int, const char* [])
 {

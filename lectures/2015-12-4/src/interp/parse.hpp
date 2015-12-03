@@ -19,7 +19,7 @@ namespace parse
 
   list<string> tokenize(const string&);
   bool isparen(const char&);
-  bool isNumeric(string);
+  bool isNumeric(const string&);
 
   class Parser 
   {
@@ -27,7 +27,7 @@ namespace parse
   public:
     
     unique_ptr<exp> parse();
-    Parser(string str);
+    Parser(const string& str);
 
   private:
     
@@ -38,5 +38,7 @@ namespace parse
     unique_ptr<exp> parse_exp();
     list<unique_ptr<exp>> parse_until_close();
   };
+
+  string run(string exp_string);
 
 }
