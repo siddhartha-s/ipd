@@ -1,9 +1,12 @@
 #include "interp/expressions.hpp"
+#include "interp/parse.hpp"
 #include <UnitTest++/UnitTest++.h>
 #include <iostream>
 
 namespace expressions
 {
+
+  using namespace parse;
   
   TEST(True)
   {
@@ -57,6 +60,20 @@ namespace expressions
     ln3.push_back(move(a34));
     unique_ptr<exp> muln17{new mul{move(ln3)}};
     CHECK_EQUAL(-7, muln17->eval()->getValue());
+  }
+
+  TEST(WithParse)
+  {
+    Parser p{"(+ 1 2 3 4)"};
+    unique_ptr<exp> e1 = p.parse();
+    CHECK_EQUAL(10, e1->eval()->getValue());
+  }
+
+  TEST(WithParseNested)
+  {
+    Parser p{"(* (/ 4 2) (- (+ 2 7) (+ 3 4)))"};
+    unique_ptr<exp> e = p.parse();
+    CHECK_EQUAL(4, e->eval()->getValue());
   }
   
 }  // namespace parse

@@ -4,5 +4,5 @@ macro (unit_test name)
     target_link_libraries(${name}_test UnitTest++ ${ARGV})
 endmacro (unit_test)
 
-unit_test(parse)
-unit_test(expressions)
+unit_test(parse expressions)
+unit_test(expressions parse)

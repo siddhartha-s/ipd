@@ -2,7 +2,7 @@
 
 namespace expressions
 {
-
+  
   unique_ptr<value> numeric_op::eval() const
   {
     

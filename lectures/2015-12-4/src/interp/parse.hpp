@@ -1,11 +1,16 @@
 #pragma once
 
+#include "expressions.hpp"
+
 #include <list>
 #include <string>
 #include <cctype>
+#include <regex>
 
 namespace parse
 {
+
+  using namespace expressions;
 
   template <typename T>
   using list = std::list<T>;
@@ -14,5 +19,24 @@ namespace parse
 
   list<string> tokenize(const string&);
   bool isparen(const char&);
+  bool isNumeric(string);
+
+  class Parser 
+  {
+    
+  public:
+    
+    unique_ptr<exp> parse();
+    Parser(string str);
+
+  private:
+    
+    list<string> tokens;
+    list<string>::const_iterator cur;
+    list<string>::const_iterator end;
+
+    unique_ptr<exp> parse_exp();
+    list<unique_ptr<exp>> parse_until_close();
+  };
 
 }
