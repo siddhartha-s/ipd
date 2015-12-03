@@ -52,8 +52,8 @@ namespace expressions
     std::cout << "lookup" << std::endl;
     // is it in this frame?
     if (bindings.count(id) == 1)
-      return bindings.find(id)->second;
-    
+        return bindings.find(id)->second;
+      
     if (parent == nullptr)
       throw "unbound variable";
     
@@ -62,12 +62,16 @@ namespace expressions
 
   void
   environment::bind(string id, shared_ptr<value> val)
-  {
+    {
+        //bindings[id] = shared_ptr<value>{ new numVal(1) };
+      /*
     std::cout << "bind " << id <<  " " << val->toString() << std::endl;
     shared_ptr<value> v = val;
-    auto p = std::make_pair(id, v);
-    bindings.insert(p);
-    std::cout << "bind over" << std::endl;
+    auto p = std::make_pair(id, v) ;
+       */
+        std::cout << "bind " << id <<  " " << val->toString() << std::endl;
+        bindings[id] = val;
+      std::cout  << "bind over" << std::endl;
   }
 
   shared_ptr<value>
@@ -80,7 +84,7 @@ namespace expressions
   closVal::apply(list<shared_ptr<value>> args)
   {
     std::cout << "apply" << std::endl;
-    shared_ptr<environment> newFrame{env};
+    auto newFrame = std::make_shared<environment>(env);
     list<shared_ptr<value>>::iterator arg = args.begin();
     list<string>::iterator param = params.begin();
     for( ; arg != args.end() && param != params.end(); arg++, param++) {

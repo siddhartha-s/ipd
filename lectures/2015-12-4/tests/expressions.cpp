@@ -91,6 +91,22 @@ namespace expressions
     CHECK_EQUAL("1", run("((lambda (x) x) 1)"));
   }
 
+  TEST(HigherOrder)
+  {
+    CHECK_EQUAL("3", run("((lambda (f) (f 1)) (lambda (n) (+ n 2)))"));
+  }
+
+  TEST(Closure)
+  {
+    char * expr =
+      "("
+      " ((lambda (n)"
+      "   (lambda (m) (+ n m)))"
+      "  2)"
+      " 4)";
+    CHECK_EQUAL("6", run(expr));
+  }
+
 }  // namespace parse
 
 int

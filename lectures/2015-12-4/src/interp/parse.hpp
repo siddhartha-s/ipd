@@ -11,6 +11,7 @@ namespace parse
 {
 
   using namespace expressions;
+  using exp = expressions::exp;
 
   template <typename T>
   using list = std::list<T>;

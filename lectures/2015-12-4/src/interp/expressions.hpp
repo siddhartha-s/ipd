@@ -3,7 +3,7 @@
 #include <list>
 #include <memory>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 
 namespace expressions
 {
@@ -20,13 +20,13 @@ namespace expressions
   using string = std::string;
 
   template <typename K, typename V>
-  using map = std::map<K,V>;
+  using map = std::unordered_map<K,V>;
 
   /*********************
    values
   *********************/
 
-  class exp;
+  struct exp;
   class environment;
 
   struct value : std::enable_shared_from_this<value>
@@ -72,8 +72,8 @@ namespace expressions
   /*********************
    environments
   *********************/
-
-  class environment : std::enable_shared_from_this<value>
+    
+  class environment 
   {
     
   public:
@@ -87,7 +87,7 @@ namespace expressions
   private:
     
     shared_ptr<environment> parent;
-    map<string, std::shared_ptr<value>> bindings;
+    map<string, shared_ptr<value>> bindings;
 
   };
 
