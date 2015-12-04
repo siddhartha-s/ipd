@@ -29,7 +29,7 @@ namespace expressions
   struct exp;
   class environment;
 
-  struct value : std::enable_shared_from_this<value>
+  struct value
   {
     virtual int getValue() {
       throw "not a number";
@@ -95,8 +95,9 @@ namespace expressions
    expressions
   *********************/
 
-  struct exp
+  class exp
   {
+  public:
     virtual shared_ptr<value> eval(shared_ptr<environment>) = 0;
   };
 
@@ -105,45 +106,54 @@ namespace expressions
 
   public:
     shared_ptr<value> eval(shared_ptr<environment> env) {
-      return std::shared_ptr<value>{new numVal(num_)};
+      return std::shared_ptr<value>{new numVal(val)};
     }
-    num(int num) : num_{num} {}
+    num(int n) : val{n} {}
     
   private:
     
-    int num_;
-    
+    int val;
   };
 
-  struct numeric_op : public exp 
+  class numeric_op : public exp 
   {
 
-    virtual int combine(int, int) const = 0;
+  public:
     shared_ptr<value> eval(shared_ptr<environment>);
     numeric_op(list<unique_ptr<exp>> args) : args{move(args)} {}
-   
+
+  private:
+    virtual int combine(int, int) const = 0;   
     list<unique_ptr<exp>> args;
  
   };
 
-  struct add : public numeric_op 
+  class add : public numeric_op 
   {
+  public:
     using numeric_op::numeric_op;
+  private:
     int combine(int, int) const;
   };
-  struct sub : public numeric_op
+  class sub : public numeric_op
   {
+  public:
     using numeric_op::numeric_op;
+  private:
     int combine(int, int) const;
   };
-  struct mul : public numeric_op
+  class mul : public numeric_op
   {
+  public:
     using numeric_op::numeric_op;
+  private:
     int combine(int, int) const;
   };
   struct div : public numeric_op
   {
+  public:
     using numeric_op::numeric_op;
+  private:
     int combine(int, int) const;
   };
 
@@ -153,14 +163,11 @@ namespace expressions
   public:
 
     shared_ptr<value> eval(shared_ptr<environment>);
-
-    var(string id) : id_{id} {}
-
-    string getId() { return id_; }
+    var(string id) : id{id} {}
     
   private:
     
-    string id_;
+    string id;
     
   };
 
@@ -168,15 +175,15 @@ namespace expressions
   {
     
   public:
-    shared_ptr<value> eval(shared_ptr<environment>);
 
+    shared_ptr<value> eval(shared_ptr<environment>);
     lambda(list<string> params, unique_ptr<exp> body) :
-      body_{move(body)}, params_{params} {}
+      body{move(body)}, params{params} {}
 
   private:
     
-    unique_ptr<exp> body_;
-    list<string> params_;
+    unique_ptr<exp> body;
+    list<string> params;
     
   };
 

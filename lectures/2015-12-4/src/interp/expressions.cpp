@@ -12,7 +12,7 @@ namespace expressions
       throw "numeric ops must have two or more arguments";
     }
 
-    std::list<unique_ptr<exp>>::const_iterator args_i = args.begin();
+    auto args_i = args.begin();
     int result = (*args_i)->eval(env)->getValue();
     for(args_i++; args_i != args.end(); args_i++)
       result = combine(result, (*args_i)->eval(env)->getValue());
@@ -42,7 +42,7 @@ namespace expressions
   shared_ptr<value>
   var::eval(shared_ptr<environment> env)
   {
-    return env->lookup(id_);
+    return env->lookup(id);
   }
   
   shared_ptr<value> 
@@ -67,15 +67,15 @@ namespace expressions
   shared_ptr<value>
   lambda::eval(shared_ptr<environment> env)
   {
-    return shared_ptr<value>{ new closVal(move(body_), env, params_) };
+    return shared_ptr<value>{ new closVal(move(body), env, params) };
   }
 
   shared_ptr<value> 
   closVal::apply(list<shared_ptr<value>> args)
   {
     auto newFrame = std::make_shared<environment>(env);
-    list<shared_ptr<value>>::iterator arg = args.begin();
-    list<string>::iterator param = params.begin();
+    auto arg = args.begin();
+    auto param = params.begin();
     for( ; arg != args.end() && param != params.end(); arg++, param++) {
       newFrame->bind(*param, *arg);
     }
@@ -102,7 +102,7 @@ namespace expressions
   shared_ptr<value>
   if0::eval(shared_ptr<environment> env)
   {
-    shared_ptr<value> tval = test->eval(env);
+    auto tval = test->eval(env);
     if (tval->getValue() == 0) {
       return true_branch->eval(env);
     } else {

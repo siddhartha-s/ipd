@@ -133,7 +133,6 @@ namespace expressions
     CHECK_EQUAL("5", run("(let ([z 77]) (let ([z (+ 2 3)]) z))"));
   }
 
-  
   TEST(Factorial)
   {
     string expr =
