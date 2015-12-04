@@ -42,15 +42,13 @@ namespace expressions
   shared_ptr<value>
   var::eval(shared_ptr<environment> env)
   {
-    std::cout << "var-eval" << std::endl;
     return env->lookup(id_);
   }
   
   shared_ptr<value> 
   environment::lookup(string id) const
   {
-    std::cout << "lookup" << std::endl;
-    // is it in this frame?
+     // is it in this frame?
     if (bindings.count(id) == 1)
         return bindings.find(id)->second;
       
@@ -63,17 +61,9 @@ namespace expressions
   void
   environment::bind(string id, shared_ptr<value> val)
     {
-        //bindings[id] = shared_ptr<value>{ new numVal(1) };
-      /*
-    std::cout << "bind " << id <<  " " << val->toString() << std::endl;
-    shared_ptr<value> v = val;
-    auto p = std::make_pair(id, v) ;
-       */
-        std::cout << "bind " << id <<  " " << val->toString() << std::endl;
-        bindings[id] = val;
-      std::cout  << "bind over" << std::endl;
-  }
-
+      bindings[id] = val;
+    }
+ 
   shared_ptr<value>
   lambda::eval(shared_ptr<environment> env)
   {
@@ -83,23 +73,17 @@ namespace expressions
   shared_ptr<value> 
   closVal::apply(list<shared_ptr<value>> args)
   {
-    std::cout << "apply" << std::endl;
     auto newFrame = std::make_shared<environment>(env);
     list<shared_ptr<value>>::iterator arg = args.begin();
     list<string>::iterator param = params.begin();
     for( ; arg != args.end() && param != params.end(); arg++, param++) {
-      std::cout << *param << " <> " << (*arg)->toString() << std::endl;
       newFrame->bind(*param, *arg);
-      std::cout << "...." << std::endl;
     }
 
-    std::cout << "!!!!" << std::endl;
     if (arg != args.end() || param != params.end()) {
-      std::cout << "huh" << std::endl;
       throw "wrong number of arguments";
     }
 
-    std::cout << "body eval" << std::endl;
     return body->eval(newFrame);
   }
 
@@ -114,4 +98,15 @@ namespace expressions
     return func->apply(vals);
   }
 
+  shared_ptr<value>
+  if0::eval(shared_ptr<environment> env)
+  {
+    shared_ptr<value> tval = test->eval(env);
+    if (tval->getValue() == 0) {
+      return true_branch->eval(env);
+    } else {
+      return false_branch->eval(env);
+    }
+  }
+  
 } // namespace expressions

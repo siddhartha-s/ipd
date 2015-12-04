@@ -80,14 +80,22 @@ namespace parse
 	if (*cur != ")")
 	  throw "ill-formed lambda";
 	cur++;
-	return unique_ptr<exp>{new lambda(params, move(body))};
+	return unique_ptr<exp>{new lambda(params, move(body))}; 
+      } else if (first == "if0") {
+	list<unique_ptr<exp>> exps = move(parse_until_close());
+	if (exps.size() != 3)
+	  throw "ill-formed if0";
+	unique_ptr<exp> t = move(exps.front());
+	exps.pop_front();
+	unique_ptr<exp> tb = move(exps.front());
+	exps.pop_front();
+	unique_ptr<exp> fb = move(exps.front());
+	return unique_ptr<exp>{new if0(move(t), move(tb), move(fb))};
       } else {
 	cur--;
-	std::cout << "app" << std::endl;
 	return unique_ptr<exp>{new app(parse_until_close())};
       }
     } else {
-      std::cout << "var " << *cur << std::endl;
       auto tv = *cur;
       cur++;
       return unique_ptr<exp>{new var(tv)};

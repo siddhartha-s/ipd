@@ -196,5 +196,22 @@ namespace expressions
     
   };
 
+  class if0 : public exp
+  {
+    
+  public:
+
+    shared_ptr<value> eval(shared_ptr<environment>);
+
+    if0(unique_ptr<exp> t, unique_ptr<exp> tb, unique_ptr<exp> fb) :
+      test{move(t)}, true_branch{move(tb)}, false_branch{move(fb)} {}
+    
+  private:
+
+    unique_ptr<exp> test;
+    unique_ptr<exp> true_branch;
+    unique_ptr<exp> false_branch;
+  };
+
   
 } // namespace expressions

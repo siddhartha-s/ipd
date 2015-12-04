@@ -62,7 +62,16 @@ namespace expressions
     CHECK_EQUAL(-7, muln17->eval(nullptr)->getValue());
   }
 
+  
   TEST(WithParse)
+  {
+    Parser p{"(* (- 1 2) (+ 3 4))"};
+    unique_ptr<exp> e1 = p.parse();
+    CHECK_EQUAL(-7, e1->eval(nullptr)->getValue());
+  }
+
+
+  TEST(WithParse2)
   {
     Parser p{"(+ 1 2 3 4)"};
     unique_ptr<exp> e1 = p.parse();
@@ -98,7 +107,7 @@ namespace expressions
 
   TEST(Closure)
   {
-    char * expr =
+    string expr =
       "("
       " ((lambda (n)"
       "   (lambda (m) (+ n m)))"
@@ -107,7 +116,13 @@ namespace expressions
     CHECK_EQUAL("6", run(expr));
   }
 
-}  // namespace parse
+  TEST(If)
+  {
+    CHECK_EQUAL("1", run("(if0 0 1 2)"));
+    CHECK_EQUAL("2", run("(if0 3 1 2)"));
+  }
+
+}  // namespace expressions
 
 int
 main(int, const char* [])
