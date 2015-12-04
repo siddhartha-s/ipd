@@ -26,11 +26,12 @@ namespace expressions
    values
   *********************/
 
-  struct exp;
+  class exp;
   class environment;
 
-  struct value
+  class value
   {
+  public:
     virtual int getValue() {
       throw "not a number";
     } 
@@ -40,9 +41,10 @@ namespace expressions
     virtual string toString() = 0;
   };
 
-  struct numVal : public value
+  class numVal : public value
   {
-    int num;
+
+  public:
     numVal(int num) : num{num} {}
     int getValue() {
       return num;
@@ -50,14 +52,15 @@ namespace expressions
     string toString() {
       return std::to_string(num);
     }
+
+  private: 
+    int num;
   };
 
   struct closVal : public value
   {
-    unique_ptr<exp> body;
-    shared_ptr<environment> env;
-    list<string> params;
 
+  public:
     closVal(unique_ptr<exp> body, shared_ptr<environment> env, list<string> params) :
       body{move(body)}, env{env}, params{params} {}
 
@@ -66,6 +69,12 @@ namespace expressions
     string toString() {
       return "function";
     }
+
+  private:    
+    unique_ptr<exp> body;
+    shared_ptr<environment> env;
+    list<string> params;
+
   };
 
 
@@ -135,6 +144,7 @@ namespace expressions
   private:
     int combine(int, int) const;
   };
+
   class sub : public numeric_op
   {
   public:
@@ -142,6 +152,7 @@ namespace expressions
   private:
     int combine(int, int) const;
   };
+
   class mul : public numeric_op
   {
   public:
@@ -149,6 +160,7 @@ namespace expressions
   private:
     int combine(int, int) const;
   };
+
   struct div : public numeric_op
   {
   public:

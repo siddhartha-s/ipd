@@ -114,6 +114,7 @@ namespace parse
 	return unique_ptr<exp>{new app(parse_until_close())};
       }
     } else {
+      // any other token is a variable
       auto tv = *cur;
       cur++;
       return unique_ptr<exp>{new var(tv)};
