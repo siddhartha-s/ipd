@@ -36,7 +36,7 @@ namespace parse
 
   bool isparen(const char& c)
   {
-    return c == '(' || c == ')';
+    return c == '(' || c == ')' || c =='[' || c == ']';
   }
 
   Parser::Parser(const string& s) : tokens{tokenize(s)} {}
@@ -91,6 +91,24 @@ namespace parse
 	exps.pop_front();
 	unique_ptr<exp> fb = move(exps.front());
 	return unique_ptr<exp>{new if0(move(t), move(tb), move(fb))};
+      } else if (first == "let") {
+	if (*cur != "(")
+	  throw "ill-formed let";
+	if (*++cur != "[")
+	  throw "ill-formed let";
+	string id = *++cur;
+	cur++;
+	unique_ptr<exp> bound = parse_exp();
+	if (*cur != "]")
+	  throw "ill-formed let";
+	if (*++cur != ")")
+	  throw "ill-formed let";
+	cur++;
+	unique_ptr<exp> body = parse_exp();
+	if (*cur != ")")
+	  throw "ill-formed let";
+	cur++;
+	return unique_ptr<exp>{new let(id, move(bound), move(body))};
       } else {
 	cur--;
 	return unique_ptr<exp>{new app(parse_until_close())};

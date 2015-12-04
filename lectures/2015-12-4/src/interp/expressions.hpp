@@ -213,5 +213,23 @@ namespace expressions
     unique_ptr<exp> false_branch;
   };
 
+  class let : public exp
+  {
+    
+  public:
+
+    shared_ptr<value> eval(shared_ptr<environment>);
+
+    let(string id, unique_ptr<exp> bound, unique_ptr<exp>body) :
+      id{id}, bound{move(bound)}, body{move(body)} {}
+    
+  private:
+
+    string id;
+    unique_ptr<exp> bound;
+    unique_ptr<exp> body;
+
+  };
+
   
 } // namespace expressions

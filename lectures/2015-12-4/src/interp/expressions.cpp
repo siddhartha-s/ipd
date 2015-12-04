@@ -91,8 +91,9 @@ namespace expressions
   app::eval(shared_ptr<environment> env)
   {
     list<shared_ptr<value>> vals;
-    for (auto e = exps.begin(); e != exps.end(); e++)
-      vals.push_back((*e)->eval(env));
+    for (auto e = exps.begin(); e != exps.end(); e++) {
+       vals.push_back((*e)->eval(env));
+    }
     auto func = vals.front();
     vals.pop_front();
     return func->apply(vals);
@@ -107,6 +108,18 @@ namespace expressions
     } else {
       return false_branch->eval(env);
     }
+  }
+
+  shared_ptr<value>
+  let::eval(shared_ptr<environment> env)
+  {
+    list<string> params{id};
+    unique_ptr<exp> thefunc{new lambda(params, move(body))};
+    list<unique_ptr<exp>> appexps;
+    appexps.push_back(move(thefunc));
+    appexps.push_back(move(bound));
+    unique_ptr<exp> theapp{new app(move(appexps))};
+    return theapp->eval(env);
   }
   
 } // namespace expressions

@@ -116,11 +116,36 @@ namespace expressions
     CHECK_EQUAL("6", run(expr));
   }
 
+  TEST(Nary)
+  {
+    CHECK_EQUAL("20", run("((lambda (m n) (* m n)) 4 5)"));
+  }
+
   TEST(If)
   {
     CHECK_EQUAL("1", run("(if0 0 1 2)"));
     CHECK_EQUAL("2", run("(if0 3 1 2)"));
   }
+
+  TEST(Let)
+  {
+    CHECK_EQUAL("77", run("(let ([z 77]) z)"));
+    CHECK_EQUAL("5", run("(let ([z 77]) (let ([z (+ 2 3)]) z))"));
+  }
+
+  
+  TEST(Factorial)
+  {
+    string expr =
+      "(let ([fact"
+      "       (lambda (rec n)"
+      "         (if0 n"
+      "              1"
+      "              (* n (rec rec (- n 1)))))])"
+       "  (fact fact 5))";
+    CHECK_EQUAL("120", run(expr));
+  }
+  
 
 }  // namespace expressions
 
