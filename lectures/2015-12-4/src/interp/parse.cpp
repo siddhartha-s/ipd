@@ -41,29 +41,29 @@ namespace parse
 
   Parser::Parser(const string& s) : tokens{tokenize(s)} {}
 
-  unique_ptr<exp> Parser::parse()
+  shared_ptr<exp> Parser::parse()
   {
     cur = tokens.begin();
     end = tokens.end();
     return parse_exp();
   }
 
-  unique_ptr<exp>
+  shared_ptr<exp>
   Parser::parse_exp()
   {
     if (isNumeric(*cur)) {
-      return unique_ptr<exp>{new num(std::stoi(*cur++))};
+      return shared_ptr<exp>{new num(std::stoi(*cur++))};
     } else if (*cur == "(") {
       string first = *++cur;
       cur++;
       if (first == "+") {
-	return unique_ptr<exp>{new add(parse_until_close())};
+	return shared_ptr<exp>{new add(parse_until_close())};
       } else if (first == "-") {
-	return unique_ptr<exp>{new sub(parse_until_close())};
+	return shared_ptr<exp>{new sub(parse_until_close())};
       } else if (first == "*") {
-	return unique_ptr<exp>{new mul(parse_until_close())};
+	return shared_ptr<exp>{new mul(parse_until_close())};
       } else if (first == "/") {
-	return unique_ptr<exp>{new expressions::div(parse_until_close())};
+	return shared_ptr<exp>{new expressions::div(parse_until_close())};
       } else if (first == "lambda") {
 	if (*cur != "(")
 	  throw "ill-formed lambda";
@@ -76,21 +76,21 @@ namespace parse
 	if (*cur != ")")
 	  throw "ill-formed lambda";
 	cur++;
-	unique_ptr<exp> body = parse_exp();
+	shared_ptr<exp> body = parse_exp();
 	if (*cur != ")")
 	  throw "ill-formed lambda";
 	cur++;
-	return unique_ptr<exp>{new lambda(params, move(body))}; 
+	return shared_ptr<exp>{new lambda(params, body)};
       } else if (first == "if0") {
-	list<unique_ptr<exp>> exps = move(parse_until_close());
+	list<shared_ptr<exp>> exps = parse_until_close();
 	if (exps.size() != 3)
 	  throw "ill-formed if0";
-	unique_ptr<exp> t = move(exps.front());
+	shared_ptr<exp> t = exps.front();
 	exps.pop_front();
-	unique_ptr<exp> tb = move(exps.front());
+	shared_ptr<exp> tb = exps.front();
 	exps.pop_front();
-	unique_ptr<exp> fb = move(exps.front());
-	return unique_ptr<exp>{new if0(move(t), move(tb), move(fb))};
+	shared_ptr<exp> fb = exps.front();
+	return shared_ptr<exp>{new if0(t, tb, fb)};
       } else if (first == "let") {
 	if (*cur != "(")
 	  throw "ill-formed let";
@@ -98,35 +98,35 @@ namespace parse
 	  throw "ill-formed let";
 	string id = *++cur;
 	cur++;
-	unique_ptr<exp> bound = parse_exp();
+	shared_ptr<exp> bound = parse_exp();
 	if (*cur != "]")
 	  throw "ill-formed let";
 	if (*++cur != ")")
 	  throw "ill-formed let";
 	cur++;
-	unique_ptr<exp> body = parse_exp();
+	shared_ptr<exp> body = parse_exp();
 	if (*cur != ")")
 	  throw "ill-formed let";
 	cur++;
-	return unique_ptr<exp>{new let(id, move(bound), move(body))};
+	return shared_ptr<exp>{new let(id, bound, body)};
       } else {
 	cur--;
-	return unique_ptr<exp>{new app(parse_until_close())};
+	return shared_ptr<exp>{new app(parse_until_close())};
       }
     } else {
       // any other token is a variable
       auto tv = *cur;
       cur++;
-      return unique_ptr<exp>{new var(tv)};
+      return shared_ptr<exp>{new var(tv)};
     }
   }
 
-  list<unique_ptr<exp>>
+  list<shared_ptr<exp>>
   Parser::parse_until_close()
   {
-    list<unique_ptr<exp>> exps;
+    list<shared_ptr<exp>> exps;
     while (*cur != ")" && cur != end) {
-      exps.push_back(move(parse_exp()));
+      exps.push_back(parse_exp());
     }
     if (cur == end)
       throw "unmatched parens";
@@ -143,7 +143,7 @@ namespace parse
   string run(string exp_string)
   {
     Parser p{exp_string};
-    unique_ptr<exp> e = p.parse();
+    shared_ptr<exp> e = p.parse();
     return e->eval(nullptr)->toString();
   }
 

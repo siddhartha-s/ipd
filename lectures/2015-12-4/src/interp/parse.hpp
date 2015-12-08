@@ -27,7 +27,7 @@ namespace parse
     
   public:
     
-    unique_ptr<exp> parse();
+    shared_ptr<exp> parse();
     Parser(const string& str);
 
   private:
@@ -36,8 +36,8 @@ namespace parse
     list<string>::const_iterator cur;
     list<string>::const_iterator end;
 
-    unique_ptr<exp> parse_exp();
-    list<unique_ptr<exp>> parse_until_close();
+    shared_ptr<exp> parse_exp();
+    list<shared_ptr<exp>> parse_until_close();
   };
 
   string run(string exp_string);

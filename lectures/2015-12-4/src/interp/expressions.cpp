@@ -67,7 +67,7 @@ namespace expressions
   shared_ptr<value>
   lambda::eval(shared_ptr<environment> env)
   {
-    return shared_ptr<value>{ new closVal(move(body), env, params) };
+    return shared_ptr<value>{ new closVal(body, env, params) };
   }
 
   shared_ptr<value> 
@@ -114,11 +114,11 @@ namespace expressions
   let::eval(shared_ptr<environment> env)
   {
     list<string> params{id};
-    unique_ptr<exp> thefunc{new lambda(params, move(body))};
-    list<unique_ptr<exp>> appexps;
-    appexps.push_back(move(thefunc));
-    appexps.push_back(move(bound));
-    unique_ptr<exp> theapp{new app(move(appexps))};
+    shared_ptr<exp> thefunc{new lambda(params, body)};
+    list<shared_ptr<exp>> appexps;
+    appexps.push_back(thefunc);
+    appexps.push_back(bound);
+    shared_ptr<exp> theapp{new app(appexps)};
     return theapp->eval(env);
   }
   

@@ -11,11 +11,7 @@ namespace expressions
   template <typename T>
   using list = std::list<T>;
 
-  template <typename T>
-  using unique_ptr = std::unique_ptr<T>;
-
-  template <typename T>
-  using shared_ptr = std::shared_ptr<T>;
+  using std::shared_ptr;
 
   using string = std::string;
 
@@ -61,8 +57,8 @@ namespace expressions
   {
 
   public:
-    closVal(unique_ptr<exp> body, shared_ptr<environment> env, list<string> params) :
-      body{move(body)}, env{env}, params{params} {}
+    closVal(shared_ptr<exp> body, shared_ptr<environment> env, list<string> params) :
+      body{body}, env{env}, params{params} {}
 
     shared_ptr<value> apply(list<shared_ptr<value>>);
 
@@ -71,7 +67,7 @@ namespace expressions
     }
 
   private:    
-    unique_ptr<exp> body;
+    shared_ptr<exp> body;
     shared_ptr<environment> env;
     list<string> params;
 
@@ -129,11 +125,11 @@ namespace expressions
 
   public:
     shared_ptr<value> eval(shared_ptr<environment>);
-    numeric_op(list<unique_ptr<exp>> args) : args{move(args)} {}
+    numeric_op(list<shared_ptr<exp>> args) : args{args} {}
 
   private:
     virtual int combine(int, int) const = 0;   
-    list<unique_ptr<exp>> args;
+    list<shared_ptr<exp>> args;
  
   };
 
@@ -189,12 +185,12 @@ namespace expressions
   public:
 
     shared_ptr<value> eval(shared_ptr<environment>);
-    lambda(list<string> params, unique_ptr<exp> body) :
-      body{move(body)}, params{params} {}
+    lambda(list<string> params, shared_ptr<exp> body) :
+      body{body}, params{params} {}
 
   private:
     
-    unique_ptr<exp> body;
+    shared_ptr<exp> body;
     list<string> params;
     
   };
@@ -206,12 +202,12 @@ namespace expressions
 
     shared_ptr<value> eval(shared_ptr<environment>);
     
-    app(list<unique_ptr<exp>> exps) :
-      exps{move(exps)} {}
+    app(list<shared_ptr<exp>> exps) :
+      exps{exps} {}
 
   private:
     
-    list<unique_ptr<exp>> exps;
+    list<shared_ptr<exp>> exps;
     
   };
 
@@ -222,14 +218,14 @@ namespace expressions
 
     shared_ptr<value> eval(shared_ptr<environment>);
 
-    if0(unique_ptr<exp> t, unique_ptr<exp> tb, unique_ptr<exp> fb) :
-      test{move(t)}, true_branch{move(tb)}, false_branch{move(fb)} {}
+    if0(shared_ptr<exp> t, shared_ptr<exp> tb, shared_ptr<exp> fb) :
+      test{t}, true_branch{tb}, false_branch{fb} {}
     
   private:
 
-    unique_ptr<exp> test;
-    unique_ptr<exp> true_branch;
-    unique_ptr<exp> false_branch;
+    shared_ptr<exp> test;
+    shared_ptr<exp> true_branch;
+    shared_ptr<exp> false_branch;
   };
 
   class let : public exp
@@ -239,14 +235,14 @@ namespace expressions
 
     shared_ptr<value> eval(shared_ptr<environment>);
 
-    let(string id, unique_ptr<exp> bound, unique_ptr<exp>body) :
-      id{id}, bound{move(bound)}, body{move(body)} {}
+    let(string id, shared_ptr<exp> bound, shared_ptr<exp>body) :
+      id{id}, bound{bound}, body{body} {}
     
   private:
 
     string id;
-    unique_ptr<exp> bound;
-    unique_ptr<exp> body;
+    shared_ptr<exp> bound;
+    shared_ptr<exp> body;
 
   };
 
