@@ -64,7 +64,7 @@ is allowed.
 #|
 Note: when making the image, consider using a fixed-width font. The font
 named "Courier New" or "Monospace" might work. (Usually most
-computes have one of those installed.) Below is a helper function that
+computers have one of those installed.) Below is a helper function that
 should do the trick on all platforms (but will look best on a mac)
 |#
 
