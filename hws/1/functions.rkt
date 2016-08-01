@@ -11,37 +11,14 @@ $1.80 per mile of travel.
 
 How much does a 0.5 mi. ride cost? How about 1 mi.? 2 mi.?
 
-Make a table that  shows the fare for distances of 0.5  mi., 1 mi, 1.5
-mi, 2 mi., 2.5 mi., 3 mi. Use the format of the table as in the NASA space
-probe part of the question.
+Make a table that shows the fare for distances of 0.5  mi., 1 mi, 1.5
+mi, 2 mi., 2.5 mi., 3 mi.
 
 Create a formula for calculating fares from trip distances.
 
 Use the formula to design a function that computes a taxi fare given
 the distance traveled.
 |#
-
-#|
-
-The NASA space probe New Horizons, en route to Pluto, stalled while
-passing Jupiter. Objects falling on Jupiter accelerate at 23 m/s2,
-like this:
-
-after t =	0	1	2	3	4	...	10	...	15	seconds
-it has traveled	0.0	11.5	46.0	103.5	184.0	...	??	...	??	meters
-
-Guess a formula for calculating how far New Horizons will fall in t
-seconds. (For physicists: ignore the change in gravity that results
-from changing elevation, as well as other complications.)
-
-Check the formula for the first five table entries. If the formula
-doesn’t work, guess again until you find one that does.
-
-Once the formula works for the first five entries, use it to design a
-function that computes the distance traveled given the time elapsed in
-seconds.
-|#
-
 
 
 #|
