@@ -1,7 +1,8 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-beginner-reader.ss" "lang")((modname sliding-text-window) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
-(require 2htdp/universe 2htdp/image)
+(require 2htdp/universe)
+(require 2htdp/image)
 #|
 
 Write a universe program that will, piece by piece,
@@ -69,6 +70,10 @@ should do the trick on all platforms (but will look best on a mac)
 |#
 
 ;; monspaced-text : string -> image
+;; the body of this function uses something called a "symbol"
+;; it is a lot like a string, except it begins with a ' mark
+;; and ends with whitespace. Don't worry about this too much;
+;; they are needed to call “text/font”
 (define (monospaced-text str)
   (text/font str
              36
