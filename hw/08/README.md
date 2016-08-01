@@ -1,17 +1,12 @@
-# CS 214 Homework 1: Huffman Coding
+# IPD Homework 8: Huffman Coding
 
-  - **Hard deadline: Monday, December 7 at 11:59 PM, via Canvas**
-
-  - May optionally be completed with one partner of your choosing
+  - **Due: Tuesday, November 22 at 11:59 PM**
 
 ## Summary
 
-**For more detailed instructions, see the [HW1
-Guide](http://www.eecs.northwestern.edu/~jesse/course/eecs214/hw/1/guide.pdf).**
-
 For this homework, you will write two programs:
 
-  - `huff` compresses text files using Huffman coding.
+  - `huff` compresses files using Huffman coding.
 
   - `puff` decompresses Huffman-coded files produced by `huff`, giving
     back the original file.
@@ -43,87 +38,27 @@ When two files match `diff` prints nothing.
 
 ### Goals
 
-The primary goal of this assignment is to get you started at programming
-data structures. You will also become familiar with a specific data
-structure, Huffman trees, and will think about how data structures can
-be serialized—that is, converted to a sequence of bits that can be
-written to a file.
+The primary goal of this assignment is to get you programming with
+pointers. You will also become familiar with a specific data structure,
+Huffman trees, and will think about how data structures can be
+serialized—that is, converted to a sequence of bits that can be written
+to a file.
 
 ## Getting started
 
-I've posted starter code, including bitwise IO libraries, for the five
-languages we chose:
+This homework assignment does not include reference material for Huffman
+trees and codes. Instead, you should start with the [Huffman
+coding](https://en.wikipedia.org/wiki/Huffman_coding#Basic_technique)
+page on Wikipedia.
 
-  - [C](https://github.com/tov/eecs214/tree/master/lib/bit-io/c)
-  - [C++](https://github.com/tov/eecs214/tree/master/lib/bit-io/cpp)
-  - [Java](https://github.com/tov/eecs214/tree/master/lib/bit-io/java)
-  - [Python](https://github.com/tov/eecs214/tree/master/lib/bit-io/python)
-  - [Ruby](https://github.com/tov/eecs214/tree/master/lib/bit-io/ruby)
-
-You only need one, but the best way to get this code is to clone [the
-whole course Git repository](https://github.com/tov/eecs214), which
-includes all five languages in directory
-[`lib/bit-io`](https://github.com/tov/eecs214/tree/master/lib/bit-io).
-Or you can simply download the whole course repository as a [ZIP
-file](https://github.com/tov/eecs214/archive/master.zip)
-
-The starter code for each language includes a pair of programs `encode`
-and `decode` that---rather than Huffman coding---compress an ASCII text
-file to 7/8 of its original size using a simple block code. (Note that
-your `huff` and `puff` programs are not limited to ASCII files, but must
-work on binary files containing any sequence of bytes.) The next section
-discusses details of how that works, but first we will see how to build,
-if necessary, and run the code in each language. Try it out and make
-sure you can get it to work.
-
-### C
-
-If you have Make, you should be able to build `encode` and `decode` by
-running `make`, and you should be able to run a simple test by running
-`make test`. Otherwise, you can build `encode` by compiling `bit_io.c`
-and `encode.c`, and you can build `decode` by compiling `bit_io.c` and
-`decode.c`.
-
-API documentation for the bit IO library is [in the C header
-file](https://github.com/tov/eecs214/blob/master/lib/bit-io/c/bit_io.h).
-
-### C++
-
-If you have Make, you should be able to build `encode` and `decode` by
-running `make`, and you should be able to run a simple test by running
-`make test`. Otherwise, you can build `encode` by compiling `bit_io.cpp`
-and `encode.cpp`, and you can build `decode` by compiling `bit_io.cpp`
-and `decode.cpp`.
-
-API documentation for the bit IO library is [in the C++ header
-file](https://github.com/tov/eecs214/blob/master/lib/bit-io/cpp/bit_io.hpp).
-
-### Java
-
-The Java code includes configuration information to build it with Maven
-or IntelliJ IDEA, though any Java IDE should be able to figure out how
-to build it. If you have Maven, you can build the Java code with `mvn
-compile`; otherwise use your IDE’s build facility. The example programs
-are the classes `eecs214.huffman.Decode` and `eecs214.huffman.Encode`.
-
-API documentation for the bit IO library is
-[here](http://users.eecs.northwestern.edu/~jesse/course/eecs214/lib/bit-io/java/doc/).
-
-### Python
-
-You should be able to run `encode.py` and `decode.py` directly if you
-have Python installed.
-
-API documentation for the bit IO library is
-[here](http://users.eecs.northwestern.edu/~jesse/course/eecs214/lib/bit-io/python/bit_io.m.html).
-
-### Ruby
-
-You should be able to run `encode.rb` and `decode.rb` directly if you
-have Ruby installed.
-
-API documentation for the bit IO library is
-[here](http://users.eecs.northwestern.edu/~jesse/course/eecs214/lib/bit-io/ruby/doc/BitIO.html).
+This repository includes starter code, including bitwise IO libraries
+and sample encoding and decoding programs. In particular, the starter
+code includes a pair of programs `encode` and `decode` that---rather
+than Huffman coding---compress an ASCII text file to 7/8 of its original
+size using a simple block code. (Note that your `huff` and `puff`
+programs are not limited to ASCII files, but must work on binary files
+containing any sequence of bytes.) The next section discusses details of
+how that works.
 
 ## Warmup: ASCII block code
 
@@ -232,10 +167,6 @@ it may sound:
     of 8, in which case the remaining bits in the file must be padded
     somehow. How can the decoder tell padding bits from data bits?
 
-    **[The HW1
-    Guide](http://www.eecs.northwestern.edu/~jesse/course/eecs214/hw/1/guide.pdf) discusses how to solve this problem by writing the original file size to the encoded file.**
-
-
 2.  The decoder needs some way to recover the same Huffman tree that
     `huff` used to encode it. Since different files have different
     letter frequencies, `huff` needs to somehow transmit the tree to
@@ -249,113 +180,17 @@ it may sound:
           - At every leaf, output a 0 bit followed by the 8 bits
             representing the input symbol on that leaf.
 
-          - At every branch, output a 1 bit, followed by left branch and
-            then the right branch.
+          - At every branch, output a 1 bit, followed by left subtree
+            and then the right subtree.
 
       - Instead of storing the tree, store the frequency table used to
         build the tree. Provided your Huffman-tree algorithm is
         deterministic, you should be able to reconstruct the same tree
         in `puff` as was used in `huff`.
 
-    **[The HW1
-    Guide](http://www.eecs.northwestern.edu/~jesse/course/eecs214/hw/1/guide.pdf) gives pseudocode for the former strategy.**
-
-
 Feel free to discuss these questions on Piazza. Note that because you
 are designing your own file format, your file format will not
 necessarily match that of other students.
-
-## Language-dependent details
-
-### C
-
-Your programs should be named `huff` and `puff`, and should be written
-in [standard C](https://en.wikipedia.org/wiki/C11_(C_standard_revision))
-that compiles with no warnings. You may use any features of the C
-language and standard library that you please, but no other libraries.
-
-The process for building is configured by the first few lines of the
-`Makefile`:
-
-  - `TESTFILES`: A list of files to try compressing and decompressing
-    to test your code.
-
-  - `HUFF_SRC`/`PUFF_SRC`: C source files to be compiled into
-    `huff`/`puff`
-
-  - `HUFF_INC`/`PUFF_INC`: C header that are included by
-    `huff.c`/`puff.c` or one of its dependencies
-
-You should change the first of these in order to test your programs on
-more cases. You will need to change the others only if you split your
-program into additional source files.
-
-### C++
-
-Your programs should be named `huff` and `puff`, and should be written
-in [standard C++](https://en.wikipedia.org/wiki/C%2B%2B14)
-that compiles with no warnings. You may use:
-
-  - all built-in features of the language that do not require an `#include`,
-  - the C++ versions of standard C headers such as `cstring` and `cstdlib`,
-  - the STL `string` header,
-  - STL I/O streams, and
-  - STL smart pointers `unique_ptr` and `shared_ptr`.
-
-You *may not use* any STL containers or algorithms, such as `vector` or
-`find`.
-
-The process for building is configured by the first few lines of the
-`Makefile`:
-
-  - `TESTFILES`: A list of files to try compressing and decompressing
-    to test your code.
-
-  - `HUFF_SRC`/`PUFF_SRC`: C++ source files to be compiled into
-    `huff`/`puff`
-
-  - `HUFF_INC`/`PUFF_INC`: C++ header that are included by
-    `huff.cpp`/`puff.cpp` or one of its dependencies
-
-You should change the first of these in order to test your programs on
-more cases. You will need to change the others only if you split your
-program into additional source files.
-
-### Java
-
-Your classes should be named `eecs214.huffman.Huff` and
-`eecs214.huffman.Puff`, and may be written with Java 8 (the current
-version). I suggest using the newest version of Oracle's [Java Platform
-(JDK)
-SE](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
-
-You may use arrays, classes you write yourself, and the `java.lang`
-hierarchy, except for `StringBuffer` and `StringBuilder`. You may not
-use anything from the `java.util` hierarchy, which is where the Java
-standard library's containers live.
-
-### Python
-
-Your programs should be named `huff.py` and `puff.py`, and should run on
-Python 2.7.x.
-
-You may use `list`, `str`, the numeric and boolean types, I/O (for
-reading and writing files), and any classes you write yourself; neither
-other classes from the standard library nor any external libraries are
-permitted. (If there’s something else you need, ask on Piazza and I’ll
-consider adding it to the list.)
-
-
-### Ruby
-
-Your programs should be named `huff.rb` and `puff.rb`, and should run on
-Ruby 2.x.
-
-You may use `Array`, `String`, the numeric and boolean classes, I/O
-classes (such as `File`), and any classes you write yourself; neither
-other classes from the standard library nor any external libraries are
-permitted. (If there’s something else you need, ask on Piazza and I’ll
-consider adding it to the list.)
 
 ## Deliverables
 
@@ -364,7 +199,7 @@ Your deliverables are:
   - The source code of the `huff` and `puff` programs as described
     above.
 
-  - A plain text file `README.md` (which can use
+  - A plain text file `EVALUATION.md` (which can use
     [Markdown](https://help.github.com/articles/github-flavored-markdown/)
     formatting if you like) in which you describe the design of your
     program. In particular please discuss, briefly:
@@ -384,19 +219,16 @@ You will be graded on:
   - whether your code implements the specified data structure (in this
     case a Huffman tree), as determined by reading it, and
 
-  - the quality of your `README.md` answers.
+  - the quality of your `EVALUATION.md` answers.
 
 ## How to submit
 
-Please submit your README and whatever source files are needed to build
-or run your project to the “hw1” assignment on Canvas. If you worked
-with a partner, you should first create a group in the “hw1 partners”
-group set, and then submit from that group.
+Please submit your `EVALUATION.md` and whatever source files are needed
+to build or run your project.
 
 You do not need to submit starter code that you haven’t modified. If you
-use C or C++ and you create files other than huff.c(pp) and puff.c(pp),
-please mention in the README which files get built into which
-executable.
+edit or create files other than huff.cpp and puff.cpp, please mention in
+the `EVALUATION.md` which files get built into which executable.
 
 ## Fine print
 
