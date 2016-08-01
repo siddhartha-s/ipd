@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- * bit_io.hpp: classes for reading and writing files one bit (or more)
+ * bit_io.h: classes for reading and writing files one bit (or more)
  * at a time.
  *
  * The main idea is that we create a bit input or output stream as a
@@ -14,7 +14,7 @@
 #include <ostream>
 #include <fstream>
 
-namespace eecs214 {
+namespace ipd {
     /*
      * INPUT
      */
@@ -56,7 +56,7 @@ namespace eecs214 {
         //
         // Parameters:
         //
-        //      <class T> - the type of the result; must be numeric
+        //      <typename T> - the type of the result; must be numeric
         //      result - reference for storing the result
         //      n - number of bits to read
         //
@@ -67,18 +67,17 @@ namespace eecs214 {
         //      int result;
         //      bif.read(result, 5); // reads 5 bits into result
         //
-        template <class T>
+        template <typename T>
         bifstream& read_bits(T& result, size_t n);
 
         // Determines whether we've reached the end of the input file.
         //
-        // Returns: `true` if there are no more bits to read and `false`
-        // if there are
+        // Returns: `true` if we’ve attempted to read past the end of
+        // the file, and `false` otherwise.
         //
         // Example:
         //
-        //      while (! bif.eof()) {
-        //          bif.read(b);
+        //      while (bif.read(b) && !bif.eof()) {
         //          ...
         //      }
         //
@@ -176,7 +175,7 @@ namespace eecs214 {
         //
         // Parameters:
         //
-        //      <class T> - the type of the value to write; must be numeric
+        //      <typename T> - the type of the value to write; must be numeric
         //      value - the value to write
         //      n - number of bits to write
         //
@@ -187,7 +186,7 @@ namespace eecs214 {
         //      bof.write(22, 5); // writes 10110
         //      bof.write(22, 6); // writes 010110
         //
-        template <class T>
+        template <typename T>
         bofstream& write_bits(T value, size_t n);
 
         // Determines the status of the bit output stream.
@@ -249,7 +248,7 @@ namespace eecs214 {
      * TEMPLATE IMPLEMENTATIONS
      */
 
-    template <class T>
+    template <typename T>
     bifstream& bifstream::read_bits(T& result, size_t n)
     {
         bool bit;
@@ -269,7 +268,7 @@ namespace eecs214 {
         return bif.read(bit);
     }
 
-    template <class T>
+    template <typename T>
     bofstream& bofstream::write_bits(T value, size_t n)
     {
         while (n--) {
