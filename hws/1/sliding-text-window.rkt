@@ -6,7 +6,7 @@
 #|
 
 Write a universe program that will, piece by piece,
-display the 'complete-message' below. At any given
+display the `complete-message` below. At any given
 moment, we should see exactly 3 characters of the
 message and, as time ticks, the three characters
 that are visible should move forward through the
@@ -48,7 +48,7 @@ and then
 as before. And the entire process should repeat, for all time.
 
 Try to make it be the case that if someone changes the
-definition of 'complete-message', then your program should still
+definition of `complete-message`, then your program should still
 work (displaying the different message). If there are any situations
 where your program would fail to work for some possible complete-messages,
 note them in comments in your solution.
@@ -64,7 +64,7 @@ is allowed.
 
 #|
 Note: when making the image, consider using a fixed-width font. The font
-named "Courier New" or "Monospace" might work. (Usually most
+named “Courier New” or “Monospace” might work. (Usually most
 computers have one of those installed.) Below is a helper function that
 should do the trick on all platforms (but will look best on a mac)
 |#
