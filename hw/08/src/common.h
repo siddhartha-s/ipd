@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <cstdio>
 
 template <class Stream>
 void assert_good(const Stream& stream, const char* argv[])
