@@ -2,5 +2,7 @@ cmake_minimum_required(VERSION 3.3)
 project(huffman CXX)
 include(.ipd/CMakeLists.txt)
 
-add_program(encode src/encode.cpp)
-add_program(decode src/decode.cpp)
+set(COMMON src/bit_io.h src/bit_io.cpp src/common.h)
+
+add_program(encode src/encode.cpp ${COMMON})
+add_program(decode src/decode.cpp ${COMMON})
