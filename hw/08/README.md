@@ -34,31 +34,32 @@ to make sure they match using `diff`:
     % diff hamlet.txt hamlet.txt.out
 ```
 
-When two files match `diff` prints nothing.
+When two files match, `diff` prints nothing.
 
 ### Goals
 
 The primary goal of this assignment is to get you programming with
 pointers. You will also become familiar with a specific data structure,
-Huffman trees, and will think about how data structures can be
+the Huffman tree, and you will think about how data structures can be
 serialized—that is, converted to a sequence of bits that can be written
 to a file.
 
 ## Getting started
 
 This homework assignment does not include reference material for Huffman
-trees and codes. Instead, you should start with the [Huffman
-coding](https://en.wikipedia.org/wiki/Huffman_coding#Basic_technique)
+trees and codes. Instead, you should start with the lecture notes or the
+[Huffman coding](https://en.wikipedia.org/wiki/Huffman_coding#Basic_technique)
 page on Wikipedia.
 
-This repository includes starter code, including bitwise IO libraries
+This repository contains starter code, including bitwise IO libraries
 and sample encoding and decoding programs. In particular, the starter
 code includes a pair of programs `encode` and `decode` that---rather
 than Huffman coding---compress an ASCII text file to 7/8 of its original
-size using a simple block code. (Note that your `huff` and `puff`
-programs are not limited to ASCII files, but must work on binary files
-containing any sequence of bytes.) The next section discusses details of
-how that works.
+size using a simple [block
+code](https://en.wikipedia.org/wiki/Block_code). (Note that your `huff`
+and `puff` programs are not limited to ASCII files, but must work on
+binary files containing any sequence of bytes.) The next section
+discusses details of how that works.
 
 ## Warmup: ASCII block code
 
@@ -164,8 +165,8 @@ original file. However, there are two reasons this task is harder than
 it may sound:
 
 1.  The number of bits that the encoding requires may not be a multiple
-    of 8, in which case the remaining bits in the file must be padded
-    somehow. How can the decoder tell padding bits from data bits?
+    of 8, in which case the remaining bits in the file will be padded
+    with 0s. How can the decoder tell padding bits from data bits?
 
 2.  The decoder needs some way to recover the same Huffman tree that
     `huff` used to encode it. Since different files have different
@@ -211,25 +212,11 @@ Your deliverables are:
     When discussing your code, please provide file and line number
     references.
 
-You will be graded on:
-
-  - the functional correctness of your code, as determined via automated
-    testing,
-
-  - whether your code implements the specified data structure (in this
-    case a Huffman tree), as determined by reading it, and
-
-  - the quality of your `EVALUATION.md` answers.
-
 ## How to submit
 
 Please submit your `EVALUATION.md` and whatever source files are needed
 to build or run your project.
 
 You do not need to submit starter code that you haven’t modified. If you
-edit or create files other than huff.cpp and puff.cpp, please mention in
+edit or create files other than `huff.cpp` and `puff.cpp`, please mention in
 the `EVALUATION.md` which files get built into which executable.
-
-## Fine print
-
-‡ Free weekend extensions until noon on Monday
