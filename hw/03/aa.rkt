@@ -14,8 +14,8 @@ Here's the datastructure for it:
 |#
 
 ;; An [AA-tree X] is:
-;;  (make-tree [AA-node X] Natural [X X -> Boolean] [X X -> Boolean])
-(define-struct tree (root size less-than equal-to))
+;;  (make-tree [AA-node X] Natural [X X -> Boolean])
+(define-struct tree (root size less-than))
 
 ;; An [AA-node X] is one of:
 ;;   - "leaf"
@@ -23,7 +23,25 @@ Here's the datastructure for it:
 (define-struct node (value level left right))
 
 #|
+The less-than operation must be a strict comparsion operation. That is,
+it must be the case that, for any two possible x1 and x2 that are both Xs,
+at most one of these two expressions can return #true:
 
+  (less-than x1 x2)
+  (less-than x2 x1)
+
+This means that you can compare any two elements in the tree with a
+`cond` expression like this one:
+|#
+
+#;
+(cond
+ [(less-than x1 x2) ...] ;; x1 < x2 
+ [(less-than x2 x1) ...] ;; x1 > x2
+ [else ...])             ;; x1 = x2
+
+
+#|
 As compared with the normal binary search tree, each node has an
 additional natural number, the level.  There are a number of rules
 that govern the relationship between the values of the level field of
@@ -62,8 +80,7 @@ And, of course, the binary search tree invariant also holds:
 (define one-two-three "...")
 
 ;; Similarly, there is only one that has the strings "one" "two" and "three"
-;; in it, using string<? and string=? as the comparison and equality
-;; predicate. Define it.
+;; in it, using string<? as the comparison predicate. Define it.
 (define one-two-three-string "...")
 
 ;; There are two [AA-tree number]s that have the numbers 1, 2, 3, and
@@ -101,10 +118,10 @@ the place of some leaf node and leave all of the other levels alone.
 The new node should have level 1.
 
 |#
-;; insert-wrong : [AA-node X] X [X X -> Boolean] [X X -> Boolean] -> [AA-node X]
-;; inserts 'value' into 'tree' using 'less-than' and 'equal-to' without
+;; insert-wrong : [AA-node X] X [X X -> Boolean] -> [AA-node X]
+;; inserts 'value' into 'tree' using 'less-than' without
 ;; regard to the AA invariant.
-(define (insert-wrong node value less-than equal-to) "...")
+(define (insert-wrong node value less-than) "...")
 
 #|
 
