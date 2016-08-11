@@ -13,9 +13,13 @@ Here's the datastructure for it:
 
 |#
 
-;; an X AA-node is either:
+;; An [AA-tree X] is:
+;;  (make-tree [AA-node X] Natural [X X -> Boolean] [X X -> Boolean])
+(define-struct tree (root size less-than equal-to))
+
+;; An [AA-node X] is one of:
 ;;   - "leaf"
-;;   - (make-node X natural-number AA-node AA-node)
+;;   - (make-node X Natural [AA-node X] [AA-node X])
 (define-struct node (value level left right))
 
 #|
@@ -26,12 +30,12 @@ that govern the relationship between the values of the level field of
 a parent and its children. We collectively call these rules the AA
 invariant. They are:
 
-   - the level of a left-child is one more than the level of the
+   - the level of a left-child is one less than the level of the
      parent
 
    - the level of a right child is either the same as the parent or
-     one more. If it is the same, then the right child of the right
-     child must be one more (so no two consecutive right children can
+     one less. If it is the same, then the right child of the right
+     child must be one less (so no two consecutive right children can
      have the same level)
 
 where the level of a leaf node counts as 0.
@@ -49,22 +53,42 @@ And, of course, the binary search tree invariant also holds:
 
 ;; Examples.
 
-;; Define an example AA tree (holding numbers) that
-;; has only the number 0 in it.
+;; Define the example [AA-tree number] that has only the number 0
+;; in it and uses < and = as the less than and comparison operation.
 (define zero "...")
 
-;; Define the only AA tree that has the numbers 1, 2, and 3 in it.
+;; There is only one [AA-tree number] that has the numbers 1, 2, and 3 in
+;; it, using < and = as the less than and comparison operation. Define it.
 (define one-two-three "...")
 
-;; There are two AA trees that have the numbers 1, 2, 3, and 4 in them.
-;; Define them both. (The constraint that all "leaf"s have level 0
-;; means that many of the trees that you might think are AA trees
-;; really are not.)
+;; Similarly, there is only one that has the strings "one" "two" and "three"
+;; in it, using string<? and string=? as the comparison and equality
+;; predicate. Define it.
+(define one-two-three-string "...")
+
+;; There are two [AA-tree number]s that have the numbers 1, 2, 3, and
+;; 4 in them (when using < and =). Define them both. The constraint
+;; that all "leaf"s have level 0 means that many of the trees that
+;; you might think are AA trees really are not.
 (define one-two-three-four-a "...")
 (define one-two-three-four-b "...")
 
-;; Define a tree that has at least 6 numbers in it.
+;; Define an [AA-tree number] that has at least 6 numbers in it.
+;; Use > and = as the comparsion and equality.
 (define six-nodes "...")
+
+#|
+
+The first function we are going to design is a lookup function.
+It should look in the tree only in places that might have the
+number. In other words, be sure that the function you write takes
+advantage of the binary search tree invariant.
+
+|#
+
+;; lookup : [AA-tree X] X -> Boolean
+;; to determine if `x` occurs in `tree`
+(define (lookup tree x) "...")
 
 #|
 
@@ -73,29 +97,26 @@ Our next goal is to design an insertion function.
 Start by designing a function that inserts a number into a given tree
 without regard for the 'level' invariants, paying attention only to
 the binary search tree invariant.  It should insert the new value in
-the place of some leaf node (with level 1) and leave all of the other
-levels alone
+the place of some leaf node and leave all of the other levels alone.
+The new node should have level 1.
 
 |#
-
-;; insert-wrong : (X AA-tree) X (X X -> Boolean) (X X -> Boolean) -> (X AA-tree)
+;; insert-wrong : [AA-node X] X [X X -> Boolean] [X X -> Boolean] -> [AA-node X]
 ;; inserts 'value' into 'tree' using 'less-than' and 'equal-to' without
 ;; regard to the AA invariant.
-(define (insert node value less-than equal-to) "...")
-
+(define (insert-wrong node value less-than equal-to) "...")
 
 #|
 
-Next, find two example AA-trees and numbers such that, when passed to
+Next, find two example AA-nodes and numbers such that, when passed to
 insert-wrong, each returns a tree that is not an AA-tree. One of the
 examples should violate the constraint that the left child is one
-level lower than the parent and the other should violate the contraint
+level lower than its parent and the other should violate the contraint
 that the right-right grandchild is (at least) one level below the parent.
 
 Add these two examples as test cases.
 
 |#
-
 
 
 #|
@@ -153,12 +174,12 @@ Design the rotate-right and rotate-left functions.
 
 |#
 
-;; rotate-right : X AA-node -> X AA-node
-;; assumes at least two 'node's
+;; rotate-right : [AA-node X] -> [AA-node X]
+;; ASSUMPTION: `node` is not "leaf", and `(node-left node)` is not "leaf"
 
 
-;; rotate-left : X AA-node -> X AA-node
-;; assumes at least two 'node's
+;; rotate-left : [AA-node X] -> [AA-node X]
+;; ASSUMPTION: `node` is not "leaf", and `(node-right node)` is not "leaf"
 
 
 #|
@@ -180,6 +201,7 @@ result of the rotation.
 |#
 
 
+
 #|
 
 Finally, we're ready to design insert. For the first step, look at
@@ -188,13 +210,37 @@ the pdf slides here:
   http://faculty.ycp.edu/~dbabcock/PastCourses/cs350/lectures/AATrees.pdf
 
 They show a series of trees that you get (and the skews and splits) by
-inserting the numbers (in order): 6, 2 8, 16, 10, and 1. Write each of
-those down as test cases and then finish the design of insert.
+inserting the numbers (in order): 6, 2, 8, 16, 10, and 1. Write each of
+those down as test cases (i.e. write them down as [AA-node X]s)
+and then finish the design of insert.
+
+Note that when you write test cases, you are not allowed to pass functions
+(or structures that have functions inside them) to check-expect. So,
+for example, this:
+
+  (check-expect (make-tree "leaf" 0 < =) (make-tree "leaf" 0 < =))
+
+will raise an error. To avoid this problem, write test cases that check
+only the root field and size field of your insertion function (by calling
+selectors on the result of insert).
 
 |#
 
+(define inserted-nothing
+  "...")
+(define inserted-6
+  "...")
+(define inserted-6-2
+  "...")
+(define inserted-6-2-8
+  "...")
+(define inserted-6-2-8-16
+  "...")
+(define inserted-6-2-8-16-10
+  "...")
+(define inserted-6-2-8-16-10-1
+  "...")
 
+;; insert : [AA-tree X] X -> [AA-tree X]
+;; inserts `x` into `tree`
 
-;; insert : (X AA-tree) X (X X -> Boolean) (X X -> Boolean) -> (X AA-tree)
-;; inserts 'value' into 'tree' using 'less-than' and 'equal-to'
-(define (insert node value less-than equal-to) "...")
