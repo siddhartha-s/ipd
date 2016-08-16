@@ -1,0 +1,213 @@
+Arbitrarily large data
+----------------------
+
+Lets turn to an aquarium. And, lets say that the only thing
+we care about for fish is their weight.
+
+... draw 2 fish ...
+
+How can we represent these two fish?
+
+;; an aq is:
+;;  - (make-aq number number)
+(define-struct aq (first second))
+
+Generic template:
+;; func-for-aq : aq -> ...
+(define (func-for-aq aq)
+  ... (aq-first aq) ...
+  ... (aq-second aq) ...)
+
+;; aq-weight : aq -> number
+(define (aq-weight aq)
+  (+ (aq-first aq)
+     (aq-second aq)))
+
+;; etc etc
+
+... uh oh -- one of the fishes died!
+
+What happens to our data?
+
+Now, we have
+;; an aq is
+;;  - (make-aq number)
+(define-struct aq (first))
+
+What happens when the data definition changes?
+  the template changes.
+What happens when the template changes?
+  the functions all change.
+
+Generic template:
+;; func-for-aq : aq -> ...
+(define (func-for-aq aq)
+  ... (aq-first aq) ...)
+
+;; aq-weight : aq -> number
+(define (aq-weight aq)
+  (aq-first aq))
+
+and so on for *all* of the functions! (yuck)
+
+So, we go buy a replacement fish and we see two
+beautiful ones in the store...
+
+;; an aq is:
+;; - (make-aq number number number)
+(define-struct aq (first second third))
+
+oh no, not again!
+
+Our data isn't working.
+
+An aquarium isn't 1, or 2, or 100 fish -- it should allow
+us to have whatever number we want.
+
+We need a *list* of numbers.
+
+There is nothing new in the language for this -- we just
+need to *think*.
+
+Structs as Boxes
+----------------
+
+define-struct makes up a new kind of box.
+(define-struct snake (name weight food))
+  ==> box with 3 compartments
+
+(define-struct ant (weight dist))
+  ==> box with 2 compartments
+
+The compartments each hold only 1 thing:
+
+  snake box: 
+   +------------------------------+
+   |  'asp  |   12   | 'cleopatra |
+   +------------------------------+
+
+but they stretch to fit big things:
+
+  ant box
+
+   +--------------------+
+   |       | +-------+  |
+   |  0.01 | | 2 | 3 |  |
+   |       | +-------+  |
+   +--------------------+
+
+Still, only a fixed number of slots.
+
+Lets say you want to pack up 4 fishes. You have 2 slot
+boxes. How can you do it?
+
+Well, you can put them into two boxes.
+
+But that's not good enough -- you must also put the two
+boxes into their own box!
+
+How about 8?
+
+16?
+
+So, we can double the number of fish each time, but what
+about just adding one? How can we do that?
+
+For no fish, we use '(), pronounced "empty".
+
+Then, we put together one fish in a box with '().
+
+Then, we put together one more fish in a box with the
+previous stuff.
+
+Lets turn this back into a define-struct:
+
+ (define-struct bigger-box (weight box))
+
+ (make-bigger-box 10 '())
+ (make-bigger-box 20 (make-bigger-box 10 '()))
+ ...
+
+What does the data definition look like for that?
+
+ ;; an aquarium is either:
+ ;;  - '()
+ ;;  - (make-bigger-box number aquarium)
+
+A rose is a rose? Self-reference!!
+
+Lets check out our examples and make sure they fit the data
+definition.
+
+How about the template. Lets build it. What are the steps?
+
+(define (fun-for-aq alon)
+  (cond
+    [(empty? l) ...]
+    [(bigger-box? l)
+     (bigger-box-weight l)
+     (bigger-box-box l)]))
+
+are we done?
+
+Well, we have new information in the data definition
+(the self-reference) that we don't account for in the
+template. The template should be a "mining" of the data
+definition.
+
+What do we do when there is a complex data form in one of
+the cases?
+
+We use a helper function!
+
+Can anyone see a function for aq lying around anywhere?
+
+Use it!
+
+(define (fun-for-aq alon)
+  (cond
+    [(empty? l) ...]
+    [(bigger-box? l)
+     ... (bigger-box-weight l)
+     ... (fun-for-aq (bigger-box-box l))]))
+
+How about we add up the weights in the aquarium.
+
+(define (sum alon)
+  (cond
+    [(empty? l) 0]
+    [(bigger-box? l)
+     (+ (bigger-box-weight l)
+        (sum (bigger-box-box l)))]))
+
+How little we had to add!
+
+Tests:
+
+(sum '()) = 0
+
+(sum (make-bigger-box 1 (make-bigger-box 2 '())))
+=  .. hand evaluate
+
+This pattern is so common, drracket has these things built
+in for you, with shorter versions:
+
+  cons  -- constructs a new list (two argument function)
+  first -- extracts the first element from a cons list
+  rest  -- extracts the smaller list from a cons list
+  cons? -- test if a list is constructed with cons.
+
+;; A list-of-numbers is either:
+;;  - '()
+;;  - (cons number list-of-numbers)
+
+... write count that returns the number of numbers in the
+list.
+
+How many of you have seen recursion before?  *no magic
+here*!!
+
+No new features. Design recipe change: add arrows to data
+definitions -- corresponds to recursive calls.
+
+

@@ -1,0 +1,62 @@
+Practice some more on lists. 
+
+  - add3to (adds 3 to each element in a list)
+
+Possibly go thru reverse in class (from homework).
+
+sorting
+-------
+
+a list-of-numbers is either:
+  - '()
+  - (cons number list-of-numbers)
+
+template:
+
+(define (fun-for-lon alon)
+  (cond
+    [(empty? alon) ...]
+    [else ... (first alon) ...
+          ... (fun-for-lon (rest alon)) ...]))
+
+So, lets write the function sort:
+
+;; sort : list-of-numbers -> list-of-numbers
+;; to sort alon, in ascending order
+(define (sort alon)
+  (cond
+    [(empty? alon) '()]
+    [else  (insert (first alon)
+                   (sort (rest alon)))]))
+
+;; examples
+(check-expect (sort '()) '())
+(check-expect (sort (cons 1 (cons 2 '())))
+              (cons 1 (cons 2 '())))
+
+(check-expect (sort (cons 2 (cons 1 '())))
+              (cons 1 (cons 2 '())))
+
+but now we have to do insert!
+
+;; insert : number list-of-numbers -> list-of-numbers
+;; inserts n into alon, assuming it is sorted
+
+(define (insert n alon)
+  (cond
+    [(empty? alon) (cons n '())]
+    [else
+     (cond
+       [(< (first alon) n) (cons n alon)]
+       [(> (first alon) n) 
+        (cons (first alon) (insert n (rest alon)))]
+       [(= (first alon) n) (cons n alon)])]))
+
+;; examples:
+
+(check-expect (insert 2 '())
+              (cons 2 '()))
+(check-expect (insert 2 (cons 3 '()))
+              (cons 2 (cons 3 '())))
+(check-expect (insert 2 (cons 1 '()))
+              (cons 1 (cons 2 '())))

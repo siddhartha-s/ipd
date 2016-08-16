@@ -1,0 +1,204 @@
+An important motivation for algorithm/data-structure design is
+performance. But before we can talk about the relative performance of
+various algorithms and data structures, we need some way to measure
+performance. There are two main concerns:
+
+- be hardware-independent
+
+- capture the behavior of functions
+
+So, instead of counting seconds, we'll count "step"s that the
+algorithm takes. Each step will be some fixed amount of time, but we
+won't worry about steps, except to insist that they are all some fixed
+amount of time.
+
+To capture a function's performance, we need to measure more than just
+the time of a complete program. What we'll do is measure the time a
+function takes to run based on the size of its input. On computers,
+when the input is small, pretty much every function is fast. What will
+matter is how things change as the input gets larger and larger. Does
+the time grow really fast? Or does the time grow slowly as the input
+grows?
+
+Lets take an example. Here's the sum function we had from earlier:
+
+;; sum : list-of-numbers -> number
+(define (sum alon)
+  (cond
+    [(empty? l) 0]
+    [(cons? l)
+     (+ (first l)
+        (sum (rest l)))]))
+
+Clearly, if the input is the empty list, (the smallest input), then it
+takes the time that the cond takes, and it takes the time that the
+empty? predicate takes. Lets call that 2 units. What if we pass in a
+one element list?  Well, it takes the time for the cond and the empty
+test like before, but we also have to do the cons? test and then the
+'first' operation, and then the 'rest' operation, and then the time
+for 'sum' of the empty list. Lets say that all the new stuff is 5
+units of time and then add in the 2 units for the empty list. How
+about a two element list? 5+5+2.  Three elements? 5+5+5+2. So, for n
+elements it takes 5*n+2 steps.
+
+Okay, lets write another function that reverses the elements of a
+list:
+
+;; rev : list-of-number -> list-of-number
+(check-expect (rev '()) '())
+(check-expect (rev (cons 1 '())) (cons 1 '()))
+(check-expect (rev (cons 1 (cons 2 '()))) (cons 2 (cons 1 '())))
+
+(define (rev l)
+  (cond
+    [(empty? l) '()]
+    [else (add-at-end (first l) (rev (rest l)))]))
+
+;; add-at-end : number list-of-number -> list-of-number
+(check-expect (add-at-end 1 '()) (cons 1 '()))
+(check-expect (add-at-end 1 (cons 2 '())) (cons 2 (cons 1 '())))
+(define (add-at-end n l)
+  (cond
+    [(empty? l) (cons n '())]
+    [else (cons (first l) (add-at-end n (rest l)))]))
+
+How much time does this reversal function take?
+
+Well, first figure out add-at-end. Looking at the cases and reasoning
+as before might conclude that it also takes 4*n+2 steps since it does
+nearly the same things, except it doesn't have the `cons?` steps.
+
+How about rev? Well, the empty list case is still about 2 steps.  But
+now we have to take add-at-end's time into account. It isn't just some
+fixed number of steps, but depends on its second input!
+
+So when we supply a list with one element to rev, we're calling
+add-at-end with 0 elements. And with a 2 element list passed to rev,
+we're calling add-at-end with 1 element. So we have a formula like
+this:
+
+    4*(add-at-end-time (- n 1)) + 2
+
+But this happens at each step! So if we have a 5 element list, we are
+going to make 5 calls to add-at-end and end up with something like
+this:
+
+   4*a-time(4)+
+   4*a-time(3)+
+   4*a-time(2)+
+   4*a-time(1)+
+   4*a-time(0)+
+   10
+
+which is the same as this:
+
+     n-1
+    ----
+10+ \     add-at-end-time(i)      
+    /
+    ----
+     i=0
+
+which is the same as this:
+
+     n-1
+    ----
+10+ \     4*i+2
+    /
+    ----
+     i=0
+
+
+     n-1         n-1
+    ----        ----
+10+ \     4*i + \    2
+    /           /
+    ----        ----
+     i=0         i=0
+
+
+which is probably about this:
+
+  4*n^2 - 2*n + 8
+
+Okay, so we have three functions we've looked at so far:
+
+ sum --> 5*n+2
+ add-at-end --> 4*n+2
+ rev --> 4*n^2 - 2n + 8
+
+For the purposes of analyzing the running time, we really want to
+think of the first two functions as having the same running time.
+
+Why? Well, if we run add-at-end on a computer that's 5 years old it
+will probably go slower than sum on a computer today. And we really
+don't want to have to analyze algorithms on a per-computer basis! If
+we do that, then we have to redo the analysis for each new computer.
+
+So the idea is to try to think if can abstract this away. And yes: we
+can. The way this is done is to think about something called "Big
+Oh". It captures how functions perform "in the limit" or
+"asymptotically".
+
+So, intuitively what's going on is that sum and add-at-end both grow
+proportionally to the input, but rev grows with the square. So if have
+a fixed-speed computer, you can always find an input size such that
+all bigger inputs are going to be slower with rev than sum.
+
+So we want to collapse all functions with the same running time into a
+certain class that represents all of the ones where varying the speed
+of the computer doesn't matter. So, we write:
+
+ O(n)   -- set of all functions that grow linearly
+ O(n^2) -- set of all functions that grow quadratically
+
+And, in general:
+
+ O(f) -- set of all functions that grow with the same speed as `f`
+
+Here's the mathematically precise definition:
+
+ O(f) = {g | exists n0, m: forall n > n0, f(n) <= m*g(n) }
+
+What is this saying intuitively? Think of "n0" as indicating where the
+input got big enough and "m" as that newer computer that speeds things
+up. Lets check: is 5*n+2 in O(n)? Yes; take n0 = 0 and m = 10
+
+  for n > 0, 5*n+2 <= 10*n
+
+well, at n=1, we have 7 <= 10. And n=2 we are going to add 5 to the
+left and 10 to the right. And it continues like that.
+
+We can do a similar thing to show that 4*n^2 - 2n + 8 is in O(n^2). A
+little bit trickier is to show that 4*n^2 - 2n + 8 is NOT in O(n). It
+isn't, but lets show that n^2 is not in O(n).
+
+Assume we had n0 and m such that
+
+  for all n > n0,
+     n^2 <= c*n
+
+so that should be true of the number max(c,n)+1 because it is true of
+all numbers. Lets call max(c,n)=X.
+
+   (X+1)*(X+1) <= c*(X+1)
+   X^2+2*X+1 <= c*X+1
+   X^2+2*X <= c*X
+
+expand out X:
+
+   max(c,n)*max(c,n) + 2*max(c,n) <= c*max(c,n)
+   2*max(c,n) <= 0
+   c and n are both 0, but n is at least 1.
+
+  Contradiction.
+
+Alright, we can work a lot of things out from first principles here,
+but in general it is the case that
+
+  O(n^i) is NOT in O(n^(i+1))
+
+And, in fact, we can ignore any of the terms in a polynomial except
+the first one (the one with highest degree) and we can ignore any
+constant factors, and we will tell you about more relationships as they
+come up.
