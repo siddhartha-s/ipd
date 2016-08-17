@@ -3,22 +3,25 @@ performance. But before we can talk about the relative performance of
 various algorithms and data structures, we need some way to measure
 performance. There are two main concerns:
 
-- be hardware-independent
+- being hardware-independent
 
-- capture the behavior of functions
+- capturing the behavior of functions
 
-So, instead of counting seconds, we'll count "step"s that the
-algorithm takes. Each step will be some fixed amount of time, but we
-won't worry about steps, except to insist that they are all some fixed
-amount of time.
+Instead of counting seconds, we'll count "step"s that the algorithm
+takes. Each step will be some fixed amount of time, but we won't worry
+about how much time each step takes, except to insist that they are
+all some fixed amount of time. This seems a bit dubious, since
+different steps might take different amounts of time, but we'll return
+to this point later in the lecture. For now, a step is a step is a
+step.
 
 To capture a function's performance, we need to measure more than just
 the time of a complete program. What we'll do is measure the time a
-function takes to run based on the size of its input. On computers,
-when the input is small, pretty much every function is fast. What will
-matter is how things change as the input gets larger and larger. Does
-the time grow really fast? Or does the time grow slowly as the input
-grows?
+function takes to run based on the size of its input. With a modern
+computer, when the input is small, pretty much every function is
+fast. What matters is how things change as the input gets larger and
+larger. Does the time grow really fast? Or does the time grow slowly
+as the input grows?
 
 Lets take an example. Here's the sum function we had from earlier:
 
@@ -35,8 +38,8 @@ takes the time that the cond takes, and it takes the time that the
 empty? predicate takes. Lets call that 2 units. What if we pass in a
 one element list?  Well, it takes the time for the cond and the empty
 test like before, but we also have to do the cons? test and then the
-'first' operation, and then the 'rest' operation, and then the time
-for 'sum' of the empty list. Lets say that all the new stuff is 5
+`first` operation, and then the `rest` operation, and then the time
+for `sum` of the empty list. Lets say that all the new stuff is 5
 units of time and then add in the 2 units for the empty list. How
 about a two element list? 5+5+2.  Three elements? 5+5+5+2. So, for n
 elements it takes 5*n+2 steps.
@@ -108,6 +111,7 @@ which is the same as this:
     ----
      i=0
 
+and then using, you know, math, we know it is the same as this:
 
      n-1         n-1
     ----        ----
@@ -117,15 +121,15 @@ which is the same as this:
      i=0         i=0
 
 
-which is probably about this:
+and after some more simplification steps, 
 
-  4*n^2 - 2*n + 8
+  2*n^2 + 10
 
 Okay, so we have three functions we've looked at so far:
 
  sum --> 5*n+2
  add-at-end --> 4*n+2
- rev --> 4*n^2 - 2n + 8
+ rev --> 2*n^2 + 10
 
 For the purposes of analyzing the running time, we really want to
 think of the first two functions as having the same running time.
@@ -169,9 +173,10 @@ up. Lets check: is 5*n+2 in O(n)? Yes; take n0 = 0 and m = 10
 well, at n=1, we have 7 <= 10. And n=2 we are going to add 5 to the
 left and 10 to the right. And it continues like that.
 
-We can do a similar thing to show that 4*n^2 - 2n + 8 is in O(n^2). A
-little bit trickier is to show that 4*n^2 - 2n + 8 is NOT in O(n). It
-isn't, but lets show that n^2 is not in O(n).
+We can do a similar thing to show that 2*n^2 + 10 is in O(n^2). A
+little bit trickier is to show that 2*n^2 + 10 is NOT in O(n). It
+isn't, but lets just show that n^2 is not in O(n), since it is
+smaller.
 
 Assume we had n0 and m such that
 
@@ -189,7 +194,7 @@ expand out X:
 
    max(c,n)*max(c,n) + 2*max(c,n) <= c*max(c,n)
    2*max(c,n) <= 0
-   c and n are both 0, but n is at least 1.
+   That's true only if c and n are both 0, but n is at least 1.
 
   Contradiction.
 
@@ -202,3 +207,39 @@ And, in fact, we can ignore any of the terms in a polynomial except
 the first one (the one with highest degree) and we can ignore any
 constant factors, and we will tell you about more relationships as they
 come up.
+
+Lets look at the running time of one more function. But first, we should
+design it:
+
+  ;; max : list-of-numbers -> list-of-numbers
+  ;; ASSUME: all of the numbers are bigger or equal to than 0
+  (check-expect (max '()) 0)
+  (check-expect (max (cons 1 (cons 3 (cons 2 '())))) 3)
+  (define (max l)
+    (cond
+      [(empty? l) 0]
+      [else
+        (cond
+         [(< (first l) (max (rest l)))
+	  (max (rest l))]
+	 [else (first l)])]))
+
+What is the running time of this function?
+
+Well, if the list is empty, then its running time is 3. What if there
+is one element in the list? To figure out the running time, we need to
+look at the inner `cond` expression. Either case could happen, right?
+But the first case looks like it does more work, so lets assume that
+case always happens. We have to do the first operation. Then we do the
+`max` call, on an empty list. Then we do a comparison and then the max
+call again, also on an empty list.
+
+Lets say there were 3 elements in the list. Then we are going to do
+the max call on the 2 element list twice. But, EACH of those is going
+to do the max call on the 1 element list, for a total of how many
+calls to the max function on the 1 element list? What if we started with
+10 elements in the list? Then we'd do the 9 call twice, the 8 call 4
+times, the 7 call 8 times, 6 call 16 times 5 -> 32, 4 -> 64, 3 -> 128.
+Do you see where this is going?
+
+This is an exponential time function!  O(2^n)
