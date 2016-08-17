@@ -1,0 +1,202 @@
+
+graphs, representing neighbors as a function.
+
+;; a graph is:
+;;  (make-graph (listof symbol) (symbol -> (listof symbol)))
+(define-struct graph (nodes neighbor))
+
+Here is a graph:
+
+      A
+     /
+    /  
+   B     C
+   |\   /|
+   | \ / |
+   D  E  F
+    \ | /
+     \|/
+      G
+
+(draw arrows going down)
+
+How can we represent this graph as above?
+
+(make-graph
+ '(a b c d e f g)
+  (lambda (node)
+   (cond
+    [(symbol=? node 'a) '(b)]
+    [(symbol=? node 'b) '(d e)]
+    [(symbol=? node 'c) '(e f)]
+    [(member node '(d e f)) '(g)]
+    [(symbol=? node 'g) '()])))
+
+;; add-edge : (graph symol) symbol symbol -> graph
+(define (add-edge ...) ...)
+
+;; this one requires graph=? for testing. We didn't quite get thru
+;; that in a single lecture.
+
+============================================================
+
+
+;; find-path : graph symbol symbol -> list-of-symbol or #false
+
+For this function, structural recursion won't work. I don't
+see any helper functions. Lets try generative recursion. 
+
+Okay. Generative recursion is much more fuzzy. But, we can
+still look for two things: a few simple cases that we know
+what to do, and then maybe a way to trim down complex cases
+into a simpler cases that we can recur with.
+
+Any ideas here for some simple cases?
+
+complex ones that can be made slightly simpler?
+
+;; route-exists? : graph symbol symbol -> boolean
+(check-expect (route-exists? a-graph 'a 'g) #t)
+(check-expect (route-exists? a-graph 'a 'c) #f)
+(define (route-exists? g src dest)
+  (cond
+   [((graph-same-node? graph) src dest) #true]
+   [else (any-route-exists? graph
+			    ((graph-neighbors graph) in)
+			    out)]))
+
+;; any-route-exists? : graph (listof symbol) symbol -> boolean
+(define (any-route-exists? graph srcs dest)
+  (cond
+    [(empty? srcs) #false]
+    [else (or (route-exists? (first ins) out graph)
+              (any-route-exists? ins out graph))]))
+
+Okay, that works for the graph above.
+
+But, what happens if the graph has a cycle (say from A to
+B)?
+
+Termination. Again!
+
+Lets look more carefully at this problem in a simpler graph.
+
+(define a-graph 
+  (make-graph '(x y z)
+	      (lambda (x)
+		(cond
+		 [(symbol=? x 'a) '(b)]
+		 [(symbol=? x 'b) '(a)]
+		 [(symbol=? x 'c) '()]))
+	      symbol=?))
+
+  (route-exists? a-graph 'x 'z)
+= (any-route-exists? '(y) 'z a-graph)
+= (or (route-exists? 'y 'z a-graph)
+      (any-route-exists? '() 'y a-graph))
+= (or (any-route-exists? a-graph '(x) 'z)
+      (any-route-exists? '() 'y a-graph))
+= (or (or (route-exists? 'x 'z a-graph)
+          (any-route-exists? a-graph '() 'z))
+      (any-route-exists? '() 'y a-graph))
+
+uhoh....
+
+not only does this loop, but it loops in a bad way.
+
+How would you and I do this?
+
+Well, we could keep track of where we've been.
+
+Sound like context information to you?
+
+Accumulator.
+
+What kind of value?
+
+list of symbols:
+
+maintain it:
+
+(define (route-exists?/a graph src dest seen-so-far)
+  (cond
+   [((graph-same-node? graph) src dest) #true]
+   [else (any-route-exists? graph
+			    ((graph-neighbors graph) in)
+			    out
+			    (cons in seen-so-far))]))
+
+(define (any-route-exists?/a graph srcs dest seen-so-far)
+  (cond
+    [(empty? srcs) #false]
+    [else (or (route-exists? graph (first srcs) dest seen-so-far)
+              (any-route-exists? graph srcs dest seen-so-far))]))
+
+take advantage of it:
+
+(define (route-exists?/a graph src dest seen-so-far)
+  (cond
+   [((graph-same-node? graph) src dest) #true]
+   [(already-seen? g src seen-so-far) #false]
+   [else (any-route-exists? graph
+			    ((graph-neighbors graph) in)
+			    out
+			    (cons in seen-so-far))]))
+
+(define (already-seen? g node nodes)
+  (cond
+   [(empty? nodes) #false]
+   [else (or ((graph-same-node? g) (first nodes) node)
+	     (already-seen? g node (rest nodes)))]))
+
+(define (route-exists? in out graph)
+   (route-exists?/a in out graph empty))
+
+
+What is the running time of this function?
+
+Well, differently shaped graphs are going to give us different
+pictures of the running times for this function. Lets consider graphs
+that are straight lines where we ask if the first node is connected
+to the last node:
+
+   A
+   |
+   B
+   |
+   C
+   |
+  ...
+   |
+   Z
+
+Clearly that is going to take O(n) time.
+
+What happens for a graph that looks like this, tho:
+
+  start     end
+   /\
+  A  B
+  |\/|
+  |/\|
+  C  D
+  |\/|
+  |/\|
+  E  F
+  |\/|
+  |/\|
+  G  H
+
+  ....
+
+  W  X
+  |\/|
+  |/\|
+  Y  Z
+
+
+where we ask if 'start' is connected to 'end', but 'end' isn't
+connected to anything at all. So the answer will also be #false, but
+how long does it take to figure that out?
+
+Exponential time.
