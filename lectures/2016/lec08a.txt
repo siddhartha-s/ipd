@@ -1,0 +1,264 @@
+generative recursion
+--------------------
+
+So far, all of the recursion we've seen has been structural
+recursion. That is, we've always recurred on the structure of the
+data. This form of recursion is the simple kind. Sadly, it isn't the
+*only* form of recursion out there. Today, we turn to generative
+recursion.
+
+structural recursion: always recur on subparts of the input to the
+function.
+
+generative recursion: generate _new_ inputs to the function and recur
+on them. 
+
+With structural recursive problems, we were given fixed choices for
+recursion. We didn't have to use them, but they were there (from the
+template). Now, we get to make up new kinds of recursions -- this is
+much harder, because there are lots and lots of choices.
+
+(So much harder, in fact, that most people never make up new forms of
+generative recursion -- usually you find it in an algorithms text book
+that some smart person that came before you figured out.)
+
+Lets try an example.
+
+;; make-secret : nat -> (nat -> symbol)
+;; makes up a secret and then returns
+;; a function that lets you guess the secret
+(define (make-secret n)
+  (local [(define secret (random n))]
+    (lambda (guess)
+      (cond
+        [(= guess secret) 'yes]
+        [else 'no]))))
+
+What does this function do?
+
+Lets just try it:
+
+(define my-secret (make-secret 100))
+=
+(define my-secret 
+  (local [(define secret (random 100))]
+    (lambda (guess) ...)))
+=
+(define secret (random 100))
+(define my-secret
+  (lambda (guess)
+    (cond
+      ...)))
+
+=
+(define secret 76)
+(define my-secret
+  (lambda (guess)
+     ...))
+
+Okay. Lets say that we wanted to write a secret guessing function:
+
+;; guess-secret : (nat -> symbol) -> nat
+(define (guess-secret secret)
+  ...)
+
+Now, we know that secrets are always numbers bigger than or equal to
+0.
+
+So, we can write this:
+
+;; guess-helper : (number -> symbol) number -> number
+;; guesses a secret, assuming that the secret is at least n
+(define (guess-helper secret n)
+  (cond
+    [(symbol=? (secret n) 'yes) n]
+    [else (guess-helper secret (+ n 1))]))
+
+How did we recur here? We just made up another number!
+
+How do we know that this function terminates?
+
+Aha! It's it a complex argument! 
+
+With structural recursion, termination was guaranteed (if you don't
+break your template)
+
+With generative recursion, termination is not guaranteed. If you mess
+up your recursive calls, watch out.
+
+That's probably the best we can do with this secret generator. But,
+lets say we have a more informative secret generator. How about this
+one:
+
+;; make-secret : number -> (number -> symbol)
+(define (make-secret n)
+  (local [(define secret (random n))]
+    (lambda (guess)
+      (cond
+        [(< guess secret) 'toosmall]
+        [(= guess secret) 'yes]
+        [(> guess secret) 'toobig]))))
+
+It works just like the one before, but it tells us if the number is
+too big or too small.
+
+How can that help us?
+
+Let say that we've figured out a number below (0) and a number about
+(10,000) the secret:
+
+Say we guess 5,000:
+
+ 0                        5,000                      10,000
+-----------------------------|-----------------------------
+
+If it is 'toosmall, we've eliminated half of the possibilities!
+
+If it is 'toobig, we've also eliminated half of the possibilities.
+
+So, can we use this insight?
+
+Well, first we have to find a number that is bigger. How can we do
+that?
+
+Lets start by writing the contract purpose and header:
+
+;; find-upper-bound : (number -> symbol) number -> number
+;; to find a number that is bigger than the secret number
+;; assume that `n' is smaller than the secret number
+(define (find-bound secret n)
+  ...)
+
+What do we want to do? How about we double the number each time?
+
+(define (find-bound secret n)
+  (cond
+   [(symbol=? 'toobig (secret (* 2 n))) (* 2 n)]
+   [else (find-bound secret (* 2 n))]))
+
+Okay, now we're getting even fancier. Our recursion is doubling the
+number each time.
+
+What happens if I pass in -1 to this function? How about 0? Uhoh.
+
+That's easily fixed: we just add something to the contract. But look:
+we're running into this problem of termination a lot, aren't we?
+
+Okay, lets say that we have a lower bound and an upper bound
+on the secret number. Now we can take advantage of that
+earlier trick:
+
+(define (guess-helper secret below above)
+  (local [(define guess (/ (+ below above) 2))
+          (define ans (secret guess))]
+    (cond
+      [(symbol=? ans 'yes) guess]
+      [(symbol=? ans 'toolow) (guess-helper secret guess above)]
+      [(symbol=? ans 'toohigh) (guess-helper secret below guess)])))
+
+Okay, lets try this out with a secret of 3:
+
+(guess-helper ... 1 4)
+(guess-helper ... 5/2 4)
+(guess-helper ... 5/2 13/4)
+(guess-helper ... 23/8 13/4)
+(guess-helper ... 23/8 49/16)
+(guess-helper ... 95/32 49/16)
+(guess-helper ... 95/32 193/64)
+(guess-helper ... 383/128 193/64)
+(guess-helper ... 383/128 769/256)
+(guess-helper ... 1535/512 769/256)
+(guess-helper ... 1535/512 3073/1024)
+(guess-helper ... 6143/2048 3073/1024)
+(guess-helper ... 6143/2048 12289/4096)
+(guess-helper ... 24575/8192 12289/4096)
+(guess-helper ... 24575/8192 49153/16384)
+(guess-helper ... 98303/32768 49153/16384)
+(guess-helper ... 98303/32768 196609/65536)
+(guess-helper ... 393215/131072 196609/65536)
+(guess-helper ... 393215/131072 786433/262144)
+(guess-helper ... 1572863/524288 786433/262144)
+(guess-helper ... 1572863/524288 3145729/1048576)
+(guess-helper ... 6291455/2097152 3145729/1048576)
+(guess-helper ... 6291455/2097152 12582913/4194304)
+(guess-helper ... 25165823/8388608 12582913/4194304)
+
+Yikes.
+
+We went off into fraction land, never to return.
+
+
+(define (guess-helper secret below above)
+  (local [(define guess (quotient (+ below above) 2))
+          (define ans (secret guess))]
+    (cond
+      [(symbol=? ans 'yes) guess]
+      [(symbol=? ans 'toolow) (guess-helper secret guess above)]
+      [(symbol=? ans 'toohigh) (guess-helper secret below guess)])))
+
+  (guess-helper (fixed-secret 3) 1 4) ;; guess 2, not 2.5
+= (guess-helper (fixed-secret 3) 2 4) ;; guess 3.
+= 3
+
+
+============================================================
+
+
+The chaos game.
+
+1- pick a triangle (three verticies)
+2- start with a random point.
+3- pick a random vertex
+4- plot the point halfway between the random vertex and the point
+5- go back to step 3. Unless you're tired, in which case stop.
+
+
+Lets code this up. Generative recursion produces strange things!
+
+
+(require 2htdp/image)
+(define size 200)
+
+;; serp : posn posn posn posn number -> image
+;; plays the chaos game with verticies (t1,t2,t3) and previous iteration pos
+(define (serp pos t1 t2 t3 n)
+  (cond
+    [(zero? n) (rectangle size size 'solid 'black)]
+    [else 
+     (local [(define r (random 3))
+             (define chosen-vertex
+               (cond
+                 [(= r 0) t1]
+                 [(= r 1) t2]
+                 [(= r 2) t3]))
+             (define next-point (between pos chosen-vertex))]
+       (add-dot next-point
+                (serp next-point t1 t2 t3 (- n 1))))]))
+
+;; add-dot : posn image -> image
+(check-expect (add-dot (make-posn 10 10) (rectangle 20 20 'outline 'black))
+              (overlay/xy (rectangle 20 20 'outline 'black) 
+                          10
+                          10
+                          (circle 1 'solid 'red)))
+(define (add-dot p image)
+  (underlay/xy image
+               (posn-x p)
+               (posn-y p)
+               (circle 1 'solid 'red)))
+
+;; between : posn posn -> posn
+(check-expect (between (make-posn 50 50)
+                       (make-posn 100 0))
+              (make-posn 75 25))
+(define (between p1 p2)
+  (make-posn (/ (+ (posn-x p1) (posn-x p2)) 2)
+             (/ (+ (posn-y p1) (posn-y p2)) 2)))
+
+;; run program, run
+(serp (make-posn (random size) (random size))
+      (make-posn (/ size 2) 0)
+      (make-posn 0 (- size 1))
+      (make-posn (- size 1) (- size 1))
+      5000)
+      
