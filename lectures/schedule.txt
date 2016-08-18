@@ -4,9 +4,10 @@
  09/27: linked lists (R); asymptotic analysis (R); trees (R)
 [BSL+]
  09/29: ADTs (stacks and queues) (J); banker’s queues (J); random BSTs (J)
-[ISL/ISL+]
+[ISL]
  10/04: abstracting fns (J); list abstractions (J); polymorphism (J)
  10/06: filesystem trees (R); invariants (R); AVL trees (R)
+[ISL+]
  10/11: evaluating expressions (R); adding definitions (R); binomial heap? (R)
 [DSSL]
  10/13: generative recursion (R); sorting (R); graph representations (R)
