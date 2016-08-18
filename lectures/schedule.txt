@@ -1,14 +1,19 @@
+[BSL]
 *09/20: welcome (J); the algebras of images and strings (J); big bang (J)
 *09/22: structures (J); enumerations (J); itemizations of every kind (J)
  09/27: linked lists (R); asymptotic analysis (R); trees (R)
+[BSL+]
  09/29: ADTs (stacks and queues) (J); banker’s queues (J); random BSTs (J)
+[ISL/ISL+]
  10/04: abstracting fns (J); list abstractions (J); polymorphism (J)
  10/06: filesystem trees (R); invariants (R); AVL trees (R)
  10/11: evaluating expressions (R); adding definitions (R); binomial heap? (R)
+[DSSL]
  10/13: generative recursion (R); sorting (R); graph representations (R)
  10/18: graph search (J); Bellman–Ford algorithm (J); Dijkstra’s algorithm (J)
  10/20: subst. evaluator (R); environment evaluator (R); laziness/streams (R)
  10/25: union-find (J); Kruskal’s algorithm (J); slack
+[C++]
  10/27: welcome to C++ (J); structs and functions (J); vectors (J)
 *11/01: Exam
 *11/03: classes and data hiding (J); union-find, again (J); a graph class (J)
