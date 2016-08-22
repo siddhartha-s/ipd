@@ -1,8 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-intermediate-reader.ss" "lang")((modname lec06-avl) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
-(require "provide.rkt") (provide insert AVL? in-order)
-
 ;; an AVL-tree is either:
 ;;  (make-node number AVL-tree AVL-tree number)
 ;;  "leaf"
@@ -138,7 +136,9 @@
 
 (define (rebalance-left value original-left new-left right the-balance)
   (cond
-    [(not (= (height original-left) (height new-left)))
+    [(= (height original-left) (height new-left))
+     (build-node value new-left right)]
+    [else
      (cond
        [(equal? the-balance "left")
         (cond
@@ -164,13 +164,13 @@
        [(equal? the-balance "right")
         (build-node value new-left right)]
        [(equal? the-balance "even")
-        (build-node value new-left right)])]
-    [else
-     (build-node value new-left right)]))
+        (build-node value new-left right)])]))
 
 (define (rebalance-right value left original-right new-right the-balance)
   (cond
-    [(not (= (height original-right) (height new-right)))
+    [(= (height original-right) (height new-right))
+     (build-node value left new-right)]
+    [else
      (cond
        [(equal? the-balance "left")
         (build-node value left new-right)]
@@ -197,6 +197,49 @@
                          (build-node x A B)
                          C))])]
        [(equal? the-balance "even")
-        (build-node value left new-right)])]
+        (build-node value left new-right)])]))
+
+;; insert-many : listof-number -> AVL-tree
+(check-expect (insert-many '()) "leaf")
+(check-expect (insert-many (list 1 2 3))
+              (build-node 2
+                          (build-node 1 "leaf" "leaf")
+                          (build-node 2 "leaf" "leaf")))
+(define (insert-many lon)
+  (cond
+    [(empty? lon) "leaf"]
+    [else (insert (insert-many (rest lon))
+                  (first lon))]))
+
+(define (insert-worked? elements)
+  (local [(define tree (insert-many elements))]
+    (and (AVL? tree)
+         (equal? (in-order tree)
+                 (remove-duplicates (sort elements <))))))
+
+;; remove-duplicates : listof-number -> listof-number
+(check-expect (remove-duplicates '()) '())
+(check-expect (remove-duplicates (list 1)) (list 1))
+(check-expect (remove-duplicates (list 1 2)) (list 1 2))
+(check-expect (remove-duplicates (list 1 1)) (list 1))
+(check-expect (remove-duplicates (list 1 2 1)) (list 1 2))
+(define (remove-duplicates lon)
+  (cond
+    [(empty? lon) lon]
     [else
-     (build-node value left new-right)]))
+     (cons (first lon) (remove-all (first lon) (remove-duplicates (rest lon))))]))
+
+(check-satisfied '() insert-worked?)
+(check-satisfied (list 1) insert-worked?)
+(check-satisfied (list 1 2) insert-worked?)
+(check-satisfied (list 2 1) insert-worked?)
+(check-satisfied (list 2 1) insert-worked?)
+(check-satisfied (list 1 2 3) insert-worked?)
+(check-satisfied (list 2 1 3) insert-worked?)
+(check-satisfied (list 1 3 2) insert-worked?)
+(check-satisfied (list 3 1 2) insert-worked?)
+(check-satisfied (list 2 3 1) insert-worked?)
+(check-satisfied (list 3 2 1) insert-worked?)
+(check-satisfied (list 1 1) insert-worked?)
+(check-satisfied (list 1 1 2 3) insert-worked?)
+(check-satisfied (list 3 1 2 3) insert-worked?)
