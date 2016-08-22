@@ -10,11 +10,6 @@
 ;;   (<= -1 (- (height left) (height right)) 1)
 (define-struct node (value left right height))
 
-(define (height tree)
-  (cond
-    [(equal? tree "leaf") 0]
-    [else (node-height tree)]))
-
 (define (build-node value left right)
   (make-node value left right (+ 1 (max (height left) (height right)))))
 
@@ -26,11 +21,16 @@
               (build-node 2 "leaf" "leaf")
               (build-node 6 "leaf" "leaf")))
 
+;; height : AVL-tree -> number
 (check-expect (height "leaf") 0)
 (check-expect (height size1) 1)
 (check-expect (height size2l) 2)
 (check-expect (height size2r) 2)
 (check-expect (height size3) 2)
+(define (height tree)
+  (cond
+    [(equal? tree "leaf") 0]
+    [else (node-height tree)]))
 
 
 ;; AVL? : AVL-tree -> number
