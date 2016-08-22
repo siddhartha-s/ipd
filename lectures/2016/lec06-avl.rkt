@@ -28,7 +28,8 @@
               (build-node 6 "leaf" "leaf")))
 
 ;; AVL? : AVL-tree -> number
-;; checks to be sure the given tree has the AVL invariant
+;; checks to be sure the given tree has the AVL invariant,
+;; the BST invariant, and that the height fields are correct
 (check-expect (AVL? "leaf") #true)
 (check-expect (AVL? size1) #true)
 (check-expect (AVL? size2l) #true)
@@ -78,6 +79,12 @@
                (values-all? cmp val (node-left tree))
                (values-all? cmp val (node-right tree)))]))
 
+;; compute-height : AVL-tree -> number
+;; ignores the `height` field of the AVL tree and
+;; computes the heights by counting
+(check-expect (compute-height "leaf") 0)
+(check-expect (compute-height (make-node 1 "leaf" "leaf" 100)) 1)
+(check-expect (compute-height (make-node 1 (make-node 1 "leaf" "leaf" 100) "leaf" 100)) 2)
 (define (compute-height tree)
   (cond
     [(equal? tree "leaf") 0]
@@ -87,6 +94,7 @@
 
 
 ;; in-order : AVL-tree -> (listof number)
+;; returns the numbers in the AVL tree as they would appear in an inorder traversal
 (check-expect (in-order "leaf") '())
 (check-expect (in-order (build-node 2
                                     (build-node 1 "leaf" "leaf")
@@ -100,6 +108,7 @@
                   (in-order (node-right tree)))]))
 
 ;; insert : AVL-tree number -> AVL-tree
+;; inserts 'value' into 'tree', returning a new AVL tree.
 (define (insert tree value)
   (cond
     [(equal? tree "leaf")
@@ -126,13 +135,12 @@
 (check-expect (balance (build-node 2 (build-node 1 "leaf" "leaf") "leaf")) "left")
 (check-expect (balance (build-node 2 "leaf" (build-node 3 "leaf" "leaf"))) "right")
 (define (balance node)
-  (cond
-    [(= (height (node-left node)) (height (node-right node)))
-     "even"]
-    [(= (- (height (node-left node)) 1) (height (node-right node)))
-     "left"]
-    [(= (+ (height (node-left node)) 1) (height (node-right node)))
-     "right"]))
+  (local [(define delta (- (height (node-left node))
+                           (height (node-right node))))]
+    (cond
+      [(= delta 0) "even"]
+      [(= delta 1) "left"]
+      [(= delta -1) "right"])))
 
 (define (rebalance-left value original-left new-left right the-balance)
   (cond
@@ -204,7 +212,7 @@
 (check-expect (insert-many (list 1 2 3))
               (build-node 2
                           (build-node 1 "leaf" "leaf")
-                          (build-node 2 "leaf" "leaf")))
+                          (build-node 3 "leaf" "leaf")))
 (define (insert-many lon)
   (cond
     [(empty? lon) "leaf"]
@@ -227,7 +235,9 @@
   (cond
     [(empty? lon) lon]
     [else
-     (cons (first lon) (remove-all (first lon) (remove-duplicates (rest lon))))]))
+     (cons (first lon)
+           (remove-all (first lon)
+                       (remove-duplicates (rest lon))))]))
 
 (check-satisfied '() insert-worked?)
 (check-satisfied (list 1) insert-worked?)
