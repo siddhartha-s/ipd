@@ -10,6 +10,14 @@
 ;;   (<= -1 (- (height left) (height right)) 1)
 (define-struct node (value left right height))
 
+;; height : AVL-tree -> number
+(check-expect (height "leaf") 0)
+(check-expect (height (make-node 3 "leaf" "leaf" 1)) 1)
+(define (height tree)
+  (cond
+    [(equal? tree "leaf") 0]
+    [else (node-height tree)]))
+
 (define (build-node value left right)
   (make-node value left right (+ 1 (max (height left) (height right)))))
 
@@ -20,18 +28,6 @@
   (build-node 4
               (build-node 2 "leaf" "leaf")
               (build-node 6 "leaf" "leaf")))
-
-;; height : AVL-tree -> number
-(check-expect (height "leaf") 0)
-(check-expect (height size1) 1)
-(check-expect (height size2l) 2)
-(check-expect (height size2r) 2)
-(check-expect (height size3) 2)
-(define (height tree)
-  (cond
-    [(equal? tree "leaf") 0]
-    [else (node-height tree)]))
-
 
 ;; AVL? : AVL-tree -> number
 ;; checks to be sure the given tree has the AVL invariant
@@ -105,32 +101,25 @@
                   (list (node-value tree))
                   (in-order (node-right tree)))]))
 
-;; an AVL-tree/grow is:
-;;  (make-AG AVL-tree boolean)
-;;   INVARIANT: the AVL-tree is always a 'node'
-(define-struct AG (tree grew?))
-
 ;; insert : AVL-tree number -> AVL-tree
 (define (insert tree value)
-  (AG-tree (insert/grow tree value)))
-
-;; insert/grow : AVL-tree number -> AVL-tree/grow
-(define (insert/grow tree value)
   (cond
     [(equal? tree "leaf")
-     (make-AG (build-node value "leaf" "leaf") #true)]
+     (build-node value "leaf" "leaf")]
     [else
      (cond
        [(< value (node-value tree))
         (rebalance-left (node-value tree)
-                        (insert/grow (node-left tree) value)
+                        (node-left tree)
+                        (insert (node-left tree) value)
                         (node-right tree)
                         (balance tree))]
-       [(= value (node-value tree)) (make-AG tree #false)]
+       [(= value (node-value tree)) tree]
        [(> value (node-value tree))
         (rebalance-right (node-value tree)
                          (node-left tree)
-                         (insert/grow (node-right tree) value)
+                         (node-right tree)
+                         (insert (node-right tree) value)
                          (balance tree))])]))
 
 ;; balance : AVL-tree -> "even" or "left" or "right"
@@ -147,81 +136,67 @@
     [(= (+ (height (node-left node)) 1) (height (node-right node)))
      "right"]))
 
-(define (rebalance-left value AG-left right the-balance)
+(define (rebalance-left value original-left new-left right the-balance)
   (cond
-    [(AG-grew? AG-left)
+    [(not (= (height original-left) (height new-left)))
      (cond
        [(equal? the-balance "left")
         (cond
-          [(equal? "right" (balance (AG-tree AG-left)))
+          [(equal? "right" (balance new-left))
            (local [(define x value)
-                   (define y (node-value (AG-tree AG-left)))
-                   (define z (node-value (node-right (AG-tree AG-left))))
-                   (define A (node-left (AG-tree AG-left)))
-                   (define B (node-left (node-right (AG-tree AG-left))))
-                   (define C (node-right (node-right (AG-tree AG-left))))
+                   (define y (node-value new-left))
+                   (define z (node-value (node-right new-left)))
+                   (define A (node-left new-left))
+                   (define B (node-left (node-right new-left)))
+                   (define C (node-right (node-right new-left)))
                    (define D right)]
-             (make-AG
-              (build-node
-               z
-               (build-node y A B)
-               (build-node x C D))
-              #false))]
+             (build-node
+              z
+              (build-node y A B)
+              (build-node x C D)))]
           [else
            (local [(define x value)
-                   (define y (node-value (AG-tree AG-left)))
-                   (define A (node-left (AG-tree AG-left)))
-                   (define B (node-right (AG-tree AG-left)))
+                   (define y (node-value new-left))
+                   (define A (node-left new-left))
+                   (define B (node-right new-left))
                    (define C right)]
-             (make-AG
-              (build-node y A (build-node x B C))
-              #true))])]
+             (build-node y A (build-node x B C)))])]
        [(equal? the-balance "right")
-        (make-AG (build-node value (AG-tree AG-left) right)
-                 #false)]
+        (build-node value new-left right)]
        [(equal? the-balance "even")
-        (make-AG (build-node value (AG-tree AG-left) right)
-                 #true)])]
+        (build-node value new-left right)])]
     [else
-     (make-AG (build-node value (AG-tree AG-left) right)
-              #false)]))
+     (build-node value new-left right)]))
 
-(define (rebalance-right value left AG-right the-balance)
+(define (rebalance-right value left original-right new-right the-balance)
   (cond
-    [(AG-grew? AG-right)
+    [(not (= (height original-right) (height new-right)))
      (cond
        [(equal? the-balance "left")
-        (make-AG (build-node value left (AG-tree AG-right))
-                 #false)]
+        (build-node value left new-right)]
        [(equal? the-balance "right")
         (cond
-          [(equal? "left" (balance (AG-tree AG-right)))
+          [(equal? "left" (balance new-right))
            (local [(define x value)
-                   (define y (node-value (AG-tree AG-right)))
-                   (define z (node-value (node-left (AG-tree AG-right))))
+                   (define y (node-value new-right))
+                   (define z (node-value (node-left new-right)))
                    (define A left)
-                   (define B (node-left (node-left (AG-tree AG-right))))
-                   (define C (node-right (node-left (AG-tree AG-right))))
-                   (define D (node-right (AG-tree AG-right)))]
-             (make-AG
-              (build-node z
-                          (build-node x A B)
-                          (build-node y C D))
-              #false))]
+                   (define B (node-left (node-left new-right)))
+                   (define C (node-right (node-left new-right)))
+                   (define D (node-right new-right))]
+             (build-node z
+                         (build-node x A B)
+                         (build-node y C D)))]
           [else
            (local [(define x value)
-                   (define y (node-value (AG-tree AG-right)))
+                   (define y (node-value new-right))
                    (define A left)
-                   (define B (node-left (AG-tree AG-right)))
-                   (define C (node-right (AG-tree AG-right)))]
-             (make-AG
-              (build-node y
-                          (build-node x A B)
-                          C)
-              #true))])]
+                   (define B (node-left new-right))
+                   (define C (node-right new-right))]
+             (build-node y
+                         (build-node x A B)
+                         C))])]
        [(equal? the-balance "even")
-        (make-AG (build-node value left (AG-tree AG-right))
-                 #true)])]
+        (build-node value left new-right)])]
     [else
-     (make-AG (build-node value left (AG-tree AG-right))
-              #false)]))
+     (build-node value left new-right)]))
