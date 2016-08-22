@@ -17,7 +17,12 @@
     [else (node-height tree)]))
 
 (define (build-node value left right)
-  (make-node value left right (+ 1 (max (height left) (height right)))))
+  (make-node value
+             left
+             right
+             (+ (max (height left)
+                     (height right))
+                1)))
 
 (define size1 (build-node 2 "leaf" "leaf"))
 (define size2l (build-node 3 size1 "leaf"))
@@ -243,13 +248,42 @@
 (check-satisfied (list 1) insert-worked?)
 (check-satisfied (list 1 2) insert-worked?)
 (check-satisfied (list 2 1) insert-worked?)
-(check-satisfied (list 2 1) insert-worked?)
+
+;; permutations of three elements
 (check-satisfied (list 1 2 3) insert-worked?)
 (check-satisfied (list 2 1 3) insert-worked?)
 (check-satisfied (list 1 3 2) insert-worked?)
 (check-satisfied (list 3 1 2) insert-worked?)
 (check-satisfied (list 2 3 1) insert-worked?)
 (check-satisfied (list 3 2 1) insert-worked?)
+
+;; permutations of four elements
+(check-satisfied (list 4 1 2 3) insert-worked?)
+(check-satisfied (list 1 4 2 3) insert-worked?)
+(check-satisfied (list 1 2 4 3) insert-worked?)
+(check-satisfied (list 1 2 3 4) insert-worked?)
+(check-satisfied (list 4 2 1 3) insert-worked?)
+(check-satisfied (list 2 4 1 3) insert-worked?)
+(check-satisfied (list 2 1 4 3) insert-worked?)
+(check-satisfied (list 2 1 3 4) insert-worked?)
+(check-satisfied (list 4 1 3 2) insert-worked?)
+(check-satisfied (list 1 4 3 2) insert-worked?)
+(check-satisfied (list 1 3 4 2) insert-worked?)
+(check-satisfied (list 1 3 2 4) insert-worked?)
+(check-satisfied (list 4 3 1 2) insert-worked?)
+(check-satisfied (list 3 4 1 2) insert-worked?)
+(check-satisfied (list 3 1 4 2) insert-worked?)
+(check-satisfied (list 3 1 2 4) insert-worked?)
+(check-satisfied (list 4 2 3 1) insert-worked?)
+(check-satisfied (list 2 4 3 1) insert-worked?)
+(check-satisfied (list 2 3 4 1) insert-worked?)
+(check-satisfied (list 2 3 1 4) insert-worked?)
+(check-satisfied (list 4 3 2 1) insert-worked?)
+(check-satisfied (list 3 4 2 1) insert-worked?)
+(check-satisfied (list 3 2 4 1) insert-worked?)
+(check-satisfied (list 3 2 1 4) insert-worked?)
+
+;; duplicate elements in different configurations
 (check-satisfied (list 1 1) insert-worked?)
 (check-satisfied (list 1 1 2 3) insert-worked?)
 (check-satisfied (list 3 1 2 3) insert-worked?)
