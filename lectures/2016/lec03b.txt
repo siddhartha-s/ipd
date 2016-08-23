@@ -1,9 +1,3 @@
-Practice some more on lists. 
-
-  - add3to (adds 3 to each element in a list)
-
-Possibly go thru reverse in class (from homework).
-
 sorting
 -------
 

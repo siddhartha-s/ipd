@@ -1,12 +1,11 @@
 [BSL]
 *09/20: welcome (J); the algebras of images and strings (J); big bang (J)
 *09/22: structures (J); enumerations (J); itemizations of every kind (J)
- 09/27: linked lists (R); asymptotic analysis (R); trees (R)
-[BSL+]
- 09/29: ADTs (stacks and queues) (J); banker’s queues (J); random BSTs (J)
+ 09/27: linked lists (R); asymptotic analysis (R)
 [ISL]
- 10/04: abstracting fns (J); list abstractions (J); polymorphism (J)
- 10/06: filesystem trees (R); invariants (R); AVL trees (R)
+ 09/29: abstracting fns (R); list abstractions (R); polymorphism (R)
+ 10/04: filesystem trees (R); invariants (R); AVL trees (R)
+ 10/06: ADTs (stacks and queues) (J); banker’s queues (J); random BSTs (J)
 [ISL+]
  10/11: evaluating expressions (R); adding definitions (R); binomial heap? (R)
 [DSSL]
@@ -27,3 +26,5 @@
  11/29: object-oriented graphics library (J)
  12/01: ISL+λ interpreter (R)
  
+
+
