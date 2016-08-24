@@ -1,0 +1,137 @@
+AVL trees
+============================================================
+
+Before the break, we found that if we had a tree that with the binary
+search tree invariant, we could search directly for the person we
+wanted in the tree.
+
+But the tree might still have a bad shape (like we talked about
+before):
+
+  /\
+   /\
+    /\
+     /\
+      /\
+       /\
+        /\
+
+
+where, in the worst case (deciding to go right) only eliminates a
+single node in the tree.
+
+So now we want to study is a form of tree that, in addition to keeping
+the numbers arranged in the tree, also guarantees that the tree
+remains (mostly) balanced.
+
+What is the best possible case? Well, at each level in the tree, we
+look at one number and that means that 1/2 of the nodes are
+eliminated. What does that kind of tree look like?
+
+        /\
+       /  \
+      /    \
+     /      \
+    /\      /\
+   /  \    /  \
+  /\  /\  /\  /\ 
+
+How does the height compare to the size of these trees? That is, if we
+have a tree of height N, how many nodes are in there? 2^N, right? So
+that means that if we have a tree of N nodes, what is the running time
+of looking up a node in it? log(N). That's fast.
+
+We're not going to get something that's always that good, but we're
+going to see if we can get something that's still very good. Here's
+the precise definition:
+
+Here is the data definition for an AVL tree:
+
+;; an AVL-tree is either:
+;;  (make-node number AVL-tree AVL-tree number)
+;;  "leaf"
+;; INVARIANT :
+;;   the BST invariant, PLUS
+;;   (<= -1 (- (height left) (height right)) 1)
+(define-struct node (value left right height))
+
+The height of the tree is distance to the furthest "leaf" and the
+invariant ensures that the heights of the left and right subtrees of
+any tree stay ... close enough.
+
+Is close enough good enough?
+
+Well, if they are equal, then we're okay and we'll get good trees, so
+that's good. But what is the worst case? We can't have a tree like the
+one above, right? But we could have one where every left-hand node was
+one bigger than every right node, all over the tree. What do those
+trees look like?
+
+ << see lec05-worst-case.pdf >>
+
+In general, if the left-hand node's depth is one more than the right
+one, then we have a situation like this:
+
+  S(1) = 1
+  S(2) = 2
+  S(n) = S(n-1) + S(n-2) + 1
+
+Okay, math happens here, cf the Fibonacci numbers. But even in this
+case, we get that the height of the tree is proportional to the log of
+the number of elements in it. In this worst case.
+
+Lets make some example trees.
+
+Since we are going to store the heights in the trees, then it is
+useful to have a helper function that computes those heights for us
+(see build-db and height in lec05-avl.rkt).
+
+(define size1 (build-db 2 "leaf" "leaf"))
+(define size2l (build-db 3 size1 "leaf"))
+(define size2r (build-db 1 "leaf" size1))
+(define size3
+  (build-db 4
+            (build-db 2 "leaf" "leaf")
+            (build-db 6 "leaf" "leaf")))
+
+Okay, so this is all fine: if we have this invariant, we can exploit
+it. But how do we get it?
+
+Well, as it turns out, it is possible to write a function like this:
+
+   insert : AVL-tree number -> AVL-tree
+
+in such a way that it guarantees the AVL invariant.
+
+Lets do it!
+
+The critical piece to keep in mind as you work though the code is that
+you can rotate a tree. This rotation can adjust the heights in a
+helpful way and it does not affect the BST invariant:
+
+      y             x
+     / \           / \
+    x   C    ==>  A   y
+   / \               / \
+  A   B             B   C
+
+Think of the 'x' and 'y' as numbers in the tree and the 'A' 'B' and
+'C' as entire trees. if the tree on the left has the BST invariant, so
+does the one on the right. And vice versa.
+
+The basic strategy is to do an insertion at the bottom of the tree and
+then, since that (possibly) increases the height, do a bunch of
+rotations in order to restore the AVL tree invariant.
+
+Lets try to write the code and work though those invariants.
+
+Here's a challenge for you: you do not need to keep the entire heights
+in the tree. It is sufficient to keep only one of three possible
+states: "left" (meaning the left tree is one taller than the right),
+"right" (meaning the right tree is one taller than the left), and
+"even", meaning that the two trees have the same height.
+
+You cannot implement the function insert with that contract, but if
+you change it so that it returns both the new tree and a boolean
+indicating if the new tree got taller, then it is possible to
+implement.

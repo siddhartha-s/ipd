@@ -1,6 +1,9 @@
 # DrRacket backup files
 *~
 
+# Racket's compiled files
+compiled/
+
 # Compiled Object files
 *.slo
 *.lo
