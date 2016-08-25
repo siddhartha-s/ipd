@@ -211,17 +211,17 @@ come up.
 Lets look at the running time of one more function. But first, we should
 design it:
 
-  ;; max : list-of-numbers -> list-of-numbers
+  ;; biggest : list-of-numbers -> number
   ;; ASSUME: all of the numbers are bigger or equal to than 0
-  (check-expect (max '()) 0)
-  (check-expect (max (cons 1 (cons 3 (cons 2 '())))) 3)
-  (define (max l)
+  (check-expect (biggest '()) 0)
+  (check-expect (biggest (cons 1 (cons 3 (cons 2 '())))) 3)
+  (define (biggest l)
     (cond
       [(empty? l) 0]
       [else
         (cond
-         [(< (first l) (max (rest l)))
-	  (max (rest l))]
+         [(< (first l) (biggest (rest l)))
+	  (biggest (rest l))]
 	 [else (first l)])]))
 
 What is the running time of this function?
@@ -243,3 +243,30 @@ times, the 7 call 8 times, 6 call 16 times 5 -> 32, 4 -> 64, 3 -> 128.
 Do you see where this is going?
 
 This is an exponential time function!  O(2^n)
+
+We can actually verify this empirically too:
+
+(time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)))
+(time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16)))
+(time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17)))
+(time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18)))
+(time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19)))
+(time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20)))
+
+
+Welcome to DrRacket, version 6.6.0.4--2016-08-23(2e5b4a65/d) [3m].
+Language: Intermediate Student; memory limit: 1024 MB.
+cpu time: 47 real time: 46 gc time: 0
+15
+cpu time: 83 real time: 83 gc time: 0
+16
+cpu time: 159 real time: 159 gc time: 0
+17
+cpu time: 341 real time: 353 gc time: 0
+18
+cpu time: 648 real time: 680 gc time: 0
+19
+cpu time: 1385 real time: 1390 gc time: 62
+20
+Both tests passed!
+> 
