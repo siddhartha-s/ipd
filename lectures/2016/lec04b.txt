@@ -1,0 +1,130 @@
+Abstraction
+-----------
+
+single point of control: It means that if you have code that does the
+same thing in two different places, you combine them into a single
+piece of code that is parameterized over the difference.
+
+Lack of single point of control is bad: means that errors are
+potentially duplicated (when you copy 100 lines of code, you might be
+copying 100 errors ...). People make mistakes, that's normal -- but
+lets not copy the mistakes! Maintaining the code becomes painful. Both
+for fixing the bugs and for adapting to changes in the data
+definitions, etc.
+
+We have already seen the fundamental form for this: functions. There
+are a lot more constructs around that do more for you than functions,
+but a function is the fundamental tool and we've not yet tapped their
+full power.
+
+Here's our old friend the biggest function:
+
+(define (biggest l)
+  (cond
+    [(empty? (rest l)) (first l)]
+    [else
+     (local [(define rb (biggest (rest l)))]
+       (cond
+         [(< (first l) rb)
+          rb]
+         [else (first l)]))]))
+
+What if we wanted to find the smallest element in a list?
+
+(define (smallest l)
+  (cond
+    [(empty? (rest l)) (first l)]
+    [else
+     (local [(define rb (smallest (rest l)))]
+       (cond
+         [(> (first l) rb)
+          rb]
+         [else (first l)]))]))
+
+
+Do these functions look similar?
+
+Yes! 
+
+Recipe:
+
+1) Circle the parts that are different.
+
+2) Move them into the parameter list.
+
+3) create new functions that pass in the right parameters
+
+Here is what we get:
+
+(define (est p l)
+  (cond
+    [(empty? (rest l)) (first l)]
+    [else
+     (local [(define rb (smallest (rest l)))]
+       (cond
+         [(p (first l) rb)
+          rb]
+         [else (first l)]))]))
+
+(define (biggest l) (est < l))
+(define (smallest l) (est > l))
+
+What is the contract for est? What is the first
+argument?
+
+A function!
+
+Do we have a notation for contracts on functions? Yes!
+
+;; est : (number number -> boolean) NE-list-of-numbers -> number
+
+That's definitely how we have used insert so far.
+
+But is that a fully general contract for insert?
+
+Would the function work if I wrote these?
+
+  (est string<? (list "aa" "cc"))
+  (est string>? (list "aa" "cc"))
+
+Sure! What contract would insert have to have to work like that?
+
+  est : (string string -> boolean) ne-list-of-string -> string
+
+We can generalize these two contracts now. Indeed, it does
+not matter what the elements of the list are, as long as
+they match the predicate and the element to be inserted. We
+can capture that like this:
+
+  insert : (X X -> boolean) X ne-list-of-X -> X
+
+As long as all of the X's are the same kind of data,
+everything is fine.
+
+But what is that ne-list-of-X definition?
+
+Lets complete sorting and do a little hand evaluation to
+help cement some of these ideas and see how this works.
+
+Here's the data definition for lists of X
+
+;; a (ne-listof X) is either:
+;;  - (cons X '())
+;;  - (cons X (ne-listof X))
+
+
+lets be sure:
+
+  (est < (cons 1 (cons 2 '())))
+= (local [(define rb (est < (cons 2 '())))]
+    (cond
+      [(< 1 rb) rb]
+      [else 1]))
+= (define rb 2)
+  (cond
+    [(< 1 rb) rb]
+    [else 1])
+= 2
+
+Sure, the same rules all work just fine!
+

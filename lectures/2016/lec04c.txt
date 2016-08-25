@@ -1,0 +1,174 @@
+more on abstraction.
+
+============================================================
+
+Abstract over these two, following the recipe from last time.
+
+;; neg-all : list-of-booleans -> list-of-booleans
+(define (neg-all lob)
+  (cond
+    [(empty? lob) empty]
+    [else (cons (not (first lob))
+                (neg-all (rest lob)))]))
+
+;; get-widths : list-of-images -> list-of-numbers
+(define (get-widths lon)
+  (cond
+    [(empty? lon) empty]
+    [else (cons (image-width (first lon))
+                (get-widths (rest lon)))]))
+
+===>>
+
+(define (map f l)
+  (cond
+    [(empty? l) empty]
+    [else (cons (f (first l))
+                (map f (rest l)))]))
+
+re-define 
+
+(define (get-widths loi) (map image-width loi))
+(define (neg-all lob) (map not lob))
+
+To find the contract, collect the uses:
+
+from the two uses:
+  map : (image -> number) (listof image) -> (listof number)
+  map : (boolean -> boolean) (listof boolean) -> (listof boolean)
+
+What is the most general contact we get from that?
+
+;; map : (X -> Y) (listof X) -> (listof Y)
+
+Does that contract make sense from the definition of map?
+
+Lets try some hand-evaluation
+
+  (neg-all (list false true))
+= (map not (list false true))
+= (cons true (map not (list true)))
+= (cons true (cons false (map not empty)))
+= (cons true (cons false empty))
+aka 
+(list true false)
+
+
+This is one form of _refactoring_. Refactoring: rewriting
+ your code to semantically equivalent code, in order to make
+ some beneficial change (in this case: single point of
+ control).
+
+The key property that we use here is that functions are _values_. This
+means they can be passed as arguments to other functions or returned
+as results or bound by local. Basically they can be used anywhere
+things like numbers or strings ca be used. They are results of
+computations (or subcomputations).
+
+Lets try to do this again with two more examples:
+
+;; remove-odds : list-of-numbers -> list-of-numbers
+(define (remove-odds l)
+  (cond
+    [(empty? l) empty]
+    [else (cond
+            [(odd? (first l)) (remove-odds (rest l))]
+            [else (cons (first l) (remove-odds (rest l)))])]))
+
+;; remove-dolls : list-of-symbols -> list-of-symbols
+(define (remove-dolls l)
+  (cond
+    [(empty? l) empty]
+    [else (cond
+            [(symbol=? 'doll (first l)) (remove-dolls (rest l))]
+            [else (cons (first l) (remove-dolls (rest l)))])]))
+
+.. abstract to filter ...
+
+(define (filter l p?)
+  (cond
+   [(empty? l) empty]
+   [else (cond
+          [(p? (first l)) (filter (rest l) p?)]
+          [else (cons (first l) (remove-dolls (rest l)))])]))
+
+re-define these functions in terms of filter.
+
+filter's contract. Collect the uses:
+
+   from remove-dolls: list-of-symbols (symbol -> boolean)
+   -> list-of-symbols
+
+   from remove-odds : list-of-numbers (number -> boolean)
+   -> list-of-numbers
+
+  generalizing: list-of-X -> (X -> boolean) -> list-of-X
+
+Lets try one more.
+
+(define (sum l)
+  (cond
+    [(empty? l) 0]
+    [else (+ (first l) (sum (rest l)))]))
+
+(define (prod l)
+  (cond
+    [(empty? l) 1]
+    [else (* (first l) (prod (rest l)))]))
+
+(define (foldr combine base l)
+  (cond
+    [(empty? l) base]
+    [else (combine (first l) (fold combine base (rest l)))]))
+
+(define (sum l) (fold + 0 l))
+(define (prod l) (fold * 1 l))
+
+Lets define contains-doll?
+
+(define (contains-doll? l)
+  (foldl first-doll-or-else false l))
+
+(define (first-doll-or-else fst rst)
+  (or (symbol=? fst 'doll) rst))
+
+... show hand evaluation for this ...
+
+Here's remove-dolls
+
+(define (remove-dolls l)
+  (cond
+   [(empty? l) empty]
+   [else 
+    (cond
+     [(is-doll? (first l)) (remove-dolls (rest l))]
+     [else (cons (first l) (remove-dolls (rest l)))])]))
+
+can we write that via foldr?
+
+(define (cons-unless-doll x y)
+   (if (is-doll? x)
+       y
+       (cons x y)))
+
+
+(define (remove-dolls l)
+  (foldr empty cons-unless-doll
+         l))
+
+Contract for foldr. Here are the uses we had:
+
+foldr : number
+        (number number -> number)
+        (listof number)
+     -> number
+
+foldr : (listof symbol)
+        (symbol (listof symbol) -> (listof symbol))
+        (listof symbol)
+     -> (listof symbol)
+
+unified:
+
+foldr : (X Y -> Y) Y (listof X) -> Y
+ 

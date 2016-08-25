@@ -209,15 +209,19 @@ constant factors, and we will tell you about more relationships as they
 come up.
 
 Lets look at the running time of one more function. But first, we should
-design it:
+design it. It needs a slightly different data definition:
 
-  ;; biggest : list-of-numbers -> number
+  ;; an NE-list-of-numbers is either:
+  ;;  - (cons number '())
+  ;;  - (cons number NE-list-of-numbers)
+
+  ;; biggest : ne-list-of-numbers -> number
   ;; ASSUME: all of the numbers are bigger or equal to than 0
-  (check-expect (biggest '()) 0)
+  (check-expect (biggest (cons 0 '())) 0)
   (check-expect (biggest (cons 1 (cons 3 (cons 2 '())))) 3)
   (define (biggest l)
     (cond
-      [(empty? l) 0]
+      [(empty? (rest l)) (first l)]
       [else
         (cond
          [(< (first l) (biggest (rest l)))
@@ -226,18 +230,18 @@ design it:
 
 What is the running time of this function?
 
-Well, if the list is empty, then its running time is 3. What if there
-is one element in the list? To figure out the running time, we need to
+Well, in the first case then its running time is 4. What if there are
+two elements in the list? To figure out the running time, we need to
 look at the inner `cond` expression. Either case could happen, right?
 But the first case looks like it does more work, so lets assume that
 case always happens. We have to do the first operation. Then we do the
-`max` call, on an empty list. Then we do a comparison and then the max
-call again, also on an empty list.
+`biggest` call, on a one element list. Then we do a comparison and
+then the biggest call again, also on a one-element list.
 
-Lets say there were 3 elements in the list. Then we are going to do
-the max call on the 2 element list twice. But, EACH of those is going
-to do the max call on the 1 element list, for a total of how many
-calls to the max function on the 1 element list? What if we started with
+Lets say there were 4 elements in the list. Then we are going to do
+the biggest call on the 3 element list twice. But, EACH of those is going
+to do the biggest call on the 2 element list, for a total of how many
+calls to the biggest function on the 1 element list? What if we started with
 10 elements in the list? Then we'd do the 9 call twice, the 8 call 4
 times, the 7 call 8 times, 6 call 16 times 5 -> 32, 4 -> 64, 3 -> 128.
 Do you see where this is going?
@@ -252,21 +256,27 @@ We can actually verify this empirically too:
 (time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18)))
 (time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19)))
 (time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20)))
+(time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21)))
+(time (biggest (list 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22)))
 
 
 Welcome to DrRacket, version 6.6.0.4--2016-08-23(2e5b4a65/d) [3m].
 Language: Intermediate Student; memory limit: 1024 MB.
-cpu time: 47 real time: 46 gc time: 0
+cpu time: 40 real time: 39 gc time: 0
 15
-cpu time: 83 real time: 83 gc time: 0
+cpu time: 80 real time: 81 gc time: 0
 16
-cpu time: 159 real time: 159 gc time: 0
+cpu time: 162 real time: 162 gc time: 0
 17
-cpu time: 341 real time: 353 gc time: 0
+cpu time: 468 real time: 471 gc time: 60
 18
-cpu time: 648 real time: 680 gc time: 0
+cpu time: 794 real time: 794 gc time: 45
 19
-cpu time: 1385 real time: 1390 gc time: 62
+cpu time: 1515 real time: 1531 gc time: 81
 20
+cpu time: 2880 real time: 2876 gc time: 163
+21
+cpu time: 5667 real time: 5655 gc time: 327
+22
 Both tests passed!
 > 
