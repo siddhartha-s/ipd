@@ -125,6 +125,8 @@ rotations in order to restore the AVL tree invariant.
 
 Lets try to write the code and work though those invariants.
 
+[[ see lec05-avl.rkt for the completed code ]]
+
 Here's a challenge for you: you do not need to keep the entire heights
 in the tree. It is sufficient to keep only one of three possible
 states: "left" (meaning the left tree is one taller than the right),
