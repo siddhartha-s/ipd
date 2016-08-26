@@ -117,8 +117,14 @@ H¢±È
 ```
 
 The program `encode` converts from the ordinary 8-bit format to the
-packed 7-bit format, and `decode` converts back. However, there are two
-caveats:
+packed 7-bit format, and `decode` converts back. Each of them can be passed 
+two command-line arguments, and input filename and an output filename; if 
+none is passed, they use the hard-coded defaults. Note that the programs 
+expect to find test input files at the relative path `test-files/`, which 
+means that if you are using CLion, you will have to edit the run 
+configuration for each to set the working directory to be the project directory.
+
+Additionally, there are two caveats:
 
   - This encoding means that if your file has any non-ASCII characters,
     they won’t survive the encoding.

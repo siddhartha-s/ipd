@@ -6,8 +6,8 @@
 
 // These are the default files to read from and write to when no
 // command-line arguments are given:
-#define DEFAULT_INFILE  "hamlet.txt.huff"
-#define DEFAULT_OUTFILE "hamlet.txt.puff"
+#define DEFAULT_INFILE  "test-files/hamlet.txt.huff"
+#define DEFAULT_OUTFILE "test-files/hamlet.txt.puff"
 
 using namespace ipd;
 using namespace std;
