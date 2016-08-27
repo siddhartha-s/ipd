@@ -47,7 +47,7 @@
 ;;     and making a new tree from the rest.
 ;;
 
-(define-struct node (value rank children))
+(define-struct node (value children))
 
 ;; a binomial-heap is:
 ;;  (listof (or #f binomial-tree))
@@ -81,7 +81,7 @@
 
 ;; insert : binomial-heap number -> binomial-heap
 (define (insert b n)
-  (add #false (list (make-node n 0 '())) b))
+  (add #false (list (make-node n '())) b))
 
 (define (remove-min b)
   (local [(define small-root (find-min b))
@@ -161,7 +161,6 @@
                               (rest h)))])]))
 
 ;; join : (or #false binomial-tree) (or #false binomial-tree) -> (or #false binomial-tree)
-;; ASSERTION if both nodes: (= (node-rank t1) (node-rank t2))
 (define (join t1 t2)
   (cond
     [(boolean? t1) t2]
@@ -170,9 +169,7 @@
      (cond
        [(< (node-value t1) (node-value t2))
         (make-node (node-value t1)
-                   (+ (node-rank t1) 1)
                    (cons t2 (node-children t1)))]
        [else
         (make-node (node-value t2)
-                   (+ (node-rank t2) 1)
                    (cons t1 (node-children t2)))])]))
