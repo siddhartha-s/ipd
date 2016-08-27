@@ -11,10 +11,6 @@
 ;;     pre: not is-empty?
 ;;  meld : binomial-heap binomial-heap -> binomial-heap
 
-(check-expect (find-min (insert empty-heap 0)) 0)
-(check-expect (find-min (insert (insert empty-heap 0) 1)) 0)
-(check-expect (find-min (insert (insert empty-heap 1) 0)) 0)
-
 (define (insert-nums nums)
   (cond
     [(empty? nums) empty-heap]
@@ -26,80 +22,53 @@
     [else (cons (find-min h)
                 (remove-mins (remove-min h)))]))
 
-(check-expect (remove-mins (insert-nums (list 0 0 0))) (list 0 0 0))
+(check-expect (remove-mins (insert-nums (list 0))) (list 0))
+(check-expect (remove-mins (insert-nums (list 0 1))) (list 0 1))
+(check-expect (remove-mins (insert-nums (list 1 0))) (list 0 1))
+(check-expect (remove-mins (insert-nums (list 0 0))) (list 0 0))
 
-(check-expect (remove-mins (insert-nums (list 0 1 2))) (list 0 1 2))
-(check-expect (remove-mins (insert-nums (list 1 0 2))) (list 0 1 2))
-(check-expect (remove-mins (insert-nums (list 0 2 1))) (list 0 1 2))
-(check-expect (remove-mins (insert-nums (list 2 0 1))) (list 0 1 2))
-(check-expect (remove-mins (insert-nums (list 1 2 0))) (list 0 1 2))
-(check-expect (remove-mins (insert-nums (list 2 1 0))) (list 0 1 2))
+(check-expect (remove-mins (meld (insert-nums (list 0 1 2))
+                                 (insert-nums (list 2 1 0))))
+              (list 0 0 1 1 2 2))
 
-(check-expect (remove-mins (insert-nums (list 0 1 2 3))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 1 0 2 3))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 0 2 1 3))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 2 0 1 3))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 1 2 0 3))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 2 1 0 3))) (list 0 1 2 3))
-
-(check-expect (remove-mins (insert-nums (list 0 1 3 2))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 1 0 3 2))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 0 2 3 1))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 2 0 3 1))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 1 2 3 0))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 2 1 3 0))) (list 0 1 2 3))
-
-(check-expect (remove-mins (insert-nums (list 0 3 1 2))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 1 3 0 2))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 0 3 2 1))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 2 3 0 1))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 1 3 2 0))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 2 3 1 0))) (list 0 1 2 3))
-
-(check-expect (remove-mins (insert-nums (list 3 0 1 2))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 3 1 0 2))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 3 0 2 1))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 3 2 0 1))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 3 1 2 0))) (list 0 1 2 3))
-(check-expect (remove-mins (insert-nums (list 3 2 1 0))) (list 0 1 2 3))
-
-(define (make-nums n)
-  (cond
-    [(zero? n) '()]
-    [else (cons (- n 1) (make-nums (- n 1)))]))
-
-(define lots-of-numbers (reverse (make-nums 10000)))
-(check-expect (remove-mins (insert-nums lots-of-numbers)) lots-of-numbers)
-(check-expect (remove-mins (insert-nums (reverse lots-of-numbers)))
-              lots-of-numbers)
-
-(check-expect (remove-mins (meld (insert-nums (list 0 1 2 3))
-                                 (insert-nums (list 4 5 6 7))))
-              (list 0 1 2 3 4 5 6 7))
-(check-expect (remove-mins (meld (insert-nums (list 4 5 6 7))
-                                 (insert-nums (list 0 1 2 3))))
-              (list 0 1 2 3 4 5 6 7))
+(define zero-thru-sixteen (list 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16))
+(check-expect (remove-mins (insert-nums zero-thru-sixteen))
+              zero-thru-sixteen)
+(check-expect (remove-mins (insert-nums (reverse zero-thru-sixteen)))
+              zero-thru-sixteen)
 
 ;; a binomial-tree is:
 ;;  (make-node number (listof binomial-tree))
-;; invariant: 
-;;  if 'children' is non-empty, then the first
-;;  element of 'children' has the same shape & size as
-;;  the tree you get by removing that first child
-;;  and making a new tree from the rest.
+;; invariant:
+;;  -- heap invariant
+;;  -- if 'children' is non-empty, then the first
+;;     element of 'children' has the same shape & size as
+;;     the tree you get by removing that first child
+;;     and making a new tree from the rest.
+;;
 
 (define-struct node (value rank children))
 
 ;; a binomial-heap is:
-;;  (listof binomial-tree)
+;;  (listof (or #f binomial-tree))
+;; invariant: each element of the list
+;; has the next largest order from the
+;; previous element in the list, unless
+;; that element is #f, in which case it
+;; stands for an empty binomial-tree with
+;; the missing order. In other words, all
+;; orders are represented in the tree
 
 ;; find-min : binomial-heap -> number or #f
 (define (find-min b)
   (cond
     [(empty? b) #f]
     [else
-     (pick-one (node-value (first b))
-               (find-min (rest b)))]))
+     (cond
+       [(boolean? (first b)) (find-min (rest b))]
+       [else
+        (pick-one (node-value (first b))
+                  (find-min (rest b)))])]))
 
 ;; pick-one : number (number or false) -> number
 (define (pick-one n1 n2/f)
@@ -121,7 +90,7 @@
           (define node-with-small-root
             (find-tree-with-root b small-root))]
     (add #false
-         heap-without-small-root
+         (remove-trailing-falses heap-without-small-root)
          (reverse (node-children node-with-small-root)))))
 
 (define (remove-tree-with-root b v)
@@ -129,100 +98,81 @@
     [(empty? b) (error 'ack)]
     [else
      (cond
+       [(boolean? (first b)) (cons #f (remove-tree-with-root (rest b) v))]
        [(= (node-value (first b)) v)
-        (rest b)]
+        (cons #f (rest b))]
        [else
         (cons (first b) (remove-tree-with-root (rest b) v))])]))
+
+(define (remove-trailing-falses b)
+  (cond
+    [(empty? b) '()]
+    [else
+     (local [(define no-trailing-falses (remove-trailing-falses (rest b)))]
+       (cond
+         [(and (boolean? (first b)) (empty? no-trailing-falses))
+          '()]
+         [else (cons (first b) no-trailing-falses)]))]))
 
 (define (find-tree-with-root b v)
   (cond
     [(empty? b) (error 'ack)]
     [else
      (cond
+       [(boolean? (first b)) (find-tree-with-root (rest b) v)]
        [(= (node-value (first b)) v)
         (first b)]
        [else
         (find-tree-with-root (rest b) v)])]))
 
-(define (meld b1 b2)
-  (add #f b1 b2))
+(define (meld h1 h2) (add #false h1 h2))
 
 ;; add : (or #f binomial-tree) binomial-heap binomial-heap -> binomial-heap
-(define (add c-in b1 b2)
-  (local [(define carry-rank (tree-rank c-in))
-          (define b1-rank (heap-rank b1))
-          (define b2-rank (heap-rank b2))]
-    (cond
-      [(boolean? carry-rank)
-       (cond
-         [(boolean? b1-rank) b2]
-         [(boolean? b2-rank) b1]
-         [(= b1-rank b2-rank)
-          (add (join (first b1) (first b2)) (rest b1) (rest b2))]
-         [(< b1-rank b2-rank)
-          (cons (first b1) (add #f (rest b1) b2))]
-         [(> b1-rank b2-rank)
-          (cons (first b2) (add #f b1 (rest b2)))])]
-      [else
-       (cond
-         [(and (boolean? b1-rank) (boolean? b2-rank))
-          (list c-in)]
-         [(boolean? b2-rank)
-          (cond
-            [(< carry-rank b1-rank)
-             (cons c-in (add #f b1 b2))]
-            [(= carry-rank b1-rank)
-             (add (join c-in (first b1)) (rest b1) b2)])]
-         [(boolean? b1-rank)
-          (cond
-            [(< carry-rank b2-rank)
-             (cons c-in (add #f b1 b2))]
-            [(= carry-rank b2-rank)
-             (add (join c-in (first b2)) b1 (rest b2))])]
-         [else
-          (cond
-            [(and (< carry-rank b1-rank)
-                  (< carry-rank b2-rank))
-             (cons c-in (add #f b1 b2))]
-            [(and (< carry-rank b1-rank)
-                  (= carry-rank b2-rank))
-             (add (join c-in (first b2))
-                  b1
-                  (rest b2))]
-            [(and (< carry-rank b2-rank)
-                  (= carry-rank b1-rank))
-             (add (join c-in (first b1))
-                  (rest b1)
-                  b2)]
-            [(and (= carry-rank b1-rank)
-                  (= carry-rank b2-rank))
-             (cons c-in
-                   (add (join (first b1) (first b2))
-                        (rest b1)
-                        (rest b2)))])])])))
-
-;; join : binomial-tree binomial-tree -> binomial-tree
-;; ASSERTION (= (node-rank b1) (node-rank b2))
-(define (join b1 b2)
+(define (add c-in h1 h2)
   (cond
-    [(< (node-value b1) (node-value b2))
-     (make-node (node-value b1)
-                (+ (node-rank b1) 1)
-                (cons b2 (node-children b1)))]
+    [(and (empty? h1) (empty? h2) (boolean? c-in))
+     '()]
+    [(and (empty? h1) (cons? h2) (boolean? c-in))
+     h2]
+    [(and (cons? h1) (empty? h2) (boolean? c-in))
+     h1]
+    [(and (empty? h1) (empty? h2) (node? c-in))
+     (list c-in)]
+    [(and (empty? h1) (cons? h2) (node? c-in))
+     (add-one c-in h2)]
+    [(and (cons? h1) (empty? h2) (node? c-in))
+     (add-one c-in h1)]
+    [(and (cons? h1) (cons? h2) (boolean? c-in))
+     (cons #false (add (join (first h1) (first h2)) (rest h1) (rest h2)))]
+    [(and (cons? h1) (cons? h2) (node? c-in))
+     (cons c-in
+           (add (join (first h1) (first h2))
+                (rest h1) (rest h2)))]))
+
+(define (add-one t h)
+  (cond
+    [(empty? h) (list t)]
     [else
-     (make-node (node-value b2)
-                (+ (node-rank b2) 1)
-                (cons b1 (node-children b2)))]))
+     (cond
+       [(boolean? (first h))
+        (cons t (rest h))]
+       [else
+        (cons #false (add-one (join (first h) t)
+                              (rest h)))])]))
 
-
-;; heap-rank : binomial-heap -> nat or #f
-(define (heap-rank b)
+;; join : (or #false binomial-tree) (or #false binomial-tree) -> (or #false binomial-tree)
+;; ASSERTION if both nodes: (= (node-rank t1) (node-rank t2))
+(define (join t1 t2)
   (cond
-    [(empty? b) #f]
-    [else (node-rank (first b))]))
-
-;; tree-rank : binomial-tree or #f -> nat or #f
-(define (tree-rank b)
-  (cond
-    [(boolean? b) #f]
-    [else (node-rank b)]))
+    [(boolean? t1) t2]
+    [(boolean? t2) t1]
+    [else
+     (cond
+       [(< (node-value t1) (node-value t2))
+        (make-node (node-value t1)
+                   (+ (node-rank t1) 1)
+                   (cons t2 (node-children t1)))]
+       [else
+        (make-node (node-value t2)
+                   (+ (node-rank t2) 1)
+                   (cons t1 (node-children t2)))])]))
