@@ -1,0 +1,205 @@
+Binomial Heaps at Priority Queues
+---------------------------------
+
+A priority queue is an ADT supporting these operations:
+
+  - empty-heap     -- gets us started
+  - (is-empty? h)  -- still empty?
+  - (insert h x)   -- extends a heap with a new value
+  - (find-min h)   -- returns the smallest value in the heap
+  - (remove-min h) -- builds a new heap, without the smallest entry
+
+The tricky part here is no matter what order we add values to the
+heap, the find-min operation always returns the smallest element.
+
+Today I'll explain how binomial heaps provide us with an
+implementation of this ADT.
+
+We'll just stick with numbers in the trees to simplify the code for
+now, but you know how to generalize that -- just make the empty-heap
+function accept a comparison function.
+
+There are two approaches to these: persistent or not?
+
+Persistent means that the operations never destroy old versions of the
+data structure. In this case, it means that remove-min and insert
+return new versions of the data structure instead of changing the
+given ones. You may have encountered data structures like this
+before. We will implement the persistent version here because it is
+not any more difficult in this case. We'll return to this idea later,
+but for now what it means is that we have these contracts:
+
+  empty-heap : binomial-heap
+  is-empty? : binomial-heap -> boolean
+  insert : binomial-heap number -> binomial-heap
+  find-min : binomial-heap -> number
+  remove-min : binomial-heap -> binomial-heap
+
+The last three functions consume non-empty binomial heaps.
+
+There is a simple implementation, where we represent the heap as a
+list. Each new element just goes on the front and then when we want to
+remove the minimum or find it, we work our way down the list. What is
+the running time of that implementation?
+  
+  empty-heap : O(1)
+  is-empty? : O(1)
+  insert : O(1)
+  find-min : O(n)
+  remove-min : O(n)
+
+What if we still keep a list, but we keep it sorted? 
+
+  empty-heap : O(1)
+  is-empty? : O(1)
+  insert : O(n)
+  find-min : O(1)
+  remove-min : O(1)
+
+We can do better than both of these using binomial heaps. These are
+the running times:
+
+  empty-heap : O(1)
+  is-empty? : O(1)
+  insert : O(log n)
+  find-min : O(log n)
+  remove-min : O(log n)
+
+So what we'll do for the rest of lecture is explain how these work and
+then try to code them up. We'll have to stage the explanation and then
+pieces will come together.
+
+Part 1: binomial trees.
+
+  Our heap will consist of a bunch of binomial trees. So I'll need to
+  explain those first.
+
+  They come in sizes that are only powers of 2 and numbered using
+  "rank"s. The smallest binomial tree, of rank 0, has exactly one
+  node. Then the next one, rank 1, has two nodes, then 4, 8, 16, 32,
+  etc.
+
+  Their shapes are fixed too: the smallest is a single node. And then
+  to build one of rank n+1, we start with two that have rank n and
+  join them together. They are joined always by taking one and putting it
+  as a new child of the other. Here's the first few:
+
+
+  Rank 0:
+  
+  *
+  
+  
+  Rank 1:
+  
+  *
+  ║
+  ║
+  ║
+  *
+  
+  Rank 2:
+  
+    *
+    ║
+  ╔═╣
+  ║ ║
+  * *
+  ║
+  ║
+  ║
+  *
+  
+  Rank 3
+  
+        *	  
+        ║	  
+    ╔═╦═╣	  
+    ║ ║ ║	  
+    * * *	  
+    ║ ║     
+  ╔═╣ ║     
+  ║ ║ ║     
+  * * *     
+  ║         
+  ║         
+  ║         
+  *         
+  
+  Rank 4:
+  
+  
+                *	  
+                ║	  
+        ╔═══╦═╦═╣	  
+        ║   ║ ║ ║	  
+        *   * * *	  
+        ║   ║ ║     
+    ╔═╦═╣ ╔═╣ ║     
+    ║ ║ ║ ║ ║ ║     
+    * * * * * *     
+    ║ ║   ║         
+  ╔═╣ ║   ║         
+  ║ ║ ║   ║         
+  * * *   *         
+  ║         
+  ║ 
+  ║         
+  *           
+  
+This is the only way to build them and you can see that their sizes
+are always powers of 2.
+
+Also, look at the children of the root of each. Like check out the
+children of the one of rank 4. Do you recognize them? They are the
+ones of rank 0, 1, 2, and 3! And that keeps happening.
+
+Part 2: the heap invariant.
+
+That was the rules for the structure of the trees. The values also
+have a rule: the value is the root is always smaller than the values
+in any of its children.
+
+
+Okay, so that was binominal trees.  And now we put a list of them
+together to make a binomial heap. Are you familiar with base 2
+numbers? That's how we're going to represent a heap with various
+different numbers of elements in the heap. For example, if we have a
+heap with seven elements, we'll have a rank 0 (1 element), rank 1 (2
+elements), and rank 2 (4 elements, for a total of 7) binomial tree
+together in a list. And if we want 5, we'll have a rank 0 and a rank 2
+tree in the list. BUT, to track that there is a missing rank, we'll
+also include a false in the list where the rank 1 tree would have been
+if we'd had 7 elements.
+
+Here's the data definitions:
+
+;; a binomial-heap is:
+;;  (listof (or #f binomial-tree))
+;; invariant: each element of the list
+;; has the next largest rank from the
+;; previous element in the list, unless
+;; that element is #f, in which case it
+;; stands for an empty binomial-tree with
+;; the missing order.
+
+;; a binomial-tree is:
+;;  (make-node number (listof binomial-tree))
+;; invariant:
+;;  -- heap invariant
+;;  -- if 'children' is non-empty, then the first
+;;     element of 'children' has the same shape & size as
+;;     the tree you get by removing that first child
+;;     and making a new tree from the rest.
+;;
+(define-struct node (value children))
+
+Lets see if we can implement these functions.
+
+Lets start with empty-heap? and empty-heap.
+
+Next up: find-min
+
+Then remove-min.
+
+Last: insert.

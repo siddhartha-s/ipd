@@ -37,6 +37,15 @@
 (check-expect (remove-mins (insert-nums (reverse zero-thru-sixteen)))
               zero-thru-sixteen)
 
+;; a binomial-heap is:
+;;  (listof (or #f binomial-tree))
+;; invariant: each element of the list
+;; has the next largest rank from the
+;; previous element in the list, unless
+;; that element is #f, in which case it
+;; stands for an empty binomial-tree with
+;; the missing order.
+
 ;; a binomial-tree is:
 ;;  (make-node number (listof binomial-tree))
 ;; invariant:
@@ -46,18 +55,9 @@
 ;;     the tree you get by removing that first child
 ;;     and making a new tree from the rest.
 ;;
-
 (define-struct node (value children))
 
-;; a binomial-heap is:
-;;  (listof (or #f binomial-tree))
-;; invariant: each element of the list
-;; has the next largest order from the
-;; previous element in the list, unless
-;; that element is #f, in which case it
-;; stands for an empty binomial-tree with
-;; the missing order. In other words, all
-;; orders are represented in the tree
+
 
 ;; find-min : binomial-heap -> number or #f
 (define (find-min b)
