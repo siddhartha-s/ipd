@@ -7,8 +7,8 @@
  10/04: filesystem trees (R); invariants (R); AVL trees (R)
  10/06: ADTs (stacks and queues) (J); banker’s queues (J); random BSTs (J)
 [ISL+]
- 10/11: nats; accumulators; binomial heap (R)
- 10/13: generative recursion (R); sorting (R); graph representations (R)
+ 10/11: binomial heap (R); generative recursion (R); sorting (R)
+ 10/13: accumulators (R); nats (R); graph representations (R)
 [DSSL]
  10/18: laziness/streams (R); state, vectors (R)
  10/20: graph search (J); Bellman–Ford algorithm (J); Dijkstra’s algorithm (J)

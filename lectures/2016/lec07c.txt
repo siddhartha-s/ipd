@@ -1,205 +1,209 @@
-Binomial Heaps at Priority Queues
----------------------------------
+generative recursion, cotd: quicksort
+--------------------------------------------------
 
-A priority queue is an ADT supporting these operations:
+basic idea: split the list into two sublists: one with all
+elements smaller than the first element and one with all
+elements larger than the pivot. Recursively sort the
+sublists and then put them together.
 
-  - empty-heap     -- gets us started
-  - (is-empty? h)  -- still empty?
-  - (insert h x)   -- extends a heap with a new value
-  - (find-min h)   -- returns the smallest value in the heap
-  - (remove-min h) -- builds a new heap, without the smallest entry
-
-The tricky part here is no matter what order we add values to the
-heap, the find-min operation always returns the smallest element.
-
-Today I'll explain how binomial heaps provide us with an
-implementation of this ADT.
-
-We'll just stick with numbers in the trees to simplify the code for
-now, but you know how to generalize that -- just make the empty-heap
-function accept a comparison function.
-
-There are two approaches to these: persistent or not?
-
-Persistent means that the operations never destroy old versions of the
-data structure. In this case, it means that remove-min and insert
-return new versions of the data structure instead of changing the
-given ones. You may have encountered data structures like this
-before. We will implement the persistent version here because it is
-not any more difficult in this case. We'll return to this idea later,
-but for now what it means is that we have these contracts:
-
-  empty-heap : binomial-heap
-  is-empty? : binomial-heap -> boolean
-  insert : binomial-heap number -> binomial-heap
-  find-min : binomial-heap -> number
-  remove-min : binomial-heap -> binomial-heap
-
-The last three functions consume non-empty binomial heaps.
-
-There is a simple implementation, where we represent the heap as a
-list. Each new element just goes on the front and then when we want to
-remove the minimum or find it, we work our way down the list. What is
-the running time of that implementation?
-  
-  empty-heap : O(1)
-  is-empty? : O(1)
-  insert : O(1)
-  find-min : O(n)
-  remove-min : O(n)
-
-What if we still keep a list, but we keep it sorted? 
-
-  empty-heap : O(1)
-  is-empty? : O(1)
-  insert : O(n)
-  find-min : O(1)
-  remove-min : O(1)
-
-We can do better than both of these using binomial heaps. These are
-the running times:
-
-  empty-heap : O(1)
-  is-empty? : O(1)
-  insert : O(log n)
-  find-min : O(log n)
-  remove-min : O(log n)
-
-So what we'll do for the rest of lecture is explain how these work and
-then try to code them up. We'll have to stage the explanation and then
-pieces will come together.
-
-Part 1: binomial trees.
-
-  Our heap will consist of a bunch of binomial trees. So I'll need to
-  explain those first.
-
-  They come in sizes that are only powers of 2 and numbered using
-  "rank"s. The smallest binomial tree, of rank 0, has exactly one
-  node. Then the next one, rank 1, has two nodes, then 4, 8, 16, 32,
-  etc.
-
-  Their shapes are fixed too: the smallest is a single node. And then
-  to build one of rank n+1, we start with two that have rank n and
-  join them together. They are joined always by taking one and putting it
-  as a new child of the other. Here's the first few:
+Here's a picture of how this looks:
 
 
-  Rank 0:
-  
-  *
-  
-  
-  Rank 1:
-  
-  *
-  ║
-  ║
-  ║
-  *
-  
-  Rank 2:
-  
-    *
-    ║
-  ╔═╣
-  ║ ║
-  * *
-  ║
-  ║
-  ║
-  *
-  
-  Rank 3
-  
-        *	  
-        ║	  
-    ╔═╦═╣	  
-    ║ ║ ║	  
-    * * *	  
-    ║ ║     
-  ╔═╣ ║     
-  ║ ║ ║     
-  * * *     
-  ║         
-  ║         
-  ║         
-  *         
-  
-  Rank 4:
-  
-  
-                *	  
-                ║	  
-        ╔═══╦═╦═╣	  
-        ║   ║ ║ ║	  
-        *   * * *	  
-        ║   ║ ║     
-    ╔═╦═╣ ╔═╣ ║     
-    ║ ║ ║ ║ ║ ║     
-    * * * * * *     
-    ║ ║   ║         
-  ╔═╣ ║   ║         
-  ║ ║ ║   ║         
-  * * *   *         
-  ║         
-  ║ 
-  ║         
-  *           
-  
-This is the only way to build them and you can see that their sizes
-are always powers of 2.
+             (list 3 2 12 11)
+--------------------+---+-----------------------------------
+      (list 2)      | 3 |              (list 12 11)
+-------+---+--------|   |-----------------------+--+--------
+ (list)| 2 | (list) |   |       (list 11)       |12| (list)
+-------+---+--------|   |-----------------------|  |
+                    |   | (list) | 11 | (list)  |  |
+                    |   |--------+----+---------|  |
+      (list 2)      |   |       (list 11)       |  |
+                    |   |-----------------------+--+--------
+                    |   |               (list 11 12)
+--------------------+---+-----------------------------------
+              (list 2 3 11 12)
 
-Also, look at the children of the root of each. Like check out the
-children of the one of rank 4. Do you recognize them? They are the
-ones of rank 0, 1, 2, and 3! And that keeps happening.
+base case: empty.
 
-Part 2: the heap invariant.
+(define (quicksort l)
+  (cond
+   [(empty? l) empty]
+   [else (append (quicksort (smaller-than (first l) l))
+                 (list (first l))
+                 (quicksort (larger-than (first l) l)))]))
 
-That was the rules for the structure of the trees. The values also
-have a rule: the value is the root is always smaller than the values
-in any of its children.
+;; BOGUS versions:
+
+(define (smaller-than x l)
+  (filter (lambda (y) (<= y x)) l))
+(define (larger-than x l)
+  (filter (lambda (y) (>= y x)) l))
+
+  (quicksort (list 3 2 12 11))
+= (append (quicksort (list 3 2))
+          (list 3)
+          (quicksort (list 3 12 11)))
+
+;;  less obviously BOGUS versions.
+
+(define (smaller-than x l)
+  (filter (lambda (y) (< y x)) l))
+(define (larger-than x l)
+  (filter (lambda (y) (> y x)) l))
+
+(quicksort (list 3 2 12 11))
+=
+(append (quicksort (list 2))
+        (list 3)
+        (quicksort (list 12 11)))
+=
+(append (append (quicksort empty) (list 2) (quicksort empty))
+        (list 3)
+        (quicksort (list 12 11)))
+=
+(append (list 2)
+        (list 3)
+        (quicksort (list 12 11)))
+=
+(append (list 2)
+        (list 3)
+        (append (quicksort empty) (list 11) (quicksort (list 12))))
+=
+(append (list 2)
+        (list 3)
+        (append empty
+                (list 11) 
+                (append (quicksort empty) (list 12) (quicksort empty))))
+=
+(append (list 2)
+        (list 3)
+        (append empty
+                (list 11) 
+                (append empty (list 12) empty)))
+
+(list 2 3 11 12)
 
 
-Okay, so that was binominal trees.  And now we put a list of them
-together to make a binomial heap. Are you familiar with base 2
-numbers? That's how we're going to represent a heap with various
-different numbers of elements in the heap. For example, if we have a
-heap with seven elements, we'll have a rank 0 (1 element), rank 1 (2
-elements), and rank 2 (4 elements, for a total of 7) binomial tree
-together in a list. And if we want 5, we'll have a rank 0 and a rank 2
-tree in the list. BUT, to track that there is a missing rank, we'll
-also include a false in the list where the rank 1 tree would have been
-if we'd had 7 elements.
+Now we terminate, but what about this list:
 
-Here's the data definitions:
+(quicksort (list 2 1 2 3))
+= ... =
+(list 1 2 3)
 
-;; a binomial-heap is:
-;;  (listof (or #f binomial-tree))
-;; invariant: each element of the list
-;; has the next largest rank from the
-;; previous element in the list, unless
-;; that element is #f, in which case it
-;; stands for an empty binomial-tree with
-;; the missing order.
+Any ideas on fixing that one?
 
-;; a binomial-tree is:
-;;  (make-node number (listof binomial-tree))
-;; invariant:
-;;  -- heap invariant
-;;  -- if 'children' is non-empty, then the first
-;;     element of 'children' has the same shape & size as
-;;     the tree you get by removing that first child
-;;     and making a new tree from the rest.
-;;
-(define-struct node (value children))
+Two changes: add (rest l) in calls in quicksort, and use <=
+in one and > in the other.
 
-Lets see if we can implement these functions.
+============================================================
 
-Lets start with empty-heap? and empty-heap.
 
-Next up: find-min
+Recall our two sorting functions: quicksort and sort. Of
+course, they are different. But, there is a perspective in
+which they are the same. Right? What is that?
 
-Then remove-min.
+They behave identically! Same inputs => same outputs.
 
-Last: insert.
+So, why might you prefer one over the other? Generally,
+there are two reqsons one might: maintainability and
+performance. In this case, they are pretty much equally
+maintainable (indeed, they have both been proven correct
+...) but one is faster than the other.
+
+Lets pursue this idea little bit more.
+
+Lets develop a function that finds the greatest common
+divisor of two numbers.
+
+;; a nat[>=1] is either:
+;;  - 1
+;;  - (add1 nat[>=1])
+
+;; gcd : nat[>=1] nat[>=1] -> nat[>=1]
+;; to find the greatest common divisor of a and b
+(define (gcd a b)
+  ...)
+
+So ... what do we do? Structural? Generative? Helper Functions?
+
+Any ideas?
+
+Well, we know that the answer must be smaller (or equal) to
+both a and b. And, we know that the answer must be a natual
+number. So .. we could just try all the numbers, counting
+down, starting with the smaller of the two, right?
+
+Sounds like structural recursion on numbers to me, no?
+
+;; find-divisor : nat[>=1] nat nat -> nat[>=1]
+;; to find a divisor of both a and b that is equal to or less than i.
+(define (find-divisor i a b)
+  (cond
+    [(= i 1) 1]
+    [else 
+     (cond
+      [(and (zero? (remainder a i))
+            (zero? (remainder b i)))
+       i]
+      [else (find-divisor (- i 1) a b)])]))
+
+(define (gcd a b) (find-divisor (min a b) a b))
+
+> (time (gcd-structural 797640 702559))
+289
+
+takes 3479 msec
+
+Hm. That seems a little bit slow! The numbers aren't all
+that big, are they?
+
+Turns out that this has been studied before. Here's a fact.
+
+    (gcd larger smaller) 
+  = (gcd smaller (remainder larger smaller))
+
+  if (zero? (remainder larger smaller))
+  then the gcd of larger and smaller is just smaller, right?
+
+(I wrote it that way so that the larger of the two is always
+first, since smaller will be bigger than the remainder).
+
+Can we exploit that fact, maybe in a generative recursive algorithm?
+
+Imagine how this would work for, say, 18 and 30,
+
+  (gcd 30 18)
+= (gcd 18 (remainder 30 18))
+= (gcd 18 12)
+= (gcd 12 (remainder 18 12))
+= (gcd 12 6)
+= (gcd 6 (remainder 12 6))
+= (gcd 6 0)
+= ???
+
+well, if we just imagine that 0 divides every number, then
+we can say the answer for the greatest common divisor of 0
+and 6 is 6. Its a bit of a stretch, but it makes our little
+fact useful, since 6 is indeed the greatest common divisor
+of 30 and 18.
+
+So. How can we exploit this?
+
+;; clever-gcd : nat nat -> nat
+(define (clever-gcd bigger smaller)
+  (cond
+    [(zero? smaller) bigger]
+    [else (clever-gcd smaller (remainder bigger smaller))]))
+
+(define (gcd-generative a b) (clever-gcd (max a b) (min a b)))
+
+(time (gcd-generative 797640 702559) 
+      ... 10,000 times....
+      )
+23 msec.
+
+Wow. That's a 150,000x speedup.
+
+This is called Euclid's algorithm, but I hear rumors it was known
+before that ...
+
