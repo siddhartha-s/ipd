@@ -81,7 +81,7 @@
 
 ;; insert : binomial-heap number -> binomial-heap
 (define (insert b n)
-  (add (list (make-node n '())) b))
+  (add #false (list (make-node n '())) b))
 
 (define (remove-min b)
   (local [(define small-root (find-min b))
@@ -89,7 +89,8 @@
             (remove-tree-with-root b small-root))
           (define node-with-small-root
             (find-tree-with-root b small-root))]
-    (add (remove-trailing-falses heap-without-small-root)
+    (add #false
+         (remove-trailing-falses heap-without-small-root)
          (reverse (node-children node-with-small-root)))))
 
 (define (remove-tree-with-root b v)
@@ -124,27 +125,29 @@
        [else
         (find-tree-with-root (rest b) v)])]))
 
-(define (meld h1 h2) (add h1 h2))
+(define (meld h1 h2) (add #false h1 h2))
 
 ;; add : (or #f binomial-tree) binomial-heap binomial-heap -> binomial-heap
-(define (add h1 h2)
+(define (add c-in h1 h2)
   (cond
-    [(and (empty? h1) (empty? h2))
+    [(and (empty? h1) (empty? h2) (boolean? c-in))
      '()]
-    [(and (empty? h1) (cons? h2))
+    [(and (empty? h1) (cons? h2) (boolean? c-in))
      h2]
-    [(and (cons? h1) (empty? h2))
+    [(and (cons? h1) (empty? h2) (boolean? c-in))
      h1]
-    [(and (cons? h1) (cons? h2))
-     (cond
-       [(boolean? (first h1))
-        (cons (first h2) (add (rest h1) (rest h2)))]
-       [(boolean? (first h2))
-        (cons (first h1) (add (rest h1) (rest h2)))]
-       [else
-        (cons #false
-              (add-one (join (first h1) (first h2))
-                       (add (rest h1) (rest h2))))])]))
+    [(and (empty? h1) (empty? h2) (node? c-in))
+     (list c-in)]
+    [(and (empty? h1) (cons? h2) (node? c-in))
+     (add-one c-in h2)]
+    [(and (cons? h1) (empty? h2) (node? c-in))
+     (add-one c-in h1)]
+    [(and (cons? h1) (cons? h2) (boolean? c-in))
+     (cons #false (add (join (first h1) (first h2)) (rest h1) (rest h2)))]
+    [(and (cons? h1) (cons? h2) (node? c-in))
+     (cons c-in
+           (add (join (first h1) (first h2))
+                (rest h1) (rest h2)))]))
 
 (define (add-one t h)
   (cond
@@ -157,12 +160,16 @@
         (cons #false (add-one (join (first h) t)
                               (rest h)))])]))
 
-;; join : binomial-tree binomial-tree -> binomial-tree
+;; join : (or #false binomial-tree) (or #false binomial-tree) -> (or #false binomial-tree)
 (define (join t1 t2)
   (cond
-    [(< (node-value t1) (node-value t2))
-     (make-node (node-value t1)
-                (cons t2 (node-children t1)))]
+    [(boolean? t1) t2]
+    [(boolean? t2) t1]
     [else
-     (make-node (node-value t2)
-                (cons t1 (node-children t2)))]))
+     (cond
+       [(< (node-value t1) (node-value t2))
+        (make-node (node-value t1)
+                   (cons t2 (node-children t1)))]
+       [else
+        (make-node (node-value t2)
+                   (cons t1 (node-children t2)))])]))
