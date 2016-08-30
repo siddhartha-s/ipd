@@ -11,16 +11,6 @@
 ;;     pre: not is-empty?
 ;;  meld : Abstract-Heap Abstract-Heap -> Abstract-Heap
 
-;; ADT:
-;;  empty-heap : Binomial-Heap
-;;  is-empty? : Binomial-Heap -> boolean
-;;  insert : Binomial-Heap Number -> Binomial-Heap
-;;  find-min : Binomial-Heap -> Number
-;;     pre: not is-empty?
-;;  remove-min : Binomial-Heap -> Binomial-Heap
-;;     pre: not is-empty?
-;;  meld : Binomial-Heap Binomial-Heap -> Binomial-Heap
-
 (define (insert-nums nums)
   (cond
     [(empty? nums) empty-heap]
