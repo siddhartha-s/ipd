@@ -2,14 +2,24 @@
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname lec07-binomial-heap) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ;; ADT:
-;;  empty-heap : binomial-heap
-;;  is-empty? : binomial-heap -> boolean
-;;  insert : binomial-heap number -> binomial-heap
-;;  find-min : binomial-heap -> number
+;;  empty-heap : Abstract-Heap
+;;  is-empty? : Abstract-Heap -> boolean
+;;  insert : Abstract-Heap Number -> Abstract-Heap
+;;  find-min : Abstract-Heap -> Number
 ;;     pre: not is-empty?
-;;  remove-min : binomial-heap -> binomial-heap
+;;  remove-min : Abstract-Heap -> Abstract-Heap
 ;;     pre: not is-empty?
-;;  meld : binomial-heap binomial-heap -> binomial-heap
+;;  meld : Abstract-Heap Abstract-Heap -> Abstract-Heap
+
+;; ADT:
+;;  empty-heap : Binomial-Heap
+;;  is-empty? : Binomial-Heap -> boolean
+;;  insert : Binomial-Heap Number -> Binomial-Heap
+;;  find-min : Binomial-Heap -> Number
+;;     pre: not is-empty?
+;;  remove-min : Binomial-Heap -> Binomial-Heap
+;;     pre: not is-empty?
+;;  meld : Binomial-Heap Binomial-Heap -> Binomial-Heap
 
 (define (insert-nums nums)
   (cond
@@ -31,23 +41,23 @@
                                  (insert-nums (list 2 1 0))))
               (list 0 0 1 1 2 2))
 
-(define zero-thru-sixteen (list 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16))
+(define zero-thru-sixteen (build-list 17 identity))
 (check-expect (remove-mins (insert-nums zero-thru-sixteen))
               zero-thru-sixteen)
 (check-expect (remove-mins (insert-nums (reverse zero-thru-sixteen)))
               zero-thru-sixteen)
 
-;; a binomial-heap is:
-;;  (listof (or #f binomial-tree))
+;; a Binomial-Heap is:
+;;  [List-of [Or #f Binomial-Tree]]
 ;; invariant: each element of the list
 ;; has the next largest rank from the
 ;; previous element in the list, unless
 ;; that element is #f, in which case it
-;; stands for an empty binomial-tree with
+;; stands for an empty Binomial-Tree with
 ;; the missing order.
 
-;; a binomial-tree is:
-;;  (make-node number (listof binomial-tree))
+;; a Binomial-Tree is:
+;;  (make-node Number [List-of Binomial-Tree])
 ;; invariant:
 ;;  -- heap invariant
 ;;  -- if 'children' is non-empty, then the first
@@ -59,18 +69,18 @@
 
 
 
-;; find-min : binomial-heap -> number or #f
+;; find-min : Binomial-Heap -> [Or Number #f]
 (define (find-min b)
   (cond
     [(empty? b) #f]
     [else
      (cond
-       [(boolean? (first b)) (find-min (rest b))]
+       [(false? (first b)) (find-min (rest b))]
        [else
         (pick-one (node-value (first b))
                   (find-min (rest b)))])]))
 
-;; pick-one : number (number or false) -> number
+;; pick-one : Number [Or Number #f] -> Number
 (define (pick-one n1 n2/f)
   (cond
     [(number? n2/f) (min n1 n2/f)]
@@ -79,7 +89,7 @@
 (define empty-heap '())
 (define (empty-heap? b) (empty? b))
 
-;; insert : binomial-heap number -> binomial-heap
+;; insert : Binomial-Heap Number -> Binomial-Heap
 (define (insert b n)
   (add (list (make-node n '())) b))
 
@@ -97,7 +107,7 @@
     [(empty? b) (error 'ack)]
     [else
      (cond
-       [(boolean? (first b)) (cons #f (remove-tree-with-root (rest b) v))]
+       [(false? (first b)) (cons #f (remove-tree-with-root (rest b) v))]
        [(= (node-value (first b)) v)
         (cons #f (rest b))]
        [else
@@ -109,7 +119,7 @@
     [else
      (local [(define no-trailing-falses (remove-trailing-falses (rest b)))]
        (cond
-         [(and (boolean? (first b)) (empty? no-trailing-falses))
+         [(and (false? (first b)) (empty? no-trailing-falses))
           '()]
          [else (cons (first b) no-trailing-falses)]))]))
 
@@ -118,7 +128,7 @@
     [(empty? b) (error 'ack)]
     [else
      (cond
-       [(boolean? (first b)) (find-tree-with-root (rest b) v)]
+       [(false? (first b)) (find-tree-with-root (rest b) v)]
        [(= (node-value (first b)) v)
         (first b)]
        [else
@@ -126,7 +136,7 @@
 
 (define (meld h1 h2) (add h1 h2))
 
-;; add : (or #f binomial-tree) binomial-heap binomial-heap -> binomial-heap
+;; add : Binomial-Heap Binomial-Heap -> Binomial-Heap
 (define (add h1 h2)
   (cond
     [(and (empty? h1) (empty? h2))
@@ -137,9 +147,9 @@
      h1]
     [(and (cons? h1) (cons? h2))
      (cond
-       [(boolean? (first h1))
+       [(false? (first h1))
         (cons (first h2) (add (rest h1) (rest h2)))]
-       [(boolean? (first h2))
+       [(false? (first h2))
         (cons (first h1) (add (rest h1) (rest h2)))]
        [else
         (cons #false
@@ -151,13 +161,13 @@
     [(empty? h) (list t)]
     [else
      (cond
-       [(boolean? (first h))
+       [(false? (first h))
         (cons t (rest h))]
        [else
         (cons #false (add-one (join (first h) t)
                               (rest h)))])]))
 
-;; join : binomial-tree binomial-tree -> binomial-tree
+;; join : Binomial-Tree Binomial-Tree -> Binomial-Tree
 (define (join t1 t2)
   (cond
     [(< (node-value t1) (node-value t2))
