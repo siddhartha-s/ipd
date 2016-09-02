@@ -1,0 +1,380 @@
+accumulators
+------------
+
+Lets write a function that converts a binary search tree into a
+sorted list.
+
+
+;; a [BT X] is either:
+;;  - #false
+;;  - (make-node X [BT X] [BT X])
+;; with the binary tree invariant
+(define-struct node (value left right))
+
+;; in-order [BT X] -> [Listof X]
+(check-expect (in-order #f) '())
+(check-expect (in-order (make-node 1 #f #f)) (list 1))
+(check-expect (in-order
+               (make-node 4
+                          (make-node 2
+                                     (make-node 1 #f #f)
+                                     (make-node 3 #f #f))
+                          (make-node 6
+                                     (make-node 5 #f #f)
+                                     (make-node 7 #f #f))))
+              (list 1 2 3 4 5 6 7))
+(define (in-order bt)
+  (cond
+    [(node? bt)
+     (concat
+      (in-order (node-left bt))
+      (concat
+       (list (node-value bt))
+       (in-order (node-right bt))))]
+    [else '()]))
+
+;; concat : [Listof X] [Listof X] -> [Listof X]
+(check-expect (concat '() '()) '())
+(check-expect (concat (list 1 2 3) (list 4 5 6)) (list 1 2 3 4 5 6))
+(define (concat l1 l2)
+  (cond
+    [(empty? l1) l2]
+    [else
+     (cons (first l1)
+           (concat (rest l1) l2))]))
+
+
+What is the running time of in-order?
+
+Lets say we have a tree that's out of balance, like this:
+
+(make-node 100 (make-node 99 (make-node 98 (make-node 97 ... #false) #false) #false) #false)
+
+what are the concat calls going to look like?
+
+  (in-order (make-node 100 ...))
+= (concat (in-order (make-node 99 ...)) (concat (list 100) (concat #false)))
+= (concat (in-order (make-node 99 ...)) (list 100))
+= (concat (concat (in-order (make-node 98 ...)) (concat (list 99) (concat #false)))
+          (list 100))
+= (concat (concat (in-order (make-node 98 ...)) (list 99)) (list 100))
+= (concat (concat (concat (in-order (make-node 97 ...)) (list 98)) (list 99)) (list 100))
+= (concat (concat (concat (concat ... (list 97)) (list 98)) (list 99)) (list 100))
+
+So: the innermost concat is going to have a list of length 1 as its
+    first argument, the second one is going to have a list of length 2
+    as its first argument, the third one a list of length three, etc
+    and the outermost one will have a list of length 100 as it first
+    argument.
+
+What is the running time of concat? O(n) in the length of its first
+argument. So we get the classic sum again and this in-order traversal is
+O(n^2)!
+
+How can we fix this? Accumulators.  We add an extra parameter to the
+function called the "accumulator" and then we manage that extra
+information with a little extra work and then we avoid a ton of work
+when we use that extra argument.
+
+In this case, the extra argument is going to be a list of the elements
+of the tree that we've already processed. Specifically, one that were
+"to the right" in the tree. So imagine a tree like this:
+
+        y
+       /\
+      /  \
+     x    z
+    /\    /\
+   /  \  /  \
+  A   B  C   D
+
+When we're processing the subtree "D", it will be the empty list. When
+we're processing the subtree "C", it will have the element z and all
+of the elements in "D" in it. When we're working on A, it will have x,
+y, z, and all of the elements in B, C, and D.
+
+Okay, so to design this function, we have to write down a contract for
+it that describes the accumulator and its invariant.
+
+Here's the invariant and the template.
+
+;; accumulator invariant: all of the elements of the tree
+;; in the sorted order for all of the parts of the tree to the right
+;; of the node we're currently processing, in the original tree.
+(define (in-order/acc bt sofar)
+  (cond
+    [(node? bt)
+
+     (node-value bt)
+
+     (in-order/acc
+      (node-left bt)
+      ?)
+
+     (in-order/acc
+      (node-right bt)
+      ?)
+
+    [else ?]))
+
+
+In each place we have a ? we have to figure out how to either exploit
+or maintain the invariant.
+
+;; in-order2 [BT X] -> [Listof X]
+(check-expect (in-order2 #false) '())
+(check-expect (in-order2 (make-node 1 #false #false)) (list 1))
+(check-expect (in-order2
+               (make-node 4
+                          (make-node 2
+                                     (make-node 1 #false #false)
+                                     (make-node 3 #false #false))
+                          (make-node 6
+                                     (make-node 5 #false #false)
+                                     (make-node 7 #false #false))))
+              (list 1 2 3 4 5 6 7))
+
+(define (in-order2 bt) (in-order/acc bt '()))
+
+;; in-order2 : [BT X] [Listof X] -> [Listof X]
+;; accumulator invariant: all of the elements of the tree
+;; in the sorted order for all of the parts of the tree to the right
+;; of the node we're currently processing, in the original tree.
+(define (in-order/acc bt sofar)
+  (cond
+    [(node? bt)
+     (in-order/acc
+      (node-left bt)
+      (cons
+       (node-value bt)
+       (in-order/acc
+        (node-right bt)
+        sofar)))]
+    [else sofar]))
+
+--------
+
+Lets consider a function r2a (relative to absolute) that converts a
+series of numbers from their absolute positions, to their relative
+positions:
+
+ ----0----50-----40----------70----30---30
+
+to absolute positions:
+
+ ----0----50----90----------160--190---220
+
+We can represent these as lists of numbers:
+
+(define (r2a l)
+  (cond
+    [(empty? l) l]
+    [else  (cons (first l)
+                 (add-to-each (first l) (r2a (rest l))))]))
+
+(define (add-to-each n l)
+  (map (lambda (x) (+ x n)) l))
+
+Lets look at the hand evaluation:
+
+(r2a (list 1 2 3))
+= (cons 1 (add-to-each 1 (r2a (list 2 3))))
+= (cons 1 (add-to-each 1 (cons 2 (add-to-each 2 (r2a (list 3))))))
+= (cons 1 (add-to-each 1 (cons 2 (add-to-each 2 (cons 3 (add-to-each 3 empty))))))
+
+Now, when you do each of those add-to-each's, the first one will walk
+over 0 elements. The second one will walk over 1 element. The third
+will walk over 2 elements. What if we had 4 elements in the list? The
+extra add-to-each will walk over 3 elements. Something is fishy here.
+
+Lets try to set up a recurrence for the running time of this
+algorithm. I'm just going to give you a taste of this, but the idea is
+that we want to define a function that tells us how long the computer
+takes to compute something, in terms of the size of the input.
+
+Here's this one:
+
+  Tr2a(n) = Tr2a(n-1) + c1 * (n-1) + c2
+
+This is a funny formula, since it is defined in terms of itself (just
+like our recursive functions...) but this function can be rewritten
+like this:
+
+ Tr2a(n) = c3 * n^2 c4 * n + c5
+
+for some c3, c4, and c5 (how to solve these is tricky in general; I'm
+only showing you a single example).
+
+I will wave my hands a little bit and tell you that what is really
+important here is the n^2 at the beginning. That is going to dominate
+this formula and, in fact, we can really think of this program
+actually doing something strange. It actually looks at each element
+`n' times! That's what that formula means. Wierd, right?
+
+What if you were actually doing this work yourself?
+
+You wouldn't have to look at each element in the list n times, would
+you? You would just keep track of how far you've been at each step.
+
+But, our function isn't doing that.
+
+Any ideas on what is going wrong in our function and how we can fix
+it?
+
+What if we were to make up an additional parameter to the function?
+Could that help us? What would that parameter be?
+
+(define (r2a-acc l sofar)
+  (cond
+    [(empty? l) empty]
+    [else (cons (+ sofar (first l))
+                (r2a-acc (rest l) (+ sofar (first l))))]))
+
+(define (r2a l) (r2a-acc l 0))
+
+Now, if you analyze the running time of this algorithm, you'll find
+that it is linear (ie, it only looks at each element once).
+
+------------------------------------------------------------
+
+Okay, now we've seen that we need accumulators and two
+examples, but we still need some way to codify *how* to
+write accumulators.
+
+1) Identity the need for an accumulator
+
+  - if the function is structurally recursive and the result of
+    the function is being processed by another recursive function,
+    consider an accumulator.
+
+  - the the function is generative, it's harder. In general,
+    you have to notice that you need some additional
+    information to be able to compute the answer
+    properly. That becomes the accumulator.
+
+2) Set up the accumulator.
+
+  First, figure out what you are accumulating
+   - the distance so far (r2a)
+   - the nodes where we've been
+
+  and then rewrite the program to take an extra argument,
+  and figure out how to maintain the extra argument.
+
+3) Exploit the accumulator
+
+   Next, use the accumulator as part of computing the result
+   of the program.
+
+4) re-define the original function in terms of the
+   accumulator.
+
+As you do the process, you must figure out the _accumulator
+invariant_. 
+
+This is a mathematical statement that relates the initial
+argument to the function and the accumulator to the current
+value.
+
+  For example:
+   - r2a: the distance back to the first point processed
+
+Lets take a look at our old friend sum:
+
+(define (sum l)
+  (cond
+    [(empty? l) 0]
+    [else (+ (first l) (sum (rest l)))]))
+
+Hand evaluation for sum:
+
+  (sum (list 1 2 3))
+= (+ 1 (sum (list 2 3)))
+= (+ 1 (+ 2 (sum (list 3))))
+= (+ 1 (+ 2 (+ 3 (sum (list)))))
+= (+ 1 (+ 2 (+ 3 0)))
+= 6
+
+We can change this program by using an accumulator. Rather
+than "stacking up" those additions, we can accumulate the
+current subtotal.
+
+acc invariant: the current subtotal of the numbers seen so
+far.
+
+maintaining the accumulator:
+
+(define (sum/a l a)
+  (cond
+    [(empty? l)  ...]
+    [else  (sum/a (rest l) (+ (first l) a)) ]))
+
+exploit it:
+
+(define (sum/a l a)
+  (cond
+    [(empty? l)  a]
+    [else (sum/a (rest l) (+ (first l) a))]))
+
+Now, we need to redefine sum:
+
+(define (sum l) (sum/a l 0))
+
+hand evaluation now:
+
+  (sum (list 1 2 3))
+= (sum/a (list 1 2 3) 0)
+= (sum/a (list 2 3) 1)
+= (sum/a (list 3) 3)
+= (sum/a (list) 6)
+= 6
+
+No stacking up, anymore.
+
+============================================================
+
+practicing accumulators
+-----------------------
+
+;; reverse : (listof X) -> (listof X)
+(define (rev l)
+  (cond
+    [(empty? l) empty]
+    [else   (add-at-end (first l)
+                        (rev (rest l))) ...]))
+
+1. what should the accumulator be?
+
+   the reverse of the list elements
+   we've seen so far
+
+2. rewrite to propogate the accumulator:
+
+;; rev-a : (listof X) (listof X) -> (listof X)
+(define (rev-a l acc)
+  (cond
+    [(empty? l) ...]
+    [else  (rev-a (rest l) (cons (first l) acc)) ...]))
+
+3. take advantage:
+
+;; reverse : (listof X) (listof X) -> (listof X)
+(define (rev-a l acc)
+  (cond
+    [(empty? l) acc]
+    [else (rev-a (rest l) (cons (first l) acc))]))
+
+4. rewrite original
+
+(define (rev l) (rev-a l empty))
+
+hand evals:
+
+  (rev (list 1 2 3))
+= (rev-a (list 1 2 3) empty)
+= (rev-a (list 2 3) (list 1))
+= (rev-a (list 3) (list 2 1))
+= (rev-a (list) (list 3 2 1))
+= (list 3 2 1)
+
+voila.
