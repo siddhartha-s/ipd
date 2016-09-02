@@ -319,3 +319,10 @@ hand evals:
 = (list 3 2 1)
 
 voila.
+
+
+In the binomial heap, the "add" operation's carry is a ripe spot for
+an accumulator. Fix the code so that it adds an accumulator whose
+value is the "carry in", i.e., it will be a tree that was produced
+from the preceding digit, if there was one, or #false if there wasn't
+one. See lec08-binomial-heap-acc.rkt for the solution.
