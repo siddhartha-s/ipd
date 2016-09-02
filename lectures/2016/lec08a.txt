@@ -1,6 +1,70 @@
 accumulators
 ------------
 
+Lets consider a function r2a (relative to absolute) that converts a
+series of numbers from their relative positions:
+
+ |------|----|-------|---|---|
+ 0      50   40      70  30  30
+
+
+ |------|----|-------|---|---|
+ 0      50   90      160 190 220
+
+We can represent the positions (both relative and absolute) as lists
+of numbers:
+
+;; r2a : [Listof number] -> [Listof Number]
+(check-expect (r2a (list 0 50 40 70 30 30))
+              (list 0 50 90 160 190 220))
+(define (r2a l)
+  (cond
+    [(empty? l) l]
+    [else  (cons (first l)
+                 (add-to-each (first l) (r2a (rest l))))]))
+
+(define (add-to-each n l)
+  (map (λ (x) (+ x n)) l))
+
+Lets look at the hand evaluation:
+
+(r2a (list 1 2 3))
+= (cons 1 (add-to-each 1 (r2a (list 2 3))))
+= (cons 1 (add-to-each 1 (cons 2 (add-to-each 2 (r2a (list 3))))))
+= (cons 1 (add-to-each 1 (cons 2 (add-to-each 2 (cons 3 (add-to-each 3 empty))))))
+
+Now, when you do each of those add-to-each's, the first one will walk
+over 0 elements. The second one will walk over 1 element. The third
+will walk over 2 elements. What if we had 4 elements in the list? The
+extra add-to-each will walk over 3 elements. Something is fishy here.
+
+Indeed, this is just like the reverse function we had in lecture 3 and
+it is O(n^2).
+
+What if you were actually doing this work yourself?
+
+You wouldn't have to look at each element in the list n times, would
+you? You would just keep track of how far you've been at each step.
+
+Our function isn't doing that. Can we write a variation on that
+function that does track this information?
+
+What if we were to make up an additional parameter to the function?
+Could that help us? What would that parameter be?
+
+(define (r2a-acc l sofar)
+  (cond
+    [(empty? l) empty]
+    [else (cons (+ sofar (first l))
+                (r2a-acc (rest l) (+ sofar (first l))))]))
+
+(define (r2a l) (r2a-acc l 0))
+
+Now, if you analyze the running time of this algorithm, you'll find
+that it is linear (ie, it only looks at each element once).
+
+------------------------------------------------------------
+
 Lets write a function that converts a binary search tree into a
 sorted list.
 
@@ -80,13 +144,14 @@ In this case, the extra argument is going to be a list of the elements
 of the tree that we've already processed. Specifically, one that were
 "to the right" in the tree. So imagine a tree like this:
 
-        y
-       /\
-      /  \
-     x    z
-    /\    /\
-   /  \  /  \
-  A   B  C   D
+         y
+        / \
+       /   \
+      /     \
+     x       z
+    / \     / \
+   /   \   /   \
+  A     B C     D
 
 When we're processing the subtree "D", it will be the empty list. When
 we're processing the subtree "C", it will have the element z and all
@@ -121,7 +186,14 @@ Here's the invariant and the template.
 In each place we have a ? we have to figure out how to either exploit
 or maintain the invariant.
 
-;; in-order2 [BT X] -> [Listof X]
+Here's the final code. One important piece: in order to maintain the
+accumulator invariant for the outer call to in-order/acc and to know
+what to do in the base case, the result of the function isn't just the
+numbers in the given tree -- it has to be the numbers in the given
+tree as well as the numbers in the original tree that are above and
+to the right of the given tree.
+
+;; in-order2 : [BT X] -> [Listof X]
 (check-expect (in-order2 #false) '())
 (check-expect (in-order2 (make-node 1 #false #false)) (list 1))
 (check-expect (in-order2
@@ -136,7 +208,7 @@ or maintain the invariant.
 
 (define (in-order2 bt) (in-order/acc bt '()))
 
-;; in-order2 : [BT X] [Listof X] -> [Listof X]
+;; in-order/acc : [BT X] [Listof X] -> [Listof X]
 ;; accumulator invariant: all of the elements of the tree
 ;; in the sorted order for all of the parts of the tree to the right
 ;; of the node we're currently processing, in the original tree.
@@ -151,89 +223,6 @@ or maintain the invariant.
         (node-right bt)
         sofar)))]
     [else sofar]))
-
---------
-
-Lets consider a function r2a (relative to absolute) that converts a
-series of numbers from their absolute positions, to their relative
-positions:
-
- ----0----50-----40----------70----30---30
-
-to absolute positions:
-
- ----0----50----90----------160--190---220
-
-We can represent these as lists of numbers:
-
-(define (r2a l)
-  (cond
-    [(empty? l) l]
-    [else  (cons (first l)
-                 (add-to-each (first l) (r2a (rest l))))]))
-
-(define (add-to-each n l)
-  (map (lambda (x) (+ x n)) l))
-
-Lets look at the hand evaluation:
-
-(r2a (list 1 2 3))
-= (cons 1 (add-to-each 1 (r2a (list 2 3))))
-= (cons 1 (add-to-each 1 (cons 2 (add-to-each 2 (r2a (list 3))))))
-= (cons 1 (add-to-each 1 (cons 2 (add-to-each 2 (cons 3 (add-to-each 3 empty))))))
-
-Now, when you do each of those add-to-each's, the first one will walk
-over 0 elements. The second one will walk over 1 element. The third
-will walk over 2 elements. What if we had 4 elements in the list? The
-extra add-to-each will walk over 3 elements. Something is fishy here.
-
-Lets try to set up a recurrence for the running time of this
-algorithm. I'm just going to give you a taste of this, but the idea is
-that we want to define a function that tells us how long the computer
-takes to compute something, in terms of the size of the input.
-
-Here's this one:
-
-  Tr2a(n) = Tr2a(n-1) + c1 * (n-1) + c2
-
-This is a funny formula, since it is defined in terms of itself (just
-like our recursive functions...) but this function can be rewritten
-like this:
-
- Tr2a(n) = c3 * n^2 c4 * n + c5
-
-for some c3, c4, and c5 (how to solve these is tricky in general; I'm
-only showing you a single example).
-
-I will wave my hands a little bit and tell you that what is really
-important here is the n^2 at the beginning. That is going to dominate
-this formula and, in fact, we can really think of this program
-actually doing something strange. It actually looks at each element
-`n' times! That's what that formula means. Wierd, right?
-
-What if you were actually doing this work yourself?
-
-You wouldn't have to look at each element in the list n times, would
-you? You would just keep track of how far you've been at each step.
-
-But, our function isn't doing that.
-
-Any ideas on what is going wrong in our function and how we can fix
-it?
-
-What if we were to make up an additional parameter to the function?
-Could that help us? What would that parameter be?
-
-(define (r2a-acc l sofar)
-  (cond
-    [(empty? l) empty]
-    [else (cons (+ sofar (first l))
-                (r2a-acc (rest l) (+ sofar (first l))))]))
-
-(define (r2a l) (r2a-acc l 0))
-
-Now, if you analyze the running time of this algorithm, you'll find
-that it is linear (ie, it only looks at each element once).
 
 ------------------------------------------------------------
 
@@ -278,63 +267,15 @@ value.
 
   For example:
    - r2a: the distance back to the first point processed
+   - in-order: the sorted elements to the right
+     and above in the original tree
 
-Lets take a look at our old friend sum:
 
-(define (sum l)
-  (cond
-    [(empty? l) 0]
-    [else (+ (first l) (sum (rest l)))]))
-
-Hand evaluation for sum:
-
-  (sum (list 1 2 3))
-= (+ 1 (sum (list 2 3)))
-= (+ 1 (+ 2 (sum (list 3))))
-= (+ 1 (+ 2 (+ 3 (sum (list)))))
-= (+ 1 (+ 2 (+ 3 0)))
-= 6
-
-We can change this program by using an accumulator. Rather
-than "stacking up" those additions, we can accumulate the
-current subtotal.
-
-acc invariant: the current subtotal of the numbers seen so
-far.
-
-maintaining the accumulator:
-
-(define (sum/a l a)
-  (cond
-    [(empty? l)  ...]
-    [else  (sum/a (rest l) (+ (first l) a)) ]))
-
-exploit it:
-
-(define (sum/a l a)
-  (cond
-    [(empty? l)  a]
-    [else (sum/a (rest l) (+ (first l) a))]))
-
-Now, we need to redefine sum:
-
-(define (sum l) (sum/a l 0))
-
-hand evaluation now:
-
-  (sum (list 1 2 3))
-= (sum/a (list 1 2 3) 0)
-= (sum/a (list 2 3) 1)
-= (sum/a (list 3) 3)
-= (sum/a (list) 6)
-= 6
-
-No stacking up, anymore.
-
-============================================================
-
+------------------------------------------------------------
 practicing accumulators
------------------------
+
+Reverse's running time can be improved to linear using
+accumulators. Here's how:
 
 ;; reverse : (listof X) -> (listof X)
 (define (rev l)
