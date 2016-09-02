@@ -145,9 +145,10 @@ Oh". It captures how functions perform "in the limit" or
 "asymptotically".
 
 So, intuitively what's going on is that sum and add-at-end both grow
-proportionally to the input, but rev grows with the square. So if have
-a fixed-speed computer, you can always find an input size such that
-all bigger inputs are going to be slower with rev than sum.
+proportionally to the input, but rev grows with the square of the
+input size. So if have a fixed-speed computer, you can always find an
+input size such that all bigger inputs are going to be slower with rev
+than sum.
 
 So we want to collapse all functions with the same running time into a
 certain class that represents all of the ones where varying the speed
@@ -174,7 +175,7 @@ well, at n=1, we have 7 <= 10. And n=2 we are going to add 5 to the
 left and 10 to the right. And it continues like that.
 
 We can do a similar thing to show that 2*n^2 + 10 is in O(n^2). A
-little bit trickier is to show that 2*n^2 + 10 is NOT in O(n). It
+little bit more fiddly is to show that 2*n^2 + 10 is NOT in O(n). It
 isn't, but lets just show that n^2 is not in O(n), since it is
 smaller.
 
