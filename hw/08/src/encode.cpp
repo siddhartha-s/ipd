@@ -6,8 +6,9 @@
 
 // These are the default files to read from and write to when no
 // command-line arguments are given:
-#define DEFAULT_INFILE  "test-files/hamlet.txt"
-#define DEFAULT_OUTFILE "test-files/hamlet.txt.huff"
+// change "ascii" to "utf8" to see how this goes wrong with 8 bit files
+#define DEFAULT_INFILE  "test-files/hamlet-ascii.txt"
+#define DEFAULT_OUTFILE "test-files/hamlet-ascii.txt.huff"
 
 using namespace ipd;
 using namespace std;

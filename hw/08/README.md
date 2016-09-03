@@ -17,13 +17,13 @@ command-line arguments. For example, suppose you have a text file
 `hamlet.txt.huff` using your `huff` program:
 
 ```sh
-    % ./huff hamlet.txt hamlet.txt.huff
+    % ./huff hamlet-utf8.txt hamlet-utf8.txt.huff
 ```
 
 You can decompress it using your `puff` program:
 
 ```sh
-    % ./puff hamlet.txt.huff hamlet.txt.out
+    % ./puff hamlet-utf8.txt.huff hamlet-utf8.txt.out
 ```
 
 If you’ve done your job correctly, the decompressed file will match the
@@ -31,7 +31,7 @@ original. On UNIX (including Linux and Mac OS X) you can compare the two
 to make sure they match using `diff`:
 
 ```sh
-    % diff hamlet.txt hamlet.txt.out
+    % diff hamlet-utf8.txt hamlet-utf8.txt.out
 ```
 
 When two files match, `diff` prints nothing.
@@ -146,6 +146,10 @@ Consider the following questions, and feel free to discuss on Piazza:
     Can you think of a fix that works even if the file is
     streaming? That is, suppose that you cannot see the whole file at
     once, but rather must begin producing output before the input ends.
+
+To try this out, use the included hamlet text files. The file
+hamlet-utf8.txt demonstrates the first problem and the file
+hamlet-ascii.txt demonstrates the second problem.
 
 ## The Huffman coder and decoder
 
