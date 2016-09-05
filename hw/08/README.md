@@ -224,9 +224,7 @@ Your deliverables are:
 
 ## How to submit
 
-Please submit your `EVALUATION.md` and whatever source files are needed
-to build or run your project.
-
-You do not need to submit starter code that you haven’t modified. If you
-edit or create files other than `huff.cpp` and `puff.cpp`, please mention in
-the `EVALUATION.md` which files get built into which executable.
+Please submit a ZIP or TAR archive of your whole project. Your project
+should build in CLion using the configuration in CMakeLists.txt. Before
+creating the archive, be sure to clean your project (*Run* menu /
+*Clean*).
