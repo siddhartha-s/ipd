@@ -1,0 +1,323 @@
+This Course
+-----------
+
+This course is about the fundamentals of
+programming (and computation):
+
+  - from specification to implementation
+  - software engineering principles
+  - (a little bit of computation)
+
+This course is *not* about:
+
+  - Racket, or any other language: Java, C, C++, Python, etc etc
+      We have to pick a language, or else
+      this is just talk. We picked a teaching language
+      inspired by Racket, but it *not* Racket.
+
+  - Programming tools (DrRacket, gcc, gdb, javac, etc etc)
+      Again, we need something, so we
+      picked DrRacket, but it is designed
+      to stay out of the way, as much as possible.
+
+  - Specific libraries or protocols (http, XML, Gtk, etc)
+      We might see glimpses of these in exercises,
+      but only as they help you understand those points
+      above
+
+  - How programs get translated to digital signals
+      Programming digital computers, or programming
+      with genes in test tubes -- it doesn't matter.
+      We don't study the details of that; we study
+      how to contruct and maintain the programs
+      themselves.
+
+Arithmetic, Algebra, and Computation
+------------------------------------
+
+Arithmetic is computing.
+
+What are do these equal:
+
+  2 + 3 = 5
+  4 x 2 = 8
+  cos(0) = 1
+
+No one said:
+
+  2 + 3 = 1 + 4
+
+or
+
+  2 + 3 = 1 + 1 + 3
+
+even though those are valid, right?
+
+There is a direction to those equalities, complex to
+simple.
+
+So, we are simplifying those expressions, until nothing is
+left to do. We know how to simplify them based on the basic
+rules of arithmetic.
+
+*that*'s what computation is about, from an algebraic
+perspective. Simplification of expressions.
+
+How about this one:
+
+   (2 + 3) x 5
+ = 5 x 5
+ = 25
+
+simplify complex expressions by finding embedded simple
+ones to simplify. How about this one:
+
+   2 + 3 x 5
+ = 2 + 15
+ = 17
+
+precedence helps us find the next to simplify.
+
+How about definitions:
+
+  f(x) = x * (x+1)
+
+now we can use that defined function in expressions:
+
+   f(2)
+ = 2 * (2+1)
+ = 2 * 3
+ = 6
+
+
+Let's talk notation:
+
+  - sometimes operators go in the middle: +, *
+  - sometimes operators go in front: cos.
+  - sometimes parens indicate grouping: 1 * (2+3)
+  - sometimes parens are used for arguments: cos(0)
+  - sometimes parens are optional: 1+(2*3)
+  - sometimes not: (1+2)*3
+  - sometimes = means a definition: f(x) = x * x + 1
+  - sometimes = means a simplification step: 1 + 2 = 3
+
+YUCK!
+
+  - when we get to full blown computation, this just gets
+    incredibly unwieldy (and gets in our way, see above)
+
+
+Lets use a simpler notation:
+
+  - all operators go at the beginning followed by the arguments
+  - all operations begin with a paren and end with a paren.
+  - never add any extra parens.
+
+  1 + 2   -->   (+ 1 2)
+  4 + 2 * 3  -->  (+ 4 (* 2 3))
+  cos(0) + 1  -->  (+ (cos 0) 1)
+
+Let's simplify definitions in the same manner. We'll use a
+new keyword: define
+
+  f(x) = x * (x + 1)
+
+  (define (f x) (* x (+ x 1)))
+
+  paren, define, "function call skeleton", body, paren
+
+Now, this `f' becomes a new operator and we use our new
+syntax rules just as before:
+
+   f(2)  --->  (f 2)
+   f(1+3) -->  (f (+ 1 3))
+
+evaluation with the new notation is just like before (but
+with the new notation, of course):
+
+   (f (+ 1 3))
+ = (f 4)
+ = (* 4 (+ 4 1))
+ = (* 4 5)
+ = 20
+
+Numbers are not the only kinds of values! What about
+booleans:
+
+  1 < 2 = true
+  (< 1 2) = #true
+
+  1 > 2 = false
+  (> 1 2) = #false
+
+  2 >= 2 = true
+  (>= 2 2) = #true
+
+anyone care to guess about and and or? not?
+
+    (not (= 1 2))
+  = (not false)
+  = true
+
+We also have strings:
+
+  "apple"
+
+  "pear"
+
+  (string=? "apple" "pear") = false
+  (string=? "pear" "pear") = true
+
+  (string-append "apple" " or " "pear") = "apple or pear"
+
+DrRacket also supports *images* as values. You will see this
+on your homework. Here's a taste, from the blackboard:
+
+  (rectangle 35 35 "solid" "black")
+  =
+  ... a solid box ...
+
+  (circle 25 "outline" "white")
+  =
+  ... an outline circle ...
+
+what about combining images?
+
+  (overlay (rectangle 25 25 "solid" "white")
+           (circle 35 "outline" "black"))
+  = (overlay .. a solid box ...
+             (solid-box 35 35 "black"))
+  = (overlay ... ...) ;; draw pictures on board
+  = ...
+
+How about a function?
+
+  (define (anonymize i)
+    (overlay
+     i
+     (circle (image-width i)
+             "solid"
+             "blue")))
+
+What does that do?
+
+  (anonymize ...me...)
+  =
+  ... me with dot ...
+
+The stepper.
+
+DrRacket will actually show you all these steps
+automatically, like we've been doing manually.
+
+Put everything in the definitions window, click <step> and
+watch it go.
+
+As a note: to define a constant image, do this:
+
+  (define me ...)
+
+  Special | Insert image ...
+
+to put it right there. Then, `me' will refer to that image
+in the rest of your program.
+
+Programming
+------------
+
+That was computation. What about programming?
+
+Where did anonymize come from? Did God smile down on us and
+voila out it comes from our fingers?
+
+ - programming requires creativity.
+
+Programming requires creativity, there's no doubt. But there
+is structure and based on that we've got guidance about how
+to build programs. Design rules can guide and focus
+creativity.
+
+ - just like music
+
+this is analgous to music: you need scales, rhythm, (and
+even, gasp) counterpoint (if for no other reason than to
+know how to move *past* it, in that case)
+
+ - so far: just notation.
+
+What we've seen so far is merely the notation. But we need
+more than just notation to get beautiful music.
+
+ - need design recipes
+
+So, we have a design recipe. As the course goes on, we'll
+build upon the simple recipe that we've started with today.
+
+Design recipe overview:
+
+  - Data
+  - Signature, purpose, header
+  - Examples
+  - Body
+  - tests (run the examples)
+
+data: what does the function consume and produce?
+   numbers,
+   booleans,
+   images,
+   strings
+
+Signature, purpose, and header:
+
+ ; f2c : Number -> Number
+ ; to determine a Celsius temp from a Fahrenheit one
+ (define (f2c f) ...)
+
+ ; is-milk? : String -> Boolean
+ ; determines if `s' is "milk":
+ (define (is-milk? s) ...)
+
+Examples:
+
+ sample inputs and outputs that ensure you know what you're
+ doing. *before* you write the function:
+
+ (f2c 32) should be 0
+ (f2c 212) should be 100
+ (f2c -40) should be -40
+
+ (is-milk? "oj") should be #false
+ (is-milk? "milk") should be #false
+
+Body:
+
+  This is where the creativity comes in. How do you get
+  from the inputs to the outputs?
+
+  (define (f2c f)
+    (* 9/5 (- f 32)))
+  (define (is-milk? s)
+    (string=? s "milk"))
+
+Tests:
+
+  If you're clever, you just write your examples below the
+  function definition in the format above and all you need
+  to do now is click execute in DrRacket and check that
+  your examples come out right. But sometimes there will be
+  clearer ways to write your examples that won't work as
+  tests.
+
+Importance of the Design Recipe:
+
+   The design recipe is *the* critical thing I hope you
+   will take away from this course.
+
+   It is *not* Racket-specific.
+
+   Yes, it is simple now, but if you don't get in the habit
+   now, you'll fail later, when it gets harder.
+
+   Accordingly, if there's no design recipe visible in your
+   homework, it won't get a good grade.
+
