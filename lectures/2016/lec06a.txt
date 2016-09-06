@@ -1,0 +1,113 @@
+Abstract Data Types
+===================
+
+A major theme in this course is abstraction. What does it mean for
+something to be abstract?
+
+  - Omits (unnecessary) detail
+
+When we talk about a data structure, sometimes we care only what it’s
+for—what it can accomplish—and can omit detail about how it works. For
+example, let’s consider the operations of a FIFO queue, abstractly:
+
+  Queue ADT
+  ---------
+
+  "Looks like": «« or «1 2 3«
+
+  Operations:
+
+    - empty? : Queue -> Boolean
+      Determines whether the queue is empty
+
+    - enqueue : Element Queue -> Queue
+      Adds an element to the back of the queue, yielding the new queue
+
+    - get-front : Queue -> Element
+      Returns the front element of the queue; error if empty.
+
+    - dequeue : Queue -> Queue
+      Removes the front of the queue and returns the new queue; error if
+      empty.
+
+    Laws:
+
+      (empty? ««) => #true
+      (empty? «a ...«) => #false
+
+      (enqueue «a0 ...« b) => «a0 ... b«
+
+      (get-front «a0 a1 ...«) => a0
+      (get-front ««) => ERROR
+
+      (dequeue «a0 a1 ...«) => «a1 ...«
+      (dequeue ««) => ERROR
+
+"Looks like" is our way of writing down the *information* content of
+queues abstractly without committing to a particular data
+representation. The laws tell us what the operations do to the abstract
+queues, regardless of how the operations are implemented.
+
+How would you represent queues?
+
+Here are two ideas:
+
+  - Represent the queue «a0 a1 a2« as (cons a0 (cons a1 (cons a2 '())))
+  - Represent the queue «a0 a1 a2« as (cons a2 (cons a2 (cons a0 '())))
+
+Which do you prefer? Why? Let’s implement them.
+
+Why Laws Matter
+---------------
+
+Consider this ADT:
+
+  Stack ADT
+  ---------
+
+  "Looks like": |» or |1 2 3»
+
+  Operations:
+
+    - empty? : Stack -> Boolean
+      Determines whether the stack is empty
+
+    - push : Element Stack -> Stack
+      Adds an element to the top of the stack, yielding the new stack
+
+    - get-top : Stack -> Element
+      Returns the top element of the stack; error if empty.
+
+    - pop : Stack -> Stack
+      Removes the top of the stack and returns the new stack; error if
+      empty.
+
+    Laws:
+
+      (empty? |») => #true
+      (empty? |a ...») => #false
+
+      (push |a0 ...» b) => |a0 ... b»
+
+      (get-top |a0 ... ak») => ak
+      (get-top |») => ERROR
+
+      (pop |a0 ... ak») => |a0 ...»
+      (pop |») => ERROR
+
+Note that the signature of the ADT (that is, the signatures of the
+operations) is the same! But the laws specify different behavior.
+
+How would you represent a stack in ISL?
+
+More ADTs
+---------
+
+What are some other abstract data types we can think of?
+
+  - set
+  - dictionary
+  - priority queue
+  - graph
+
+What are their signatures? Their laws?
