@@ -211,6 +211,46 @@
 
 (check-expect (< (sample-height 100) 20) #t)
 
+#|
+Deletion Algorithm
+------------------
+
+To delete an element from the tree, we first search for it in the normal
+way. Once we find the node containing the element to delete, we delete
+it by replacing it with its subtrees, joined as follows: We select one
+or the other tree to be the root of the joined subtree, randomly, where
+the size of each tree provides its weight. Suppose we choose the left
+subtree to be the root—then the left subtree of the left subtree remains
+the same, but we make its right subtree the join of its right subtree
+and the right subtree. The right subtree case is symmetric.
+
+For example, suppose we want to remove D from this tree:
+
+      __D__
+     /     \
+    B       F
+   / \     / \
+  A   C   E   G
+
+We then have to join the two subtrees:
+
+    B       F
+   / \  +  / \
+  A   C   E   G
+
+Suppose we randomly select the tree rooted at F to replace D. Then we
+recursively replace E, the left subtree of F, with the join of subtrees
+B and E:
+
+       ___F___
+      /       \
+    B + E      G
+   / \
+  A   C
+
+Note that everything remains ordered.
+|#
+
 ;; RandNumTree RandNumTree -> RandNumTree
 ;; Joins two trees, assuming all the keys of the first are less than
 ;; all the keys of the second.
