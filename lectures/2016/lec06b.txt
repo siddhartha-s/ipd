@@ -1,0 +1,80 @@
+BANKER’S QUEUE
+--------------
+
+Previously we saw two ISL representations of a queue (FIFO):
+
+  - The forward list representation, where the head is the first element
+    of a list.
+
+  - The backward list representation, where the head is the last element
+    of a list.
+
+We saw that for the former, enqueuing is a linear time operation,
+whereas for the latter, dequeuing takes linear time in the number of
+elements in the queue.
+
+Can we do better?
+
+(One way to do better is to use *mutation*, which we’re saving for
+later.)
+
+  - The banker’s queue representation, in which we keep a pair of lists,
+    `front` and `back`, where the queue in order (like forward list
+    representation) is (append front (reverse back)).
+
+IOW, the head of the queue is either the first of `front`, or if `front`
+is empty, the last of `back`.
+
+Let’s implement the queue ADT operations for the banker’s queue
+representation.
+
+  (define-struct bq [front back])
+
+  (define empty-bq (make-bq '() '()))
+
+  (define (empty-queue q)
+    (and (empty? (bq-front q)) (empty? (bq-back q))))
+
+  (define (enqueue q x)
+    (make-bq (bq-front q) (cons x (bq-back q))))
+
+  (define (dequeue q)
+    (cond
+      [(cons? (bq-front q))
+       (make-bq (rest (bq-front q)) (bq-back q))]
+      [else
+       (make-bq (rest (reverse (bq-back q))) '())]))
+;; Why not
+;;     (make-bq '() (reverse (rest (reverse (bq-back q)))))
+;; ?
+
+  (define (get-head q)
+    (cond
+      [(cons? (bq-front q))
+       (first (bq-front q))]
+      [else
+       (first (reverse (bq-last q)))]))
+
+What’s the time complexity of our queue operations?
+
+Well, `enqueue` just does a cons and make-bq, each of which is O(1), so
+`enqueue` is O(1). But both `dequeue` and `get-head` occasionally have
+to reverse a list, making them O((bq-back q)).
+
+For our analysis, we make two assumptions:
+
+  - The queue is treated linearly, in the sense that we never look at
+    old versions of it. Every time we change it with a queue operation,
+    we use that new queue going forward.
+
+  - We always use `get-head` and `dequeue` in tandem. That is, when we
+    observe the head of the queue, we also discard it from the queue.
+
+(Are these realistic assumptions? Consider graph BFS.)
+
+Then we can show that while some individual queue operations are linear
+time, any sequence of k queue operations is just O(k), not O(k^2). This
+is because each list node, by the linearity condition, is subject to
+reversal at most twice (once for get-head and once for dequeue). In k
+steps we can enqueue at most k element, which means we can take at most
+2k reversal steps.
