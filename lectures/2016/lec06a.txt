@@ -17,7 +17,7 @@ example, let’s consider the operations of a FIFO queue, abstractly:
 
   Operations:
 
-    - empty? : Queue -> Boolean
+    - empty-queue? : Queue -> Boolean
       Determines whether the queue is empty
 
     - enqueue : Element Queue -> Queue
@@ -32,8 +32,8 @@ example, let’s consider the operations of a FIFO queue, abstractly:
 
     Laws:
 
-      (empty? ««) => #true
-      (empty? «a ...«) => #false
+      (empty-queue? ««) => #true
+      (empty-queue? «a ...«) => #false
 
       (enqueue «a0 ...« b) => «a0 ... b«
 
@@ -69,7 +69,7 @@ Consider this ADT:
 
   Operations:
 
-    - empty? : Stack -> Boolean
+    - empty-stack? : Stack -> Boolean
       Determines whether the stack is empty
 
     - push : Element Stack -> Stack
@@ -84,8 +84,8 @@ Consider this ADT:
 
     Laws:
 
-      (empty? |») => #true
-      (empty? |a ...») => #false
+      (empty-stack? |») => #true
+      (empty-stack? |a ...») => #false
 
       (push |a0 ...» b) => |a0 ... b»
 
