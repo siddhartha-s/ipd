@@ -16,7 +16,7 @@
    Click "Web" in the top of the resulting dialog and
    paste this into the dialog:
 
-http://users.eecs.northwestern.edu/~jesse/course/eecs495ipd-fa16/nwu-ipd-2016.plt
+http://users.eecs.northwestern.edu/~jesse/course/ipd-fa16/nwu-ipd-2016.plt
 
    Hit OK and wait until the "Close" button is enabled.
    Click it and restart DrRacket.
