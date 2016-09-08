@@ -1,30 +1,27 @@
-[BSL]
-*09/20: welcome (J); the algebras of images and strings (J); big bang (J)
-*09/22: structures (J); enumerations (J); itemizations of every kind (J)
- 09/27: linked lists (R); asymptotic analysis (R)
-[ISL]
- 09/29: abstracting fns (R); list abstractions (R); polymorphism (R)
- 10/04: filesystem trees (R); invariants (R); AVL trees (R)
- 10/06: ADTs (stacks and queues) (J); banker’s queues (J); random BSTs (J)
-[ISL+]
- 10/11: binomial heap (R); generative recursion (R); sorting (R)
- 10/13: accumulators (R); nats (R); graph representations (R)
-[DSSL]
- 10/18: laziness/streams (R); state, vectors (R)
- 10/20: graph search (J); Bellman–Ford algorithm (J); Dijkstra’s algorithm (J)
- 10/25: union-find (J); Kruskal’s algorithm (J); slack
-[C++]
- 10/27: welcome to C++ (J); structs and functions (J); vectors (J)
-*11/01: Exam
-*11/03: classes and data hiding (J); union-find, again (J); a graph class (J)
- 11/08: Dijkstra’s algorithm (R); binary heap (R); making the heap generic (R)
- 11/10: hashing (R); vector hash table (R); open-addressing hash table (R)
- 11/15: Bloom filter (J); memory and pointers (J); linked list queue (J)
- 11/17: doubly-linked list deque (R); binary search tree (R); Huffman (R)
- 11/22: binomial heap (R); final project discussion
+    [BSL]
+01 *09/20: welcome (J); the algebras of images and strings (J); big bang (J)
+02 *09/22: structures (J); enumerations (J); itemizations of every kind (J)
+03  09/27: linked lists (R); asymptotic analysis (R)
+    [ISL]
+04  09/29: abstracting fns (R); list abstractions (R); polymorphism (R)
+05  10/04: filesystem trees (R); invariants (R); AVL trees (R)
+06  10/06: ADTs (stacks and queues) (J); banker’s queues (J); random BSTs (J)
+    [ISL+]
+07  10/11: binomial heap (R); generative recursion (R); sorting (R)
+08  10/13: accumulators (R); nats (R); graph representations (R)
+    [DSSL]
+09  10/18: laziness/streams (R); state, vectors (R)
+10  10/20: graph search (J); Bellman–Ford and Dijkstra’s algorithms (J)
+11  10/25: union-find (J); Kruskal’s algorithm (J); slack
+    [C++]
+12  10/27: welcome to C++ (J); structs and functions (J); vectors (J)
+   *11/01: Exam
+13 *11/03: classes and data hiding (J); union-find, again (J); a graph class (J)
+14  11/08: Dijkstra’s algorithm (R); binary heap (R); making heap generic (R)
+15  11/10: hashing (R); vector hash table (R); open-addressing hash table (R)
+16  11/15: Bloom filter (J); memory and pointers (J); linked list queue (J)
+17  11/17: doubly-linked list deque (R); binary search tree (R); Huffman (R)
+18  11/22: binomial heap (R); final project discussion
  11/24: – Thanksgiving —
- 11/29: object-oriented graphics library (J)
- 12/01: ISL+λ interpreter (R)
- 
-
-
+19  11/29: object-oriented graphics library (J)
+20  12/01: ISL+λ interpreter (R)
