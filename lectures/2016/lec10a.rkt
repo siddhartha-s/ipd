@@ -10,7 +10,7 @@
 ; of its successors.
 (define-struct graph (nodes succs))
 
-(define GRAPH-0
+(define A-GRAPH
   (make-graph 7
               (lambda (node)
                 (case node
@@ -49,13 +49,13 @@
   (visit start-node)
   result)
 
-(check-expect (dfs GRAPH-0 0)
+(check-expect (dfs A-GRAPH 0)
               (vector #t 0 3 1 3 4 #f))
-(check-expect (dfs GRAPH-0 1)
+(check-expect (dfs A-GRAPH 1)
               (vector 2 #t 3 1 3 4 #f))
-(check-expect (dfs GRAPH-0 5)
+(check-expect (dfs A-GRAPH 5)
               (vector #f #f #f #f #f #t #f))
-(check-expect (dfs GRAPH-0 6)
+(check-expect (dfs A-GRAPH 6)
               (vector 1 3 0 6 3 4 #t))
 
 ;; We can generalize graph search as follows. Given a graph, start with
@@ -149,17 +149,17 @@
         (first new-front)]))))
 
 ;; DFS:
-(check-expect (generic-search *STACK* GRAPH-0 0)
+(check-expect (generic-search *STACK* A-GRAPH 0)
               (vector #t 0 0 0 3 4 #f))
-(check-expect (generic-search *STACK* GRAPH-0 5)
+(check-expect (generic-search *STACK* A-GRAPH 5)
               (vector #f #f #f #f #f #t #f))
-(check-expect (generic-search *STACK* GRAPH-0 6)
+(check-expect (generic-search *STACK* A-GRAPH 6)
               (vector 2 3 3 6 6 4 #true))
 
 ;; BFS:
-(check-expect (generic-search *BANKERS-QUEUE* GRAPH-0 0)
+(check-expect (generic-search *BANKERS-QUEUE* A-GRAPH 0)
               (vector #t 0 0 0 1 4 #f))
-(check-expect (generic-search *STACK* GRAPH-0 5)
+(check-expect (generic-search *STACK* A-GRAPH 5)
               (vector #f #f #f #f #f #t #f))
-(check-expect (generic-search *BANKERS-QUEUE* GRAPH-0 6)
+(check-expect (generic-search *BANKERS-QUEUE* A-GRAPH 6)
               (vector 1 3 3 6 6 4 #t))
