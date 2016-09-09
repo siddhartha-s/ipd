@@ -22,7 +22,7 @@
                   [(5) '()]
                   [(6) '(3 4)]))))
 
-; A SearchTree is [Vector-of (Or Nat Bool)]
+; A SearchTree is [Vector-of [Or Nat Bool]]
 ; where for each node n, the nth element is the parent node of node n;
 ; the value for the root is #true, and the value for unreachable nodes is
 ; #false.
@@ -44,39 +44,44 @@
       (when (false? (vector-ref result succ))
         (vector-set! result succ node)
         (visit succ))))
-  
+
   (vector-set! result start-node #true)
   (visit start-node)
   result)
 
 (check-expect (dfs GRAPH-0 0)
               (vector #t 0 3 1 3 4 #f))
+(check-expect (dfs GRAPH-0 1)
+              (vector 2 #t 3 1 3 4 #f))
+(check-expect (dfs GRAPH-0 5)
+              (vector #f #f #f #f #f #t #f))
 (check-expect (dfs GRAPH-0 6)
               (vector 1 3 0 6 3 4 #t))
 
-;; We can generalize graph search as follows. Given a graph, start with an empty
-;; to-do list and empty search tree. Add the given starting node to the to-do
-;; list. Then repeat so long as the to-do list is non-empty: Remove a node n
-;; (any node) from the to-do list and examine each of its successors. If
-;; successor s has not been seen according to the search tree, then record n as
-;; s's predecessor in the search tree and add s to the to-do list.
+;; We can generalize graph search as follows. Given a graph, start with
+;; an empty to-do list and empty search tree. Add the given starting
+;; node to the to-do list. Then repeat so long as the to-do list is
+;; non-empty: Remove a node n (any node) from the to-do list and examine
+;; each of its successors. If successor s has not been seen according to
+;; the search tree, then record n as s's predecessor in the search tree
+;; and add s to the to-do list.
 
-;; To implement this algorithm we need a data structure to serve as the to-do
-;; list. We can partially specify the requirements as an ADT:
+;; To implement this algorithm we need a data structure to serve as the
+;; to-do list. We can partially specify the requirements as an ADT:
 
-; Container ADT:
-;  - empty : -> Container
-;  - empty? : Container -> Bool
-;  - add! : Container Element -> Void
-;  - remove! : Container -> Element
+;; Container ADT:
+;;  - empty : -> Container
+;;  - empty? : Container -> Bool
+;;  - add! : Container Element -> Void
+;;  - remove! : Container -> Element
 
-;; Different container implementations will remove nodes in different orders,
-;; yielding different kinds of graph searches.
+;; Different container implementations will remove nodes in different
+;; orders, yielding different kinds of graph searches.
 
-;; We can write our search in a generic way, where we don’t specify ahead of
-;; time what kind of container to use for the to-do list. To do this, we
-;; make a structure that holds functions for all the container ADT operations,
-;; and then pass that structure to the search function.
+;; We can write our search in a generic way, where we don’t specify
+;; ahead of time what kind of container to use for the to-do list. To do
+;; this, we make a structure that holds functions for all the container
+;; ADT operations, and then pass that structure to the search function.
 
 ; A [*CONTAINER-OF* X] is (for some Repr)
 ;  (make-container [-> Repr]
