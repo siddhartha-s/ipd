@@ -1,0 +1,69 @@
+Minimum Spanning Tree
+---------------------
+
+Given an undirected, connected graph, a spanning tree is some minimal
+subset of the edges such that all the vertices are still connected. (Or
+if a graph isn’t connected then each connected component has a spanning
+tree, and together they form a spanning forest.)
+
+How many edges will a spanning tree have?
+
+If our graph is weighted, then each possible spanning tree has a total
+weight. Minimizing that weight gives us a *minimum spanning tree* (MST).
+
+How can we compute the MST of a weighted graph?
+
+Two main algorithms:
+
+  - Prim’s: The result will be a tree. Start by adding one vertex to the
+    tree. (If the graph is connected, it doesn’t matter which vertex; if
+    it is, we will find the MST for the component containing the chosen
+    vertex.) Repeat until all (reachable) vertices are in the tree:
+    Consider the edges incident on the tree, starting with the smallest.
+    If it connects to a vertex already in the tree, discard it;
+    otherwise add it to the tree, then adding the edges incident on the
+    newly reached vertex into consideration.
+
+  - Kruskal’s: The result will be a forest. Start with the discrete
+    forest. Now consider all the graph’s edges in order by
+    weight, smallest to largest. For each edge, if it would connect to
+    previously disconnected trees, add it to the MSF; but if it would
+    produce a cycle—a redundant connection—don’t add it.
+
+What’s the time complexity of each of these algorithms?
+
+It depends on how long the various operations take:
+
+  - For Prim’s algorithm needs to maintain a set of edges ordered by
+    weight, so it needs a priority queue. It will add and remove each
+    edge once, so if each of those operations is O(log n) [as in what
+    data structure?], then the algorithm takes O(E log E) [assuming the
+    vertex set operations are contant time, which they should be].
+
+  - For Kruskal’s algorithm, we need to consider the edges in order by
+    weight, so we need to sort them O(E log E), and then we need to keep
+    track of which vertices have been connected so far. How can we do
+    that? I claim the most naive solution will be O(E) for each edge
+    we consider, since that’s how long a DFS will take to discover if
+    two nodes in the forest we are building are connected. This yields a
+    total time complexity of O(E² + E log E) = O(E²).
+
+We can do better that O(E²) by maintaining an auxiliary data structure
+to keep track of which vertices are in the same tree. Think of it as
+having all the vertices in disjoint sets. We start with each in its own
+set, and then we can union two sets to combine their elements into one.
+There’s an ADT for this:
+
+Union-Find ADT
+
+  - new-uf : Nat -> UnionFind
+    Creates a new disjoint set structure for the given number of
+    vertices.
+
+  - union! : UnionFind Nat Nat -> Void
+    Joins together the sets containing the given vertices.
+
+  - same-set? : UnionFind Nat Nat -> Bool
+    Determines whether two vertices are in the same set.
+
+How might we implement this efficiently?

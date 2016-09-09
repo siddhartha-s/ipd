@@ -1,0 +1,124 @@
+Implementing Union-Find
+-----------------------
+
+Union-Find ADT
+
+  - new-uf : Nat -> UnionFind
+    Creates a new disjoint set structure for the given number of
+    vertices.
+
+  - union! : UnionFind Nat Nat -> Void
+    Joins together the sets containing the given vertices.
+
+  - same-set? : UnionFind Nat Nat -> Bool
+    Determines whether two vertices are in the same set.
+
+How might we implement this efficiently? We’re going to pursue a set of
+approaches the consider each disjoint set to have some distinguished
+“ID” element that is chosen arbitrarily from its elements. Then we add
+an operation:
+
+  - find : UnionFind Nat -> Nat
+    For any vertex, gives back its ID element.
+
+Then
+
+  (define (same-set? uf u v)
+    (= (find uf u) (find uf v)))
+
+How might we implement these efficiently?
+
+Solution 1: Eager (quick find)
+
+Keep a vector of size |V|, where each element gives the set number of
+the corresponding vertex, where the set number is the number of an
+arbitrary vertex in the set. So find is easy. How about union!? (O(V).
+How?)
+
+This is too slow: O(VE) for |E| unions on |V| objects.
+
+Solution 2: Lazy (quick union!)
+
+Keep a vector `id` of size |V| representing a parent-pointer forest of
+vertices. That is, this forest (representing two disjoint sets)
+
+      0         5
+    / | \       |
+    2 3 6       1
+        |
+        4
+
+would be represented with this array:
+
+  id = (vector 0 5 0 0 6 5 0)
+
+Each root lists itself, and each non-root lists its parent.
+
+The ID of any vertex v is given by the fixpoint of id:
+
+  id[id[ ... id[v] ... ]] until it stops changing
+
+(V[M] is syntactic sugar for (vector-ref V M).)
+
+To union u and v, set id[(find u)] to be id[(find v)].
+
+         5
+       /   \
+      0    1
+    / | \
+    2 3 6
+        |
+        4
+
+Problem: trees can get tall, so find is expensive; and need to do find
+to do union!, so union! is expensive too.
+
+Solution 3: Weighting (weighted quick union)
+
+To the previous solution add a second vector that keeps track of the
+size of each tree. Initialize it to all 1s, and then whenever you
+union!, link the smaller tree below the larger one, updating the larger
+one’s weight.
+
+
+   (w = 5)   (w = 2)
+
+      0         5
+    / | \       |
+    2 3 6       1
+        |
+        4
+
+      0
+   / / \ \
+   2 3 6 5
+       | |
+       4 1
+
+This will tend to make trees wider rather than taller. How much? Depth
+is at most lg V. (How can we prove this?) So find is O(log V), and
+Kruskal’s algorithm is O(E log E).
+
+But we can do slightly better...
+
+Solution 4: Path compression (WQUPC)
+
+Whenever you find the root of a vertex, update id for all vertices along
+the path just traversed to point directly to the vertex. This takes no
+longer (asymptotically) than just doing the find, but it prevents having
+to retraverse the path again in the future. This keeps the tree almost
+completely flat, and result in amortized O(log* V) time for each
+operation.
+
+SUMMARY
+
+Time for |E| operations on |V| vertices:
+
+  Quick find     O(EV)
+  Quick union!   O(EV)
+  Weighted QU    O(V + E log V)
+  WQUPC          O((V + E) log* V)
+
+Note that log* is nearly constant.
+
+(Some sources claim α [inverse Ackermann] instead of log*.)
