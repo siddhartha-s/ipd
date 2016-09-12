@@ -17,7 +17,7 @@
 12  10/27: welcome to C++ (J); structs and functions (J); vectors (J)
    *11/01: Exam
 13 *11/03: classes and data hiding (J); union-find, again (J); a graph class (J)
-14  11/08: Dijkstra’s algorithm (R); binary heap (R); making heap generic (R)
+14  11/08: Dijkstra’s algorithm (J); binary heap (J); making heap generic (J)
 15  11/10: hashing (R); vector hash table (R); open-addressing hash table (R)
 16  11/15: Bloom filter (J); memory and pointers (J); linked list queue (J)
 17  11/17: doubly-linked list deque (R); binary search tree (R); Huffman (R)
