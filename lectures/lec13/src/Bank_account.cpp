@@ -26,6 +26,7 @@ void Bank_account::change_owner(const std::string& s)
 
 void Bank_account::deposit(unsigned int amount)
 {
+    // This can overflow!
     balance_ += amount;
 }
 
