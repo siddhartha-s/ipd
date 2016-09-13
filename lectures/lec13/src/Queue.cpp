@@ -1,7 +1,5 @@
 #include "Queue.h"
 
-Queue::Queue() { }
-
 void Queue::enqueue(const std::string& s)
 {
     back.push_back(s);

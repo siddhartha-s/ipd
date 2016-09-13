@@ -9,9 +9,6 @@ class Stack
 public:
     using element_t = double;
 
-    // Creates a new, empty stack.
-    Stack();
-
     // Pushes an element on top of the stack.
     void push(element_t);
 

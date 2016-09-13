@@ -2,9 +2,6 @@
 
 #include <stdexcept>
 
-Stack::Stack()
-{ }
-
 void Stack::push(element_t elt)
 {
     elements_.push_back(elt);

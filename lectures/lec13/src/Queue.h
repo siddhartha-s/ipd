@@ -8,9 +8,6 @@
 class Queue
 {
 public:
-    // Constructs a new, empty queue.
-    Queue();
-
     // Enqueues a string to the end of the queue.
     void enqueue(const std::string&);
 
