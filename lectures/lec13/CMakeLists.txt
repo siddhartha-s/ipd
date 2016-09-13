@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.3)
 project(mst CXX)
 include(.ipd/CMakeLists.txt)
 
+add_test_program(acct_test
+        test/acct_test.cpp src/Bank_account.h src/Bank_account.cpp)
 add_test_program(stack_test
         test/stack_test.cpp src/Stack.h src/Stack.cpp)
 add_test_program(queue_test
