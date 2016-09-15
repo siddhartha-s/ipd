@@ -230,8 +230,8 @@ those two forms of equality?
 (define (intentionally-equal? c1 c2)
   (local [(define c1-val (count-num c1))
           (define c2-val (count-num c2))]
-    (set-count-num! c1 (+ c1-val c2-val 1))
-    (local [(define answer (= (count-num c2) (+ c1-val c2-val 1)))]
+    (set-count-num! c1 (+ (max c1-val c2-val) 1))
+    (local [(define answer (= (count-num c2) (+ (max c1-val c2-val) 1)))]
       (set-count-num! c1 c1-val)
       answer)))
 --------------------------------------------------
