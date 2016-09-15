@@ -1,0 +1,294 @@
+Functions are not Elephants
+===========================
+
+Up until now, any function that we wrote always returns the same
+answer if it gets the same inputs. Indeed, it always runs exactly the
+same computational steps to get that same answer, no matter how many
+times we call it.
+
+Do all programming languages behave this way? NO.
+
+What we've done so far is program with immutable values. This is also
+called "pure"; we've programmed in a pure programming language. There
+are many advantages to this kind of programming: it is easier to
+understand in a very technical sense: there are fewer things that can
+happen. If you want to figure out what a function does, you don't have
+to worry about the history of calls to it. Which is a lot less to
+worry about in general!
+
+But, of course, all "real" programming languages have mutable
+values. That is, you can program in a *state*ful way.
+
+So we're going to introduce stateful, or imperative programming now.
+
+How many of you can write a function that accepts a number and returns
+the sum of all of the arguments it has ever received? Lets try to do
+that in DSSL.
+
+In DSSL, the only thing we are going to mutate are struct fields. So
+in order to have any memory of anything, we have to put that thing
+into a struct.
+
+--------------------------------------------------
+#lang dssl
+
+(define-struct count (num))
+(define the-count (make-count 0))
+
+(define (sum-args x)
+  (set-count-num! the-count (+ x (count-num the-count)))
+  (count-num the-count))
+
+(sum-args 1)
+(sum-args 2)
+(sum-args 3)
+(sum-args 4)
+(sum-args 5)
+--------------------------------------------------
+
+There are two new things here:
+
+1) set-count-num! -- this is the operator that changes a struct,
+updating its num field (in this case). The actual mutation is wrapped
+up into a convenient little function in DSSL. The function accepts the
+`count` struct to mutate and the new value of the `num` field. It then
+mutates it, and returns nothing.
+
+2) sequencing -- now that we are changing things, we wish to take
+multiple steps before computing some result value. So in the body of a
+function (and in the branches of a `cond` and in a few other places)
+if we put multiple expressions, the language just runs all of them and
+then evaluates to the value of the last one.
+
+Here is another program. Can you tell me what it does?
+
+--------------------------------------------------
+#lang dssl
+
+(define-struct count (num))
+
+(define (f a b)
+  (set-count-num! a (* 2 (count-num b))))
+
+(define a-count (make-count 2))
+(define another-count (make-count 3))
+(define a-third-count (make-count 4))
+
+(f a-count another-count)
+(f another-count a-count)
+(f a-third-count another-count)
+--------------------------------------------------
+
+a-count ==> 6 inside
+another-count ==> 12 inside
+a-third-count ==> 24 inside
+
+Here's a challenge: without using any arithmetic operators and using
+only the number zero, can you make a call to this function that
+returns 12345?
+
+--------------------------------------------------
+#lang dssl
+
+(define-struct count (num))
+
+(define (f a b)
+  (set-count-num! a 12345)
+  (count-num b))
+--------------------------------------------------
+
+Does this work:
+
+   (f (make-count 0) (make-count 0))
+
+No. How about this?
+
+   (define the-count (make-count 0))
+   (f the-count the-count)
+
+what is going on here? In the past, we said that you could always
+replace global variables with their values and, indeed, that's how
+computation proceeds. But clearly if you take the second program and
+do that, you get the first one. But they produce different results!
+
+This is, in some sense, the essence of why mutation is complex and why
+we postponed talking about it until now. To understand mutation of
+objects, you really must understand a different notion of
+"same"ness. Two different structs / values are the same if they
+contain the same elements but also the same 
+
+If I show you a book and then I take it away and I show you another
+book, can you tell if the two books are the same book? You could use
+your phone to take a picture of each page and then check the second
+one against each page. That would tell you if they were the same book
+in some sense. But maybe it is another copy of that book and not the
+same book. How can you tell that?
+
+Right: you change the book by writing your special secret mark on page
+42 and then when I give you the book later, you check to see if your
+mark is on page 42.
+
+That is the same thing with these structs. We have two different
+notions of "the same struct" now. Before we had only one. But now that
+we can mutate particular structs, we have two different notions of
+what it means to be "the same struct".
+
+It is time to talk about semantics. What is the right way to figure
+out how these programs run?
+
+The way we do that is to change the way constructors work. We used to
+say that:
+
+   (make-count 1)
+
+was a value. But now it isn't anymore. Instead, there is a step of
+computation associated with it. Each time we encounter a call to a
+constructor that has all values as arguments, we lift it out to the
+top of the program in its own special define and give it a special
+kind of name. I'll use a suffix ^ to indicate these names. The idea
+with this is that these names are different than other names we might
+write in the program so there can never be an overlap with them. Then,
+those names become the values. So: if we have this program:
+
+
+(define x (make-count 1))
+(set-count-num! x 2)
+(count-num x)
+
+==> it steps first to this; we call this the "allocation" step.
+
+(define x^ (make-count 1))
+(define x x^)
+(set-count-num! x 2)
+(count-num x)
+
+==> now, we treat x^ as a value, so the next step is to look up x.
+
+(define x^ (make-count 1))
+(define x x^)
+(set-count-num! x^ 2)
+(count-num x)
+
+==>  then we can do the set! operation; it needs a "hat" variable
+     as its first argument; we modify the definition to
+     account for the mutation
+
+(define x^ (make-count 2))
+(define x x^)
+(count-num x)
+
+==>  now we look up "x" a second time, and we still get x^:
+
+(define x^ (make-count 2))
+(define x x^)
+(count-num x^)
+
+==>  and struct selectors now operate on "hat" variables too.
+
+(define x^ (make-count 2))
+(define x x^)
+2
+
+
+Importantly, these "hat" variable are bound only to structs, since
+structs are the only things that we mutate.
+
+Have you heard of "the heap" before? That's what we're doing here. The
+set of definitions at the top of the program that bind the hat
+variables *is* the heap. In a "real" heap, we don't use variables to
+track the values, we use addresses (i.e., numbers). But you don't
+usually program directly with these numbers (adding them or
+multiplying them); instead you think of them as opaque, just as we'll
+do here.
+
+Using mutation, it now possible to create cyclic structures, something
+that we could not have done before. Check out this program:
+
+--------------------------------------------------
+#lang dssl
+
+;; a linked-list is either:
+;;   (make-link number linked-list)
+;;   #false
+(define-struct link (num next))
+
+(define a (make-link 0 #false))
+(define b (make-link 1 #false))
+(define c (make-link 2 #false))
+(define d (make-link 3 #false))
+
+(set-link-next! a b)
+(set-link-next! b c)
+(set-link-next! c d)
+
+a
+--------------------------------------------------
+
+No cycles yet, right? But what happens if I add this line:
+
+  (set-link-next! d a)
+  
+to the program?
+
+Will this print out? What will happen?
+
+What happens if I try to write a function that will sum up the
+elements in the list after making that cyclic link? Lets try it.
+
+--------------------------------------------------
+;; sum : linked-list -> number
+;; computes the sum of the numbers in `l`
+(define (sum l)
+  (cond
+    [(false? l) 0]
+    [else (+ (link-num l) (sum (link-next l)))]))
+
+(check-expect (sum a) +inf.0)
+--------------------------------------------------
+
+It loops! And runs out of memory! Why? Well, lets try hand evaluation
+with this program to see.
+
+(define a^ (make-link 0 b^))
+(define b^ (make-link 0 c^))
+(define c^ (make-link 0 d^))
+(define d^ (make-link 0 a^))
+
+(sum a^)
+=
+(+ 0 (sum b^))
+=
+(+ 0 (+ 1 (sum c^)))
+=
+(+ 0 (+ 1 (+ 2 (sum d^))))
+=
+(+ 0 (+ 1 (+ 2 (+ 3 (sum a^)))))
+
+ ... uh oh.
+
+Is this fixable? Is there a way we can tell that we've gotten back to
+a place we started from?
+
+Recall we talked about different notions of equality earlier? If we
+had an accumulator that had all the places we've been in it and we use
+that other notion of equality, then we could solve this problem, right?
+
+Lets try it. But first, one note about design.
+
+Lets talk about design. When we write a mutable function, we should
+record what it mutates as part of the contract/purpose/header
+step. For example, this is the way to write the first mutation program
+we looked at:
+
+(define the-count (make-count 0))
+
+;; sum-args : number -> number
+;; EFFECT: mutates `the-count`'s `num` field, adding `x` to it.
+(define (sum-args x)
+  (set-count-num! the-count (+ x (count-num the-count)))
+  (count-num the-count))
+
+
+Okay, now try to implement something that sums up the numbers in a
+potentially cyclic list. Restrict the elements to integers and we can
+do 0, -inf.0 and +inf.0 for the sum.
