@@ -144,7 +144,7 @@ say that:
 was a value. But now it isn't anymore. Instead, there is a step of
 computation associated with it. Each time we encounter a call to a
 constructor that has all values as arguments, we lift it out to the
-top of the program in its own special define and give it a special
+top of the program in its own special area and give it a special
 kind of name. I'll use a suffix ^ to indicate these names. The idea
 with this is that these names are different than other names we might
 write in the program so there can never be an overlap with them. Then,
@@ -157,14 +157,14 @@ those names become the values. So: if we have this program:
 
 ==> it steps first to this; we call this the "allocation" step.
 
-(define x^ (make-count 1))
+x^ = (make-count 1)
 (define x x^)
 (set-count-num! x 2)
 (count-num x)
 
 ==> now, we treat x^ as a value, so the next step is to look up x.
 
-(define x^ (make-count 1))
+x^ = (make-count 1)
 (define x x^)
 (set-count-num! x^ 2)
 (count-num x)
@@ -173,19 +173,19 @@ those names become the values. So: if we have this program:
      as its first argument; we modify the definition to
      account for the mutation
 
-(define x^ (make-count 2))
+x^ = (make-count 2)
 (define x x^)
 (count-num x)
 
 ==>  now we look up "x" a second time, and we still get x^:
 
-(define x^ (make-count 2))
+x^ = (make-count 2)
 (define x x^)
 (count-num x^)
 
 ==>  and struct selectors now operate on "hat" variables too.
 
-(define x^ (make-count 2))
+x^ = (make-count 2)
 (define x x^)
 2
 
@@ -293,10 +293,10 @@ elements in the list after making that cyclic link? Lets try it.
 It loops! And runs out of memory! Why? Well, lets try hand evaluation
 with this program to see.
 
-(define a^ (make-link 0 b^))
-(define b^ (make-link 0 c^))
-(define c^ (make-link 0 d^))
-(define d^ (make-link 0 a^))
+ a^ = (make-link 0 b^)
+ b^ = (make-link 0 c^)
+ c^ = (make-link 0 d^)
+ d^ = (make-link 0 a^)
 
 (sum a^)
 =
