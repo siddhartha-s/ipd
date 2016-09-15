@@ -201,6 +201,50 @@ usually program directly with these numbers (adding them or
 multiplying them); instead you think of them as opaque, just as we'll
 do here.
 
+Getting back to our earlier discussion, can we implement
+those two forms of equality?
+
+--------------------------------------------------
+#lang dssl
+
+;; a count is (make-count number)
+(define-struct count (num))
+
+(define c1 (make-count 0))
+(define c2 (make-count 1))
+(define c3 (make-count 0))
+
+;; extensionally-equal? : count count -> boolean
+(check-expect (extensionally-equal? c1 c2) #false)
+(check-expect (extensionally-equal? c1 c3) #true)
+(check-expect (extensionally-equal? c1 c1) #true)
+(check-expect (extensionally-equal? c2 c2) #true)
+(define (extensionally-equal? c1 c2)
+  (= (count-num c1) (count-num c2)))
+
+;; intentionally-equal? : count count -> boolean
+(check-expect (intentionally-equal? c1 c2) #false)
+(check-expect (intentionally-equal? c1 c3) #false)
+(check-expect (intentionally-equal? c1 c1) #true)
+(check-expect (intentionally-equal? c2 c2) #true)
+(define (intentionally-equal? c1 c2)
+  (local [(define c1-val (count-num c1))
+          (define c2-val (count-num c2))]
+    (set-count-num! c1 (+ c1-val c2-val 1))
+    (local [(define answer (= (count-num c2) (+ c1-val c2-val 1)))]
+      (set-count-num! c1 c1-val)
+      answer)))
+--------------------------------------------------
+
+It turns out that it is possible to implement intentionally-equal?
+more efficiently (but still constant time) if you have access to
+lower-level representations. Racket provides this via the `eq?`
+function. (Roughly speaking, it compares the "names" of the
+variables in the heap or, if you know something about heaps,
+it compares the addresses.)
+
+==== cycles ======================================================
+
 Using mutation, it now possible to create cyclic structures, something
 that we could not have done before. Check out this program:
 
