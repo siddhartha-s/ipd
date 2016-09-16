@@ -49,12 +49,13 @@ SSSP_result dijkstraH(const WU_graph& graph, WU_graph::vertex start)
 
     while (!heap.empty()) {
         WU_graph::vertex v = heap.remove_min().v;
-        if (visited[v]) continue;
         visited[v] = true;
 
         for (WU_graph::vertex u : graph.get_neighbors(v)) {
-            if (relaxH(graph, result, v, u)) {
-                heap.insert({u, graph.get_edge(v, u)});
+            if (!visited[u]) {
+                if (relaxH(graph, result, v, u)) {
+                    heap.insert({u, graph.get_edge(v, u)});
+                }
             }
         }
     }
