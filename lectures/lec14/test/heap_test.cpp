@@ -21,6 +21,25 @@ TEST(Insert5Remove5)
     CHECK_EQUAL(8, h.remove_min());
 }
 
+TEST(InsertRemove)
+{
+    Heap<int> h;
+
+    h.insert(8);
+    h.insert(7);
+    CHECK_EQUAL(7, h.peek_min());
+    CHECK_EQUAL(7, h.remove_min());
+    h.insert(2);
+    h.insert(14);
+    CHECK_EQUAL(2, h.remove_min());
+    h.insert(20);
+    h.insert(1);
+    CHECK_EQUAL(1, h.remove_min());
+    CHECK_EQUAL(8, h.remove_min());
+    CHECK_EQUAL(14, h.remove_min());
+    CHECK_EQUAL(20, h.remove_min());
+}
+
 struct known_distance {
     WU_graph::vertex v;
     WU_graph::weight w;
