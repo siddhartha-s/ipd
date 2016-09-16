@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project(mst CXX)
+project(lec13 CXX)
 include(.ipd/CMakeLists.txt)
 
 add_test_program(acct_test
