@@ -99,7 +99,102 @@ provided we know how to order it. That is, instead of having a
 `Distance_heap`, we could have a `Heap<X>` for different `X`s, such as 
 `Heap<known_distance>` for Dijkstra. (This is like `[Heap-of X]` back in ISL.)
 
-We do this by making the class declaration into a template:
+First, let’s see a simpler example.
+
+### Generic `posn`
+
+We can declare a `posn` struct like in BSL, but unlike in BSL, we need to 
+declare types for the member variables (fields). We can have posns of ints, 
+and we can have posns of doubles, but we need to declare each separately, 
+right?:
+
+```
+struct int_posn
+{
+    int x;
+    int y;
+};
+
+struct double_posn
+{
+    double x;
+    double y;
+};
+```
+
+And then if we want operations, we have to implement them for each type:
+
+```
+double distance(const int_posn& p, const int_posn& q)
+{
+    int dx = p.x - q.x;
+    int dy = p.y - q.y;
+    return sqrt(dx*dx + dy*dy);
+}
+
+double distance(const double_posn& p, const double_posn& q)
+{
+    double dx = p.x - q.x;
+    double dy = p.y - q.y;
+    return sqrt(dx*dx + dy*dy);
+}
+```
+
+But we don’t actually have to do it twice, because C++ *templates* let us 
+abstract over types. We prefix a decaration with a line like this:
+
+```
+template <typename T>
+```
+
+And then we can use `T` as a type in the declaration:
+
+```
+template <typename T>
+struct posn
+{
+    T x;
+    T y;
+}
+```
+
+Now when we write `posn<SomeType>` we get the definition of `posn` with 
+`SomeType` substituted for `T`. It’s as if we wrote:
+
+```
+struct posn<int>
+{
+    int x;
+    int y;
+}
+```
+
+except now C++ automatically writes that for us when we refer to `posn<int>`.
+And if we refer to `posn<double>` then it generates the `double` version.
+
+In addition to generic structs/classes, we can write generic functions, using
+the same `template` syntax. For example:
+
+```
+template <typename T>
+double distance(const posn<T>& p, const posn<T>& q)
+{
+    T dx = p.x - q.x;
+    T dy = p.y - q.y;
+    return sqrt(dx*dx + dy*dy);
+}
+```
+
+This says that for any type `T`, `distance` is defined as above. Now, this 
+won’t actually work for just any type, because it makes some assumptions 
+about what you can do with a `T`. What assumptions does it make?
+
+(That you can subtract, multiple, add, and square root them, and that the 
+square root is or coerces to a `double`.)
+
+### Generic heap
+
+Here’s how we templatize the `Heap` class:
 
 ```
 template <typename Element>

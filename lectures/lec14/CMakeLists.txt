@@ -12,3 +12,6 @@ add_test_program(heap_test
         test/heap_test.cpp
         src/Heap.h
         src/WU_graph.h src/WU_graph.cpp)
+add_test_program(posn_test
+        test/posn_test.cpp
+        src/posn.h)
