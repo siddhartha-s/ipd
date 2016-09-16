@@ -2,6 +2,158 @@
 
 ## Part 1: Classes and privacy
 
+### Queue example
+
+Earlier, we learned how two stacks can be used to represent a queue. We can 
+do this in C++, using a pair of vectors (since STL vector operations include 
+`push_back` and `pop_back` to add to and remove from the end of the vector).
+We can group the two vectors together in a struct:
+
+```
+struct Queue
+{
+    std::vector<std::string> front;
+    std::vector<std::string> back;
+};
+```
+
+And we can implement the queue operations using the struct:
+
+```
+void enqueue(Queue& q, const std::string& element)
+{
+    q.back.push_back(element);
+}
+
+std::string dequeue(Queue& q)
+{
+    if (q.front.empty()) {
+        if (q.back.empty())
+            throw std::logic_error("pop(Queue&): empty queue");
+            
+        while (!q.back.empty()) {
+            q.front.push(q.back.back());
+            q.back.pop_back();
+        }
+    }
+        
+    std::string result = front.back();
+    front.pop_back();
+    return result;
+}
+
+bool empty(const Queue& q) {
+    return q.front.empty() && q.back.empty();
+}
+```
+
+This works well enough—it’s how you’d do it in C—but it’s vulnerable to 
+abuse. There’s no guarantee that all code will use it as a queue, because any
+code that has access to a `Queue` can see that it’s made of two vectors, and 
+can manipulate those vectors directly. For example, suppose you have some 
+code that wants to empty a queue:
+
+```
+    while (!empty(q)) pop(q);
+```
+
+Knowing that the queue is actually two vectors, you realize that you can clear 
+the queue faster this way:
+
+```
+    q.front.clear();
+    q.back.clear();
+```
+
+Now the code that uses the queue depends on it being that particular 
+representation. But a queue is an abstract data type with multiple possible 
+implementations. If later we decide we want to use a different 
+representation for the queue, such as a ring buffer, we have to go find all 
+the places in our code that rely on the old queue representation and rewrite 
+them.
+
+Our lives would be easier if we had more modularity: a clear separation between 
+the implementation of the queue, and the client code that depends on the queue. 
+Then we could change how the queue works however we like, and provided it 
+still acts like the Queue ADT, client code will be satisfied. As an added 
+benefit, using the queue becomes simplified, because you never have to 
+reason about representation.
+
+How do we do it? We make `Queue` a `class`, and the operations of its 
+interface become *member functions*. These are functions that are declared 
+inside a class, just like data members are variables declared inside a class.
+Here is the queue class declaration (from `src/Queue.h`):
+
+```
+class Queue
+{
+public:
+    void enqueue(const std::string&);
+    std::string dequeue();
+    size_t size() const;
+
+private:
+    std::vector<std::string> front;
+    std::vector<std::string> back;
+};
+```
+
+Notice that the members of the class are separated into two sections (there 
+can be more). The public section lists the operations that clients will use 
+to interact with a queue; the private section lists the internal 
+implementation of the queue, which clients are not allowed to see. That is, 
+given a `Queue` variable `q`, all code can access the public members like
+`q.size()`, but `q.front` and `q.back` are inaccessible to all code except the 
+member functions of `Queue`.
+
+The member functions are implemented in `src/Queue.cpp`. Here, for example, 
+is the implementation of `Queue::size()` (meaning class `Queue`’s member 
+function `size`):
+
+```
+size_t Queue::size() const
+{
+    return front.size() + back.size();
+}
+```
+
+To call a member function, you need an object of the given type. For example,
+to call `Queue::size`, you need a `Queue`. When `size` is called, as `q.size()`,
+it gets access to the queue that it is called on. And from within the member 
+function, the names of other members (both data and function members) refer 
+to the members of the same queue object on which it was called.
+
+That is, suppose we make two `Queue objects`:
+
+```
+    Queue q1;
+    q1.enqueue("a");
+    
+    Queue q2;
+    q2.enqueue("b");
+    q2.enqueue("c");
+```
+
+When we call `size` on `q1`, then within `size`, `front` and `back` refer to 
+`q1.front` and `q1.back`, respectively:
+
+```
+    CHECK_EQUAL(1, q1.size());
+```
+
+And when we call `q2.size()`, the unqualified member names refer to members 
+of `q2`:
+
+```
+    CHECK_EQUAL(2, q2.size());
+```
+
+Notice the word `const` after the parameter parentheses on the first line? 
+That means that this function doesn’t change the object that it is called on.
+So when you say `q.size()` you know that `q` won’t change as a result.
+
+See `src/Queue.cpp` for the rest of the queue implementation.
+
 ### Bank account example
 
 Suppose we want to represent a bank account, with an account number, and 
@@ -189,9 +341,9 @@ directly. Instead, they restrict us to particular ways of changing the balance.
 In more complex classes, the ways that the state can change will be even more
 restricted.
 
-### Stack and queue examples
+### Stack exercise
 
-As a second example of a class using data hiding, see `src/Stack.h` and 
+As a third example of a class using data hiding, see `src/Stack.h` and 
 `src/Stack.cpp`. These files declare and define a `Stack` class for 
 representing LIFO stacks of `double`s. The `Stack` class encapsulates the 
 Stack ADT, by providing us with members for manipulating the stack via its 
@@ -200,12 +352,6 @@ representation. Privately, we can see that the stack is represented using a
 `std::vector<double>` to store its elements, but from outside the class, 
 non-member functions cannot get at the vector directly. They can only access 
 it via the public member functions that allow using it like a stack.
-
-Files `src/Queue.h` and `src/Queue.cpp` give a third example of a class, 
-similar to the second. They use the banker’s queue representation of a FIFO 
-queue, though again the representation is hidden, and there’s no way to get 
-at the underlying vectors except via the `enqueue` and `dequeue` member 
-functions, which enforce the required queue discipline.
 
 ## Part 2: Union-find review
 
