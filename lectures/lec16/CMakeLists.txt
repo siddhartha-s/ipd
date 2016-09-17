@@ -5,3 +5,8 @@ include(.ipd/CMakeLists.txt)
 add_test_program(hash_test
         test/hash_test.cpp
         src/Sbox_hash.h src/Sbox_hash.cpp)
+
+add_test_program(bf_test
+        test/bf_test.cpp
+        src/Bloom_filter.h src/Bloom_filter.cpp
+        src/Sbox_hash.h src/Sbox_hash.cpp)
