@@ -6,9 +6,14 @@ template <typename T>
 class Queue
 {
 public:
+    Queue();
+
     void enqueue(const T&);
     T dequeue();
     bool empty() const;
+
+    Queue(const Queue&) = delete;
+    Queue& operator=(const Queue&) = delete;
 
 private:
     struct node_;
@@ -17,6 +22,11 @@ private:
     link_t head_;
     link_t tail_;
 };
+
+template <typename T>
+Queue<T>::Queue()
+        : head_{nullptr}, tail_{nullptr}
+{ }
 
 template <typename T>
 struct Queue<T>::node_ {

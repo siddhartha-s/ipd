@@ -15,7 +15,7 @@ private:
     struct node_;
 
     std::unique_ptr<node_> head_;
-    node_* tail_ = nullptr;
+    node_* tail_;
 };
 
 template <typename T>
@@ -59,4 +59,5 @@ bool Queue<T>::empty() const
 {
     return head_ == nullptr;
 }
+
 
