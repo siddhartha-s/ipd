@@ -11,6 +11,10 @@ add_test_program(bf_test
         src/Bloom_filter.h src/Bloom_filter.cpp
         src/Sbox_hash.h src/Sbox_hash.cpp)
 
+add_test_program(list_test
+        test/list_test.cpp
+        src/Cons_list.h src/Cons_list.cpp)
+
 add_test_program(vec_test
         test/vec_test.cpp
         src/My_vec.h)
