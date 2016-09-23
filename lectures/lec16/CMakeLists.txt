@@ -11,6 +11,10 @@ add_test_program(bf_test
         src/Bloom_filter.h src/Bloom_filter.cpp
         src/Sbox_hash.h src/Sbox_hash.cpp)
 
+add_test_program(vec_test
+        test/vec_test.cpp
+        src/My_vec.h)
+
 add_test_program(queue_test
         test/queue_test.cpp
         src/SP_queue.h src/RP_queue.h src/UP_queue.h)
