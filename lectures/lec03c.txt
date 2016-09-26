@@ -154,12 +154,13 @@ So we want to collapse all functions with the same running time into a
 certain class that represents all of the ones where varying the speed
 of the computer doesn't matter. So, we write:
 
- O(n)   -- set of all functions that grow linearly
- O(n^2) -- set of all functions that grow quadratically
+ O(n)   -- set of all functions that grow linearly (or faster)
+ O(n^2) -- set of all functions that grow quadratically (or faster)
 
 And, in general:
 
- O(f) -- set of all functions that grow with the same speed as `f`
+ O(f) -- set of all functions that grow with the same
+         speed as `f` or faster
 
 Here's the mathematically precise definition:
 
@@ -194,8 +195,22 @@ all numbers. Lets call max(c,n)=X.
 expand out X:
 
    max(c,n)*max(c,n) + 2*max(c,n) <= c*max(c,n)
-   2*max(c,n) <= 0
-   That's true only if c and n are both 0, but n is at least 1.
+
+Okay, so we know that c and n must be related to each other by
+>=. Lets first assume that c >= n and thus we can simplify the uses of
+max
+
+     c*c + c*c <= c*c
+
+which tells us that c = 0 (that's the only way to satisfy that).  but
+we know that n is at least 1 and we know that c >= n, so c =/= 0.
+
+OKay, so it must be the case that n > c. Simplify again:
+
+   n*n+2*n <= c*n
+
+But this can't be either. Since we know that 2*n is at least 2, and
+that n > c, this inequation can't possibly be true.
 
   Contradiction.
 
@@ -281,3 +296,7 @@ cpu time: 5667 real time: 5655 gc time: 327
 22
 Both tests passed!
 > 
+
+And don't be confused: something taking "exponential time" means that
+when you make the input one bigger, the time doubles (or triples or
+quadruples, etc).
