@@ -2,17 +2,17 @@
 
 #include <memory>
 
+struct Int_cons;
+
+using Int_list = std::shared_ptr<Int_cons>;
+
 struct Int_cons
 {
-    using link_t = std::shared_ptr<Int_cons>;
-
-    Int_cons(int, const link_t&);
-
     const int first;
-    const link_t rest;
-};
+    const Int_list rest;
 
-using Int_list = Int_cons::link_t;
+    Int_cons(int, const Int_list&);
+};
 
 Int_list cons(int, const Int_list&);
 int first(const Int_list&);

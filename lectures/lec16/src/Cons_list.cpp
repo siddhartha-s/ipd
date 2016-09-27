@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-Int_cons::Int_cons(int elt, const Int_cons::link_t& link)
+Int_cons::Int_cons(int elt, const Int_list& link)
     : first{elt}, rest{link}
 { }
 
