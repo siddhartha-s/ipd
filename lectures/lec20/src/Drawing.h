@@ -22,9 +22,7 @@ public:
     // classes must override this to specify their form.
     virtual bool contains(posn) const = 0;
 
-    // Returns the color of the drawing at the given position. By default, it
-    // returns color_ for positions contained within the drawing, and
-    // transparent otherwise.
+    // Returns the color of the drawing at the given position.
     virtual color color_at(posn) const;
 
     // Classes with virtual functions need a virtual destructor.
