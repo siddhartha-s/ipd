@@ -10,7 +10,11 @@ public:
     // Constructs a background of the given color, white by default.
     Background(color fill = color::white);
 
-    bool contains(posn) const;
+    bool contains(posn) const override;
+    color color_at(posn) const override;
+
+private:
+    color color_;
 };
 
 drawing_ptr background(Drawing::color fill = Drawing::color::white);
