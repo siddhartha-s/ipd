@@ -1,236 +1,108 @@
-# Binary heap and generics
+# Bloom filter / Pointers
 
-## Analyzing Dijkstra’s algorithm
+## Bloom filter
 
-Last time we implemented Dijkstra’s SSSP algorithm. In pseudocode, it goes 
-like this:
+Suppose Google Chrome’s website blacklist (for malware sites) contains ten
+million URLs, averaging 100 characters in length. How much memory does
+it take to represent the the blacklist?
 
-1.  For all vertices v:
-      - dist[v] := infinity
-      - pred[v] := undef
-      - visited[v] := false
-      
-2.  For the starting vertex s,
-      - dist[s] := 0
-      
-3.  Find the minimum distance unvisited vertex v; if there is no such vertex,
-    terminate.
-    
-4.  Mark v as visited. Relax each outgoing edge of v.
+(8 Gbit = 1 GB.)
 
-5.  Go to 3.
+How long does it take to look up an entry in the blacklist? If we just store 
+a sequence of entries then it’s a looong linear scan. What if we want fast 
+lookups? We could use a hash table, which lets us look up a URL in constant 
+time, and the size of the hash table will be about 1 GB.
 
-What is the time complexity of this algorithm?
+1 GB is a lot to download and hold in memory, so in face Google stores the 
+hash table on a server, and browsers query it remotely. But that implies a 
+network request and response to check the blacklist for each web address that
+we load, which makes each load slower. What can we do? Store a *summary of 
+the blacklist* on the client.
 
-Well, step 1 takes O(V), proportional to the number of vertices. Step 2 is 
-constant time. Step 3 as we wrote it scans every vertex, making it O(V), but 
-let’s suppose we can do better, and for now call that step O(get_min(V)); 
-repeated at most once per vertex, it comes to O(V get_min(V)).
-Step 4 happens once (or maybe twice) for each edge, for O(E). Thus, our total
-time is O(E + V get_min(V)). Using the linear scan, that means that 
-Dijkstra's algorithm takes O(E + V^2) = O(V^2). But do we know a way that we 
-can do get_min faster?
+We don’t need to store any information with each URL, so imagine the 
+following: make a hash table where each bucket is just a bit, which will be 
+set if occupied and clear if unoccupied. What’s the problem with this approach?
 
-(We saw binomial heaps, which implement the Priority Queue ADT.)
+(False positives.)
 
-## The Binary Heap
+False positives aren’t necessarily fatal, though. We can look up a URL, and 
+if its bit isn’t set then we know it’s not in the blacklist. If the bit is 
+set, then we perform the remote query to confirm that the URL is in the 
+blacklist. We still have to perform a remote query sometimes, but not on the 
+common case, which is that the URL isn’t on the blacklist.
 
-Another kind of heap (priority queue implementation) is the bin*ary* heap. 
-Unlike the bin*omial* heap, a binary heap is a binary tree. Not only that, 
-but it’s a *complete* binary tree, which means that every level of the tree 
-is completely filled, except possibly the last level, which is filled from 
-the left. That is, nodes are only added and removed at the end of the
-level-order traversal. This will be important in a bit.
+What’s the probability of a false positive?
 
-The binary heap has the same heap condition as the binomial heap, namely, 
-that every node’s value is less than its children’s values (and by 
-transitivity, their children’s).
+(It depends on how many bits we use.)
 
-To add an element to the heap, we add a node
-containing the new element to the end of the level-order traversal—that is, 
-to the right of the previous “last” node. Then we compare its value to its 
-parent’s value, and if the new node’s value is less than the parent’s, we 
-swap their values. Then compare the parent to the grandparent, the 
-grandparent to the great grandparent, and so on, stopping when we find a node
-whose parent’s value is less than the node. This procedure, called bubbling 
-up, restores the heap invariant. Can you see why?
+Let *n* be the number of set elements. (In our example, *n* = 10,000,000.) 
+Let *m* be the number of bits. Then we expect approximately *n/m* (ignoring 
+collisions) of the bits to be set. So when we lookup a URL that isn’t in the 
+set, the probability of a false positive is *n/m*. In our example, let’s say 
+we want the probability to be 10%. Then we need *n/m = 0.1*, which means
+*m = 100,000,000* bits = 12.8 MB. That’s one-eightieth as much space as the 
+whole blacklist. It’s perfectly reasonable to download it, and we only need 
+to go to the server for 10% of requests, which means 90% of requests are faster.
 
-Finding the minimum element is easy—it’s always the root. To remove it, we 
-swap the root’s value with the last (per level-order traversal) node’s value 
-and then remove the last node. This means that the former last value is now 
-at the root, and it may be greater than one of its children! So we check its 
-children, finding the smaller of the two, and swap it with that one. Then 
-proceed down the tree, swapping with the smaller of the children, until 
-either the node is less than both children, or there are no children to swap 
-with. This procedure, called trickling down, also restores the heap invariant.
-Why?
+A Bloom filter does somewhat better than this by using multiple hash 
+functions. Let the hash functions be *h1*, *h2*, etc. Then to add an element 
+*s* to the set, we set the bits indicated by *h1(s)*, *h2(s)*, and so on. 
+Then to look up an element, we check whether all the bits indicated by the 
+hash functions are set. If all the bits are set, then the element is 
+possibly (probably) in the set; if any of the bits is clear then the element 
+definitely isn’t in the set.
 
-### Why a complete tree?
+Note that we can’t remove elements because multiple elements may share some 
+same bits.
 
-Here‘s the cool thing about binary heaps: A complete tree can be represented 
-as a stack, or in other words, a vector that grows and shrinks only at the end.
-We store the values in level traversal order, so the root comes at index 0, 
-its left child at index 1, its right child at 2, 1’s left child at 3, 1’s 
-right child at 4, and so on. Can you write the function that, given an index
-into the vector, returns the parent’s index? How about the children?
+## The code
 
-### Implementation
+The interface for a Bloom filter is in `src/Bloom_filter.h`. To construct a 
+Bloom filter, we give the constructor the number of bits and the number of 
+hash functions. There are operations to insert a string into the filter and 
+to check whether a string is in the filter.
 
-The goal of the heap in Dijkstra’s algorithm is to keep vertices ordered by 
-distance, so we need a heap that stores pairs of each vertex with its best 
-known distance, and orders them by the distance. The interface for a 
-best-known distance heap appears in `src/Distance_heap.h`, and the 
-implementation appears in `src/Distance_heap.cpp`. Note that each is 
-represented as a vector as discussed in the previous section. The vector is a
-private data member, because we want clients to the heap via its ADT 
-operations, not by manipulating the vector directly.
+We represent the Bloom filter using a `std::vector<bool>` for the bits and a 
+`std::vector<Sbox_hash>` for the hash functions. Then the operations (defined
+ in `src/Bloom_filter.cpp`) are straightforward:
+ 
+  - The constructor adds `nfunctions` hash functions to the hash function 
+  vector.
+  
+  - The `insert` function loops over the hash functions and sets the bit 
+  corresponding to each.
+  
+  - The `check` function loops over the hash functions, and if any hashed bit
+  isn’t set then it returns `false`. If all the checked bits are set then it
+  returns `true`.
 
-Tests for the implementation appear in `test/dist_heap_test.cpp`, including 
-an implementation of Dijkstra’s algorithm that uses the `Distance_heap` to 
-visit vertices in the right order.
+## The math
 
-## Generics
+How likely are false positives when using multiple hash functions? Consider:
 
-The binary heap we just made stores pairs of a vertex and a distance,
-ordered by 
-distance. But nothing about the generic description of it requires those 
-particular pieces of information. We could make a binary heap of anything, 
-provided we know how to order it. That is, instead of having a 
-`Distance_heap`, we could have a `Heap<X>` for different `X`s, such as 
-`Heap<known_distance>` for Dijkstra. (This is like `[Heap-of X]` back in ISL.)
+  - The probability of one hash function setting one particular bit is 1/m. Or, 
+  the probability of a bit not being set by the hash function is 1 - 1/m.
+  
+  - If there are k hash functions, then the probability of a bit being not 
+  set is (1 - 1/m)^k.
+  
+  - If we insert n elements, then the probability of a bit not being set is
+  (1 - 1/m)^(kn), or the probability of a bit being set is
+  1 - (1 - 1/m)^(kn).
+  
+  - Now suppose we lookup an element that's not in the set. That means we 
+  check k bits, and we return true only if all k bits are set. So the 
+  probability that all k bits are set is
+  [1 - (1 - 1/m)^(kn)]^k.
+  
+Let's try a particular instance of this with our example. So n = 10,000,000. 
+Let's use m = 100,000,000 as before, and let the number of hash functions k = 7.
+Then plugging in the numbers, we get 0.008, or about 1%.
+  
+The optimal number of hash functions k = (m/n) ln 2. In that case, then using
+4.8 bits per entry gets us a false positive rate of 10%, 9.6 bits per entry 
+gets us a false positive rate of 1%, and so on for ever additional 4.8 bits 
+per entry eliminates 90% of the remaining false positives.
 
-First, let’s see a simpler example.
+## Pointers
 
-### Generic `posn`
-
-We can declare a `posn` struct like in BSL, but unlike in BSL, we need to 
-declare types for the member variables (fields). We can have posns of ints, 
-and we can have posns of doubles, but we need to declare each separately, 
-right?:
-
-```
-struct int_posn
-{
-    int x;
-    int y;
-};
-
-struct double_posn
-{
-    double x;
-    double y;
-};
-```
-
-And then if we want operations, we have to implement them for each type:
-
-```
-double distance(const int_posn& p, const int_posn& q)
-{
-    int dx = p.x - q.x;
-    int dy = p.y - q.y;
-    return sqrt(dx*dx + dy*dy);
-}
-
-double distance(const double_posn& p, const double_posn& q)
-{
-    double dx = p.x - q.x;
-    double dy = p.y - q.y;
-    return sqrt(dx*dx + dy*dy);
-}
-```
-
-But we don’t actually have to do it twice, because C++ *templates* let us 
-abstract over types. We prefix a decaration with a line like this:
-
-```
-template <typename T>
-```
-
-And then we can use `T` as a type in the declaration:
-
-```
-template <typename T>
-struct posn
-{
-    T x;
-    T y;
-}
-```
-
-Now when we write `posn<SomeType>` we get the definition of `posn` with 
-`SomeType` substituted for `T`. It’s as if we wrote:
-
-```
-struct posn<int>
-{
-    int x;
-    int y;
-}
-```
-
-except now C++ automatically writes that for us when we refer to `posn<int>`.
-And if we refer to `posn<double>` then it generates the `double` version.
-
-In addition to generic structs/classes, we can write generic functions, using
-the same `template` syntax. For example:
-
-```
-template <typename T>
-double distance(const posn<T>& p, const posn<T>& q)
-{
-    T dx = p.x - q.x;
-    T dy = p.y - q.y;
-    return sqrt(dx*dx + dy*dy);
-}
-```
-
-This says that for any type `T`, `distance` is defined as above. Now, this 
-won’t actually work for just any type, because it makes some assumptions 
-about what you can do with a `T`. What assumptions does it make?
-
-(That you can subtract, multiple, add, and square root them, and that the 
-square root is or coerces to a `double`.)
-
-### Generic heap
-
-Here’s how we templatize the `Heap` class:
-
-```
-template <typename Element>
-class Heap
-{
-    void insert(const Element&);
-    ...
-```
-
-Read `template` as “for all”: For all types `Element`, class `Heap` is has 
-the following members: an `insert` function taking a contant reference to an 
-`Element`…
-
-When you use `Heap`, like `Heap<int>` or `Heap<double>`, then `Element` means
- `int` or `double`. (It’s substitution.) See the rest of the heap template 
-declaration in `src/Heap.h`. You may notice that there’s much more code in 
-that file than usual—in fact, the whole implementation is in the header, and 
-there’s no .cpp file. Why? One of the rules of templates is that all 
-templated code, which includes all the member functions of the class, *must 
-appear in a header*.
-
-You should also notice that each member declared outside the class has a 
-`template <typename Element>` line in front of it, and that’s because each 
-member works for any `Element` type, and we need to say so. Take a look at 
-where the member functions compare elements to decide whether to swap them, 
-and you will see that they are no longer assuming the particular 
-`known_distance` struct, but rather comparing the elements directly.
-
-You should also notice that the helpers for converting tree movements to 
-array indices (`parent`, `left_child`) are in a sub-namespace, `heap_helpers`.
-This is so they don’t pollute the main `ipd` namespace, since they don’t have
-meaning outside that file. And note that they are marked `inline`, which is 
-required for non-template functions defined in headers. (If you want to try 
-to understand why, look up C++’s “One Definition Rule.”)
-
-`test/heap_test.cpp` contains a test of a `Heap<int>` and a version of 
-Dijkstra’s algorithm using `Heap<known_distance>`. Note that
-`operator<(const known_distance&, const known_distance&)` has to be 
-overloaded to tell the heap how to order things.
