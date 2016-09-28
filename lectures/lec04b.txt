@@ -76,7 +76,7 @@ A function!
 
 Do we have a notation for contracts on functions? Yes!
 
-;; est : (number number -> boolean) NE-list-of-numbers -> number
+;; est : (Number Number -> Boolean) NE-list-of-numbers -> Number
 
 That's definitely how we have used insert so far.
 
@@ -89,14 +89,14 @@ Would the function work if I wrote these?
 
 Sure! What contract would insert have to have to work like that?
 
-  est : (string string -> boolean) ne-list-of-string -> string
+  est : (String String -> Boolean) Ne-list-of-string -> String
 
 We can generalize these two contracts now. Indeed, it does
 not matter what the elements of the list are, as long as
 they match the predicate and the element to be inserted. We
 can capture that like this:
 
-  insert : (X X -> boolean) X ne-list-of-X -> X
+  insert : (X X -> Boolean) X Ne-list-of-X -> Ne-list-of-X
 
 As long as all of the X's are the same kind of data,
 everything is fine.
@@ -108,9 +108,9 @@ help cement some of these ideas and see how this works.
 
 Here's the data definition for lists of X
 
-;; a (ne-listof X) is either:
+;; a [Ne-listof X] is either:
 ;;  - (cons X '())
-;;  - (cons X (ne-listof X))
+;;  - (cons X (Ne-listof X))
 
 
 lets be sure:

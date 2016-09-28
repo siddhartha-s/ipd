@@ -241,8 +241,8 @@ design it. It needs a slightly different data definition:
       [else
         (cond
          [(< (first l) (biggest (rest l)))
-	  (biggest (rest l))]
-	 [else (first l)])]))
+	     (biggest (rest l))]
+	    [else (first l)])]))
 
 What is the running time of this function?
 

@@ -34,12 +34,12 @@ re-define
 To find the contract, collect the uses:
 
 from the two uses:
-  map : (image -> number) (listof image) -> (listof number)
-  map : (boolean -> boolean) (listof boolean) -> (listof boolean)
+  map : (Image -> Number) [Listof Image] -> [Listof Number]
+  map : (Boolean -> Boolean) [Listof Boolean] -> [Listof Boolean]
 
 What is the most general contact we get from that?
 
-;; map : (X -> Y) (listof X) -> (listof Y)
+;; map : (X -> Y) [Listof X] -> [Listof Y]
 
 Does that contract make sense from the definition of map?
 
@@ -67,7 +67,7 @@ computations (or subcomputations).
 
 Lets try to do this again with two more examples:
 
-;; remove-odds : list-of-numbers -> list-of-numbers
+;; remove-odds : (Listof Number) -> (Listof Number)
 (define (remove-odds l)
   (cond
     [(empty? l) empty]
@@ -75,7 +75,7 @@ Lets try to do this again with two more examples:
             [(odd? (first l)) (remove-odds (rest l))]
             [else (cons (first l) (remove-odds (rest l)))])]))
 
-;; remove-dolls : list-of-symbols -> list-of-symbols
+;; remove-dolls : (Listof Symbol) -> (Listof Symbol)
 (define (remove-dolls l)
   (cond
     [(empty? l) empty]
@@ -96,13 +96,13 @@ re-define these functions in terms of filter.
 
 filter's contract. Collect the uses:
 
-   from remove-dolls: list-of-symbols (symbol -> boolean)
-   -> list-of-symbols
+   from remove-dolls: [List-of Symbol] (Symbol -> Boolean)
+                   -> [List-of Symbol]
 
-   from remove-odds : list-of-numbers (number -> boolean)
-   -> list-of-numbers
+   from remove-odds : [List-of Numbers] (Number -> Boolean)
+                   -> [List-of number]
 
-  generalizing: list-of-X -> (X -> boolean) -> list-of-X
+  generalizing: [List-of X] -> (X -> boolean) -> [List-of X]
 
 Lets try one more.
 
@@ -158,17 +158,17 @@ can we write that via foldr?
 
 Contract for foldr. Here are the uses we had:
 
-foldr : number
-        (number number -> number)
-        (listof number)
-     -> number
+foldr : Number
+        (Number Number -> Number)
+        [Listof Number]
+     -> Number
 
-foldr : (listof symbol)
-        (symbol (listof symbol) -> (listof symbol))
-        (listof symbol)
-     -> (listof symbol)
+foldr : [Listof Symbol]
+        (Symbol [Listof Symbol] -> [Listof symbol])
+        [Listof Symbol]
+     -> [Listof Symbol]
 
 unified:
 
-foldr : (X Y -> Y) Y (listof X) -> Y
+foldr : (X Y -> Y) Y [Listof X] -> Y
  
