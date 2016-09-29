@@ -136,7 +136,7 @@ really testable with check-expect. It needs different
 test suite support so we skip some tests.
 
 |#
-;; maybe-add-faller : (listof posn) -> (listof posn)
+;; maybe-add-faller : [Listof posn] -> [Listof posn]
 (check-expect (maybe-add-faller
                (list (make-posn 0 0)
                      (make-posn 1 1)
