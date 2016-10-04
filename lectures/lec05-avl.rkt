@@ -8,7 +8,7 @@
 ;;   (<= -1 (- (height left) (height right)) 1)
 (define-struct db (value left right height))
 
-;; height : AVL-tree -> number
+;; height : AVL-tree -> Number
 (check-expect (height "leaf") 0)
 (check-expect (height (make-db 3 "leaf" "leaf" 1)) 1)
 (define (height tree)
@@ -32,7 +32,7 @@
             (build-db 2 "leaf" "leaf")
             (build-db 6 "leaf" "leaf")))
 
-;; AVL? : AVL-tree -> number
+;; AVL? : AVL-tree -> Number
 ;; checks to be sure the given tree has the AVL invariant,
 ;; the BST invariant, and that the height fields are correct
 (check-expect (AVL? "leaf") #true)
@@ -52,6 +52,7 @@
                        "leaf"))))
               #false)
 
+;; Strategy: struct. decomp.
 (define (AVL? tree)
   (cond
     [(equal? tree "leaf") #true]
@@ -66,7 +67,7 @@
                  (height (db-right tree)))
               1))]))
 
-;; values-all? : (number number -> boolean) number AVL-tree -> boolean
+;; values-all? : (Number Number -> Boolean) Number AVL-tree -> Boolean
 ;; to determine if all of the values in 'tree' are 'cmp' than 'val'
 (check-expect (values-all? < 0 "leaf") #true)
 (check-expect (values-all? > 0 (build-db 2
@@ -77,6 +78,7 @@
                                          (build-db 1 "leaf" "leaf")
                                          (build-db 3 "leaf" "leaf")))
               #false)
+;; Strategy: struct. decomp.
 (define (values-all? cmp val tree)
   (cond
     [(equal? tree "leaf") #true]
@@ -84,12 +86,13 @@
                (values-all? cmp val (db-left tree))
                (values-all? cmp val (db-right tree)))]))
 
-;; compute-height : AVL-tree -> number
+;; compute-height : AVL-tree -> Number
 ;; ignores the `height` field of the AVL tree and
 ;; computes the heights by counting
 (check-expect (compute-height "leaf") 0)
 (check-expect (compute-height (make-db 1 "leaf" "leaf" 100)) 1)
 (check-expect (compute-height (make-db 1 (make-db 1 "leaf" "leaf" 100) "leaf" 100)) 2)
+;; Strategy: struct. decomp.
 (define (compute-height tree)
   (cond
     [(equal? tree "leaf") 0]
@@ -98,13 +101,14 @@
              1)]))
 
 
-;; in-order : AVL-tree -> (listof number)
+;; in-order : AVL-tree -> [Listof Number]
 ;; returns the numbers in the AVL tree as they would appear in an inorder traversal
 (check-expect (in-order "leaf") '())
 (check-expect (in-order (build-db 2
                                   (build-db 1 "leaf" "leaf")
                                   (build-db 3 "leaf" "leaf")))
               (list 1 2 3))
+;; Strategy: struct. decomp.
 (define (in-order tree)
   (cond
     [(equal? tree "leaf") '()]
@@ -112,8 +116,9 @@
                   (list (db-value tree))
                   (in-order (db-right tree)))]))
 
-;; insert : AVL-tree number -> AVL-tree
+;; insert : AVL-tree Number -> AVL-tree
 ;; inserts 'value' into 'tree', returning a new AVL tree.
+;; Strategy: struct. decomp.
 (define (insert tree value)
   (cond
     [(equal? tree "leaf")
@@ -134,11 +139,17 @@
                          (insert (db-right tree) value)
                          (balance tree))])]))
 
-;; balance : AVL-tree -> "even" or "left" or "right"
+;; a Balance is either:
+;; - "left" or
+;; - "right" or
+;; - "even"
+
+;; balance : AVL-tree -> Balance
 ;; assumption: db is not "leaf"
 (check-expect (balance (build-db 2 "leaf" "leaf")) "even")
 (check-expect (balance (build-db 2 (build-db 1 "leaf" "leaf") "leaf")) "left")
 (check-expect (balance (build-db 2 "leaf" (build-db 3 "leaf" "leaf"))) "right")
+;; Strategy: domain knowledge
 (define (balance db)
   (local [(define delta (- (height (db-left db))
                            (height (db-right db))))]
@@ -147,6 +158,8 @@
       [(= delta 1) "left"]
       [(= delta -1) "right"])))
 
+;; rebalance-left : Number AVL-tree AVL-tree AVL-tree Balance -> AVL-tree
+;; combines the pieces of a newly inserted tree together to preserve the AVL invariant
 (define (rebalance-left value original-left new-left right the-balance)
   (cond
     [(= (height original-left) (height new-left))
@@ -179,6 +192,8 @@
        [(equal? the-balance "even")
         (build-db value new-left right)])]))
 
+;; rebalance-right : Number AVL-tree AVL-tree AVL-tree Balance -> AVL-tree
+;; combines the pieces of a newly inserted tree together to preserve the AVL invariant
 (define (rebalance-right value left original-right new-right the-balance)
   (cond
     [(= (height original-right) (height new-right))
@@ -212,7 +227,8 @@
        [(equal? the-balance "even")
         (build-db value left new-right)])]))
 
-;; insert-many : listof-number -> AVL-tree
+;; insert-many : [Listof Number] -> AVL-tree
+;; Strategy: struct. decomp.
 (check-expect (insert-many '()) "leaf")
 (check-expect (insert-many (list 1 2 3))
               (build-db 2
@@ -224,13 +240,14 @@
     [else (insert (insert-many (rest lon))
                   (first lon))]))
 
+;; Strategy: function composition
 (define (insert-worked? elements)
   (local [(define tree (insert-many elements))]
     (and (AVL? tree)
          (equal? (in-order tree)
                  (remove-duplicates (sort elements <))))))
 
-;; remove-duplicates : listof-number -> listof-number
+;; remove-duplicates : [Listof Number] -> [Listof Number]
 (check-expect (remove-duplicates '()) '())
 (check-expect (remove-duplicates (list 1)) (list 1))
 (check-expect (remove-duplicates (list 1 2)) (list 1 2))
