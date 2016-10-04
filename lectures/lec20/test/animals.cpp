@@ -11,6 +11,7 @@ public:
     virtual void play();
 
     const std::string& get_name() const;
+    const unsigned int get_weight() const;
 
 private:
     std::string name_;
@@ -35,6 +36,12 @@ const std::string& Animal::get_name() const
 {
     return name_;
 }
+
+const unsigned int Animal::get_weight() const
+{
+    return weight_;
+}
+
 
 class Dog : public Animal
 {
@@ -91,4 +98,7 @@ int main()
     willie.speak();
     willie.play();
     willie.speak();
+
+    Animal& someone = vinny;
+    vinny.play();
 }
