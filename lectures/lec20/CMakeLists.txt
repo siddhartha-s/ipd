@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.3)
 project(oographics CXX)
 include(.ipd/CMakeLists.txt)
 
+add_program(animals test/animals.cpp)
+
 add_program(red test/red.cpp)
 target_link_libraries(red graphics)
 

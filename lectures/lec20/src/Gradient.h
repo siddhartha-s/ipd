@@ -85,8 +85,8 @@ protected:
     virtual color color_at(sample, sample) const;
     virtual color color_at(sample) const;
 
-    color            start_;
-    color            end_;
+    color           start_;
+    color           end_;
     const Modulator& modulator_;
     const Projector& projector_;
 };

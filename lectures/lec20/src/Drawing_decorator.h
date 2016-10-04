@@ -15,8 +15,8 @@ public:
     // Decorates the given shape, using the given bounding box.
     Drawing_decorator(drawing_ptr, bbox);
 
-    bool contains(posn) const;
-    color color_at(posn) const;
+    bool contains(posn) const override;
+    color color_at(posn) const override;
 
 private:
     const drawing_ptr base_;
