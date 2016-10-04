@@ -160,6 +160,54 @@
 
 ;; rebalance-left : Number AVL-tree AVL-tree AVL-tree Balance -> AVL-tree
 ;; combines the pieces of a newly inserted tree together to preserve the AVL invariant
+#|
+
+There are a number of interesting cases to consider in this function. A good way
+to think about them is to draw pictures with heights on them to help figure
+out the right kind of balancing.
+
+For example, if `the-balance` is "left" (and the first condition is false,
+which means that the insertion changed the height) then we know that 
+the height of the new-left is two bigger than the height of the right,
+which means we would have a picture like this if we just put the `new-left`
+and `right` together into the tree:
+
+              . h+3
+             / \
+h+2  new-left   right   h
+
+So lets take a look at new-left. We know that it isn't a leaf, because
+we inserted something into it. So it has at least one node at the top. Lets
+draw that explicitly (calling the children of new-left A and B) and consider
+the case where the new-left's balance is "even":
+
+        .
+       / \
+ h+2  /\  right   h
+     /  \
+h+1 A    B h+1
+
+What happens if we rotate the tree to have this shape?
+
+  /\
+ A  .
+   / \
+  B   right
+
+filling in the heights we get:
+
+      . h+2
+     / \
+h+1 A   . h+1
+       / \
+h+1   B   right  h
+
+which satsifies the invariant! The rest of the cases follow similar kinds of reasoning. In
+each case, we figure out what rotations are required.
+
+NB: in some cases, two rotations are required.
+
+|#
 (define (rebalance-left value original-left new-left right the-balance)
   (cond
     [(= (height original-left) (height new-left))
