@@ -11,7 +11,7 @@ public:
     virtual void play();
 
     const std::string& get_name() const;
-    const unsigned int get_weight() const;
+    unsigned int get_weight() const;
 
 private:
     std::string name_;
@@ -37,7 +37,7 @@ const std::string& Animal::get_name() const
     return name_;
 }
 
-const unsigned int Animal::get_weight() const
+unsigned int Animal::get_weight() const
 {
     return weight_;
 }
@@ -100,5 +100,5 @@ int main()
     willie.speak();
 
     Animal& someone = vinny;
-    vinny.play();
+    someone.play();
 }
