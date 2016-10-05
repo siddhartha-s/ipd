@@ -1,5 +1,5 @@
-#include <iostream>
 #include <string>
+#include <iostream>
 
 class Animal
 {
@@ -7,7 +7,7 @@ public:
     Animal(const std::string& name, unsigned int weight);
 
     void eat(unsigned int amount);
-    virtual void speak() const = 0;
+    virtual void speak() = 0;
     virtual void play();
 
     const std::string& get_name() const;
@@ -47,7 +47,7 @@ class Dog : public Animal
 {
 public:
     Dog(const std::string& name);
-    void speak() const override;
+    void speak() override;
     void play() override;
 
 private:
@@ -59,7 +59,7 @@ Dog::Dog(const std::string& name)
         , nbones_{1}
 { }
 
-void Dog::speak() const
+void Dog::speak()
 {
     std::cout << get_name() << " says";
     for (int i = 0; i < nbones_; ++i)
@@ -78,14 +78,14 @@ class Cat : public Animal
 {
 public:
     Cat(const std::string& name);
-    void speak() const override;
+    void speak() override;
 };
 
 Cat::Cat(const std::string& name)
         : Animal{name, 10}
 { }
 
-void Cat::speak() const
+void Cat::speak()
 {
     std::cout << get_name() << " says meow!\n";
 }
