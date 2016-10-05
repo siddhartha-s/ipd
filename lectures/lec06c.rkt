@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-intermediate-reader.ss" "lang")((modname lec06c-rndbst) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname lec06c) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ;; A RandNumTree is one of:
 ;; - (make-node Number Natural RandNumTree RandNumTree)
 ;; - '()
@@ -12,14 +12,18 @@
              (make-node 2 1 '() '())
              (make-node 6 1 '() '())))
 
-;; RandNumTree Number -> Boolean
+;; contains? : RandNumTree Number -> Boolean
 ;; Returns whether the given Number is in the tree.
+;;
+;; Strategy: struct. decomp.
 (define (contains? t k)
   (cond
     [(empty? t) #false]
-    [(< k (node-key t)) (contains? (node-left t) k)]
-    [(> k (node-key t)) (contains? (node-right t) k)]
-    [else #true]))
+    [else
+     (cond
+      [(< k (node-key t)) (contains? (node-left t) k)]
+      [(> k (node-key t)) (contains? (node-right t) k)]
+      [else #true])]))
 
 (check-expect (contains? A-TREE 2) #t)
 (check-expect (contains? A-TREE 4) #t)
@@ -27,43 +31,38 @@
 (check-expect (contains? A-TREE 1) #f)
 (check-expect (contains? A-TREE 3) #f)
 
-;; RandNumTree -> Natural
+;; tree-size : RandNumTree -> Natural
 ;; Gets the size of a possibly empty tree.
+;;
+;; Strategy: struct. decomp.
 (define (tree-size t)
-  (if (node? t) (node-size t) 0))
+  (cond
+    [(node? t) (node-size t)]
+    [else      0]))
 
 (check-expect (tree-size '()) 0)
 (check-expect (tree-size A-TREE) 3)
 
-;; Natural -> RandNumTree
+;; new-node : Natural -> RandNumTree
 ;; Creates a new singleton tree with the given value.
+;;
+;; Strategy: function composition
 (define (new-node k l r)
   (make-node k (+ 1 (tree-size l) (tree-size r)) l r))
 
 (check-expect (new-node 5 '() '()) (make-node 5 1 '() '()))
 (check-expect (new-node 1 '() A-TREE) (make-node 1 4 '() A-TREE))
 
-;; RandNumTree -> Void
-;; Sets the size at the root based on the sizes of the subtrees
-(define (fix-size t)
-  (make-node (node-key t)
-             (+ 1
-                (tree-size (node-left t))
-                (tree-size (node-right t)))
-             (node-left t)
-             (node-right t)))
 
-(check-expect (fix-size A-TREE) A-TREE)
-(check-expect (fix-size (make-node 4 0
-                                   (make-node 2 1 '() '())
-                                   (make-node 6 1 '() '())))
-              A-TREE)
-
-;; RandNumTree Number -> RandNumTree
+;; leaf-insert : RandNumTree Number -> RandNumTree
 ;; Inserts a key as a leaf, returning the modified tree.
+;;
+;; Strategy: struct. decomp.
 (define (leaf-insert t k)
   (cond
     [(empty? t) (new-node k '() '())]
+    ;; Strategy note: the remaining cases should be, strictly speaking,
+    ;; a nested cond in the `else` branch of the outer cond.
     [(< k (node-key t))
      (new-node (node-key t)
                (leaf-insert (node-left t) k)
@@ -85,8 +84,12 @@
                                     (make-node 5 1 '() '())
                                     '())))
 
-;; RandNumTree -> Void
+;; rotate-right : RandNumTree -> Void
 ;; Performs a right rotation
+;;
+;; ASSUMPTION: d is non-empty and has a non-empty left child.
+;;
+;; Strategy: struct. decomp.
 (define (rotate-right d)
   (new-node (node-key (node-left d))
             (node-left (node-left d))
@@ -99,8 +102,12 @@
                          (make-node 4 2 '()
                                     (make-node 6 1 '() '()))))
 
-;; RandNumTree -> Void
+;; rotate-left : RandNumTree -> Void
 ;; Performs a left rotation
+;;
+;; ASSUMPTION: d is non-empty and has a non-empty right child.
+;;
+;; Strategy: struct. decomp.
 (define (rotate-left b)
   (new-node (node-key (node-right b))
             (new-node (node-key b)
@@ -115,8 +122,10 @@
                                     '())
                          '()))
 
-;; RandNumTree Number -> RandNumTree
+;; root-insert : RandNumTree Number -> RandNumTree
 ;; Inserts an element at the root, returning the modified tree.
+;;
+;; Strategy: struct. decomp.
 (define (root-insert t k)
   (cond
     [(empty? t) (new-node k '() '())]
@@ -147,8 +156,10 @@
                                     '()
                                     (make-node 6 1 '() '()))))
 
-;; RandNumTree Number -> RandNumTree
+;; insert : RandNumTree Number -> RandNumTree
 ;; Inserts an element, maintaining randomness and returning the modified tree.
+;;
+;; Strategy: struct. decomp.
 (define (insert t k)
   (cond
     [(empty? t) (new-node k '() '())]
@@ -183,9 +194,11 @@
 (check-expect (tree-size (insert A-TREE 2)) 3)
 (check-expect (tree-size (insert A-TREE 6)) 3)
 
-;; Natural [Natural -> Number] -> RandNumTree
+;; build-tree : Natural [Natural -> Number] -> RandNumTree
 ;; Builds a random tree of `n` elements, using `f` to produce each element
 ;; (like `build-list`)
+;;
+;; Strategy: struct. decomp.
 (define (build-tree n f)
   (cond
     [(zero? n) '()]
@@ -194,8 +207,10 @@
 (check-expect (build-tree 0 identity) '())
 (check-expect (build-tree 1 identity) (new-node 0 '() '()))
 
-;; RandNumTree -> Natural
+;; height : RandNumTree -> Natural
 ;; Returns the height (max depth) of a tree.
+;;
+;; Strategy: struct. decomp.
 (define (height t)
   (cond
     [(node? t) (add1 (max (height (node-left t))
@@ -204,8 +219,10 @@
 
 (check-expect (height A-TREE) 2)
 
-;; Natural -> Natural
+;; sample-height : Natural -> Natural
 ;; Builds a tree with `n` elements and returns its height.
+;;
+;; Strategy: struct. decomp.
 (define (sample-height n)
   (height (build-tree n identity)))
 
@@ -251,9 +268,11 @@ B and E:
 Note that everything remains ordered.
 |#
 
-;; RandNumTree RandNumTree -> RandNumTree
+;; join : RandNumTree RandNumTree -> RandNumTree
 ;; Joins two trees, assuming all the keys of the first are less than
 ;; all the keys of the second.
+;;
+;; Strategy: struct. decomp. (t1 and t2)
 (define (join t1 t2)
   (cond
     [(empty? t1) t2]
@@ -267,8 +286,10 @@ Note that everything remains ordered.
                (join t1 (node-left t2))
                (node-right t2))]))
 
-;; RandNumTree Number -> RandNumTree
+;; delete : RandNumTree Number -> RandNumTree
 ;; Deletes an element from a tree, returning the modified tree.
+;;
+;; Strategy: struct. decomp.
 (define (delete t k)
   (cond
     [(empty? t) t]
