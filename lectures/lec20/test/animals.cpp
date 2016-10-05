@@ -29,7 +29,7 @@ void Animal::eat(unsigned int amount)
 
 void Animal::play()
 {
-    std::cout << get_name() << " plays\n";
+    std::cout << get_name() << " plays.\n";
 }
 
 const std::string& Animal::get_name() const
