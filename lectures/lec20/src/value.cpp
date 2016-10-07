@@ -2,7 +2,7 @@
 
 namespace islpp {
 
-std::string to_string(value_type vt)
+const char* to_string(value_type vt)
 {
     switch (vt) {
         case value_type::Boolean:

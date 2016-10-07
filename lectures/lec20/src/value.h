@@ -24,7 +24,7 @@ enum class value_type
     Void,
 };
 
-std::string to_string(value_type);
+const char* to_string(value_type);
 std::ostream& operator<<(std::ostream&, value_type);
 
 class Value;
