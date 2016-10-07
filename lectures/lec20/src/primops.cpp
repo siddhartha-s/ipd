@@ -51,10 +51,17 @@ value_ptr plus{nf("+", -1, fn_plus)};
 
 value_ptr fn_num_eq(const std::vector<value_ptr>& args)
 {
-    return get_boolean(args[0]->to_int() == args[1]->to_int());
+    return get_boolean(args[0]->as_int() == args[1]->as_int());
 }
 
 value_ptr num_eq{nf("=", 2, fn_num_eq)};
+
+value_ptr fn_equal_huh(const std::vector<value_ptr>& args)
+{
+    return get_boolean(args[0]->equal(args[1]));
+}
+
+value_ptr equal_huh{nf("equal?", 2, fn_equal_huh)};
 
 } // end namespace primop
 

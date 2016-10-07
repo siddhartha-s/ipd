@@ -46,14 +46,15 @@ public:
     virtual value_type type() const = 0;
 
     virtual std::ostream& display(std::ostream&) const = 0;
+    virtual bool equal(const value_ptr&) const = 0;
 
     virtual bool as_bool() const;
     virtual int  as_int() const;
-    virtual const std::string  & as_string() const;
-    virtual const value_ptr    & first() const;
-    virtual const value_ptr    & rest() const;
-    virtual const struct_id_ptr& struct_id() const;
-    virtual const value_ptr    & get_field(const Symbol&);
+    virtual const std::string           & as_string() const;
+    virtual const value_ptr             & first() const;
+    virtual const value_ptr             & rest() const;
+    virtual const struct_id_ptr         & struct_id() const;
+    virtual const std::vector<value_ptr>& get_fields() const;
     virtual value_ptr operator()(const std::vector<value_ptr>&) const;
 };
 
@@ -64,13 +65,14 @@ public:
 
     virtual value_type type() const override;
     virtual std::ostream& display(std::ostream&) const override;
+    virtual bool equal(const value_ptr&) const override;
 
 protected:
     Function(const std::string& name, ssize_t arity);
 
     virtual value_ptr apply(const std::vector<value_ptr>&) const = 0;
 
-    ssize_t arity_;
+    ssize_t     arity_;
     std::string name_;
 };
 

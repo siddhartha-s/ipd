@@ -9,6 +9,7 @@ namespace primop {
 extern value_ptr cons;
 extern value_ptr plus;
 extern value_ptr num_eq;
+extern value_ptr equal_huh;
 
 }
 
