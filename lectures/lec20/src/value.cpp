@@ -2,48 +2,68 @@
 
 namespace islpp {
 
+std::string to_string(value_type vt)
+{
+    switch (vt) {
+        case value_type::Boolean:
+            return "boolean";
+        case value_type::Integer:
+            return "integer";
+        case value_type::String:
+            return "string";
+        case value_type::Cons:
+            return "cons";
+        case value_type::Struct:
+            return "struct";
+        case value_type::Empty:
+            return "empty";
+        case value_type::Void:
+            return "void";
+    }
+}
+
 /*
  * Value members
  */
 
 bool Value::as_bool() const
 {
-    throw type_error(type(), "boolean");
+    throw type_error(to_string(type()), "boolean");
 }
 
 int Value::as_int() const
 {
-    throw type_error(type(), "integer");
+    throw type_error(to_string(type()), "integer");
 }
 
 const std::string& Value::as_string() const
 {
-    throw type_error(type(), "string");
+    throw type_error(to_string(type()), "string");
 }
 
 const value_ptr& Value::first() const
 {
-    throw type_error(type(), "cons");
+    throw type_error(to_string(type()), "cons");
 }
 
 const value_ptr& Value::rest() const
 {
-    throw type_error(type(), "cons");
+    throw type_error(to_string(type()), "cons");
 }
 
 const struct_id_ptr& Value::struct_id() const
 {
-    throw type_error(type(), "struct");
+    throw type_error(to_string(type()), "struct");
 }
 
 const value_ptr& Value::get_field(const Symbol&)
 {
-    throw type_error(type(), "struct");
+    throw type_error(to_string(type()), "struct");
 }
 
 value_ptr Value::operator()(const std::vector<value_ptr>&) const
 {
-    throw type_error(type(), "function");
+    throw type_error(to_string(type()), "function");
 }
 
 /*
@@ -57,8 +77,7 @@ public:
 
     virtual bool as_bool() const override;
 
-    virtual std::string type() const override;
-
+    virtual value_type type() const override;
     virtual std::ostream& display(std::ostream&) const override;
 
 private:
@@ -75,9 +94,9 @@ bool Boolean::as_bool() const
     return val_;
 }
 
-std::string Boolean::type() const
+value_type Boolean::type() const
 {
-    return "boolean";
+    return value_type::Boolean;
 }
 
 std::ostream& Boolean::display(std::ostream& o) const
@@ -96,8 +115,7 @@ public:
 
     virtual int as_int() const override;
 
-    virtual std::string type() const override;
-
+    virtual value_type type() const override;
     virtual std::ostream& display(std::ostream&) const override;
 
 private:
@@ -114,9 +132,9 @@ int Integer::as_int() const
     return val_;
 }
 
-std::string Integer::type() const
+value_type Integer::type() const
 {
-    return "integer";
+    return value_type::Integer;
 }
 
 std::ostream& Integer::display(std::ostream& o) const
@@ -135,8 +153,7 @@ public:
 
     virtual const std::string& as_string() const override;
 
-    virtual std::string type() const override;
-
+    virtual value_type type() const override;
     virtual std::ostream& display(std::ostream&) const override;
 
 private:
@@ -153,9 +170,9 @@ const std::string& String::as_string() const
     return val_;
 }
 
-std::string String::type() const
+value_type String::type() const
 {
-    return "string";
+    return value_type::String;
 }
 
 std::ostream& String::display(std::ostream& o) const
@@ -174,11 +191,9 @@ public:
             : first_{first}, rest_{rest} { }
 
     virtual const value_ptr& first() const override;
-
     virtual const value_ptr& rest() const override;
 
-    virtual std::string type() const override;
-
+    virtual value_type type() const override;
     virtual std::ostream& display(std::ostream&) const override;
 
 private:
@@ -200,9 +215,9 @@ const value_ptr& Cons::rest() const
     return rest_;
 }
 
-std::string Cons::type() const
+value_type Cons::type() const
 {
-    return "cons";
+    return value_type::Cons;
 }
 
 std::ostream& Cons::display(std::ostream& o) const
@@ -223,8 +238,7 @@ std::ostream& Cons::display(std::ostream& o) const
 struct Empty : public Value
 {
 public:
-    virtual std::string type() const override;
-
+    virtual value_type type() const override;
     virtual std::ostream& display(std::ostream&) const override;
 };
 
@@ -234,9 +248,9 @@ value_ptr get_empty()
     return instance;
 }
 
-std::string Empty::type() const
+value_type Empty::type() const
 {
-    return "empty";
+    return value_type::Empty;
 }
 
 std::ostream& Empty::display(std::ostream& o) const
@@ -251,8 +265,7 @@ std::ostream& Empty::display(std::ostream& o) const
 struct Void : public Value
 {
 public:
-    virtual std::string type() const override;
-
+    virtual value_type type() const override;
     virtual std::ostream& display(std::ostream&) const override;
 };
 
@@ -262,9 +275,9 @@ value_ptr get_void()
     return instance;
 }
 
-std::string Void::type() const
+value_type Void::type() const
 {
-    return "void";
+    return value_type::Void;
 }
 
 std::ostream& Void::display(std::ostream& o) const
@@ -282,7 +295,7 @@ public:
     Struct(const struct_id_ptr& id, std::vector<value_ptr> vals)
             : id_{id}, vals_(vals) { }
 
-    virtual std::string type() const override;
+    virtual value_type type() const override;
 
     virtual std::ostream& display(std::ostream&) const override;
 
@@ -296,7 +309,7 @@ value_ptr mk_struct(const struct_id_ptr& id, std::vector<value_ptr> vals)
     return value_ptr{new Struct{id, vals}};
 }
 
-std::string Struct::type() const
+value_type Struct::type() const
 {
     return "struct";
 }
@@ -325,7 +338,7 @@ value_ptr Function::operator()(const std::vector<value_ptr>&) const
     throw std::logic_error{"Function::operator(): need to override"};
 }
 
-std::string Function::type() const
+value_type Function::type() const
 {
     return "function";
 }

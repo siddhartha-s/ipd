@@ -11,44 +11,44 @@
 
 namespace islpp {
 
+enum class value_type
+{
+    Boolean,
+    Integer,
+    String,
+    Cons,
+    Struct,
+    Empty,
+    Void,
+};
+
+std::string to_string(value_type);
+
 class Value;
 
 using value_ptr = std::shared_ptr<Value>;
 
 value_ptr mk_boolean(bool);
-
 value_ptr mk_integer(int);
-
 value_ptr mk_string(const std::string&);
-
 value_ptr mk_cons(const value_ptr&, const value_ptr&);
-
 value_ptr mk_struct(const struct_id_ptr&, std::vector<value_ptr>);
-
 value_ptr get_empty();
-
 value_ptr get_void();
 
 struct Value
 {
-    virtual std::string type() const = 0;
+    virtual value_type type() const = 0;
 
     virtual std::ostream& display(std::ostream&) const = 0;
 
     virtual bool as_bool() const;
-
     virtual int as_int() const;
-
     virtual const std::string& as_string() const;
-
     virtual const value_ptr& first() const;
-
     virtual const value_ptr& rest() const;
-
     virtual const struct_id_ptr& struct_id() const;
-
     virtual const value_ptr& get_field(const Symbol&);
-
     virtual value_ptr operator()(const std::vector<value_ptr>&) const;
 };
 
@@ -57,8 +57,7 @@ class Function : public Value
 public:
     virtual value_ptr operator()(const std::vector<value_ptr>&) const override;
 
-    virtual std::string type() const override;
-
+    virtual value_type type() const override;
     virtual std::ostream& display(std::ostream&) const override;
 
 protected:
