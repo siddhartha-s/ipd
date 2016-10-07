@@ -5,6 +5,7 @@
 #include "value.h"
 
 #include <memory>
+#include <utility>
 
 namespace islpp {
 
@@ -29,6 +30,20 @@ public:
     // virtual Environment extend(const Environment&) const = 0;
     // virtual void eval(Environment&) const = 0;
 };
+
+Expr mk_variable(const Symbol& name);
+Expr mk_application(const Expr& rator, const Expr& rand);
+Expr mk_lambda(const std::vector<Symbol>& formals, const Expr& body);
+Expr mk_local(const std::vector<Decl>& decls, const Expr& body);
+Expr mk_cond(const std::vector<std::pair<Expr, Expr>>& alts);
+Expr mk_integer_literal(int val);
+Expr mk_string_literal(const std::string& val);
+Expr mk_boolean_literal(bool val);
+
+Decl mk_define_var(const Symbol& name, const Expr& rhs);
+Decl mk_define_fun(const Symbol& name, const std::vector<Symbol>& formals,
+                   const Expr& body);
+Decl mk_define_struct(const Symbol& name, const std::vector<Symbol>& fields);
 
 /*
  * Expressions
@@ -85,13 +100,11 @@ private:
 class Cond : public Expr_node
 {
 public:
-    struct Alternative { Expr question, answer; };
-
-    Cond(const std::vector<Alternative>& alts)
+    Cond(const std::vector<std::pair<Expr, Expr>>& alts)
             : alts_(alts) { }
 
 private:
-    std::vector<Alternative> alts_;
+    std::vector<std::pair<Expr, Expr>> alts_;
 };
 
 class Integer_literal : public Expr_node
