@@ -13,6 +13,7 @@ class String;
 class Empty;
 class Cons;
 class Struct;
+class Closure;
 
 class Value
 {
