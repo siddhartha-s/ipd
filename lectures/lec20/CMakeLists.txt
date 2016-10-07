@@ -17,3 +17,11 @@ add_test_program(value_test
         src/env.h
         src/struct.h
         src/value.h src/value.cpp)
+
+add_test_program(primops_test
+        test/primops_test.cpp
+        src/symbol.h src/symbol.cpp
+        src/env.h
+        src/struct.h
+        src/value.h src/value.cpp
+        src/primops.h src/primops.cpp)

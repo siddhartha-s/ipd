@@ -24,6 +24,11 @@ std::string to_string(value_type vt)
     }
 }
 
+std::ostream& operator<<(std::ostream& o, value_type vt)
+{
+    return o << to_string(vt);
+}
+
 /*
  * Value members
  */
@@ -335,9 +340,12 @@ std::ostream& Struct::display(std::ostream& o) const
  * Function members
  */
 
-value_ptr Function::operator()(const std::vector<value_ptr>&) const
+value_ptr Function::operator()(const std::vector<value_ptr>& args) const
 {
-    throw std::logic_error{"Function::operator(): need to override"};
+    if (arity_ < 0 ? args.size() < -1 - arity_ : args.size() != arity_)
+        throw arity_error(args.size(), arity_);
+
+    return apply(args);
 }
 
 value_type Function::type() const
@@ -350,8 +358,8 @@ std::ostream& Function::display(std::ostream& o) const
     return o << "<#function:" << name_ << '>';
 }
 
-Function::Function(const std::string& name)
-        : name_{name} { }
+Function::Function(const std::string& name, ssize_t arity)
+        : arity_{arity}, name_{name} { }
 
 }
 

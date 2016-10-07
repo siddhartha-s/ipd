@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -24,6 +25,7 @@ enum class value_type
 };
 
 std::string to_string(value_type);
+std::ostream& operator<<(std::ostream&, value_type);
 
 class Value;
 
@@ -45,12 +47,12 @@ struct Value
     virtual std::ostream& display(std::ostream&) const = 0;
 
     virtual bool as_bool() const;
-    virtual int as_int() const;
-    virtual const std::string& as_string() const;
-    virtual const value_ptr& first() const;
-    virtual const value_ptr& rest() const;
+    virtual int  as_int() const;
+    virtual const std::string  & as_string() const;
+    virtual const value_ptr    & first() const;
+    virtual const value_ptr    & rest() const;
     virtual const struct_id_ptr& struct_id() const;
-    virtual const value_ptr& get_field(const Symbol&);
+    virtual const value_ptr    & get_field(const Symbol&);
     virtual value_ptr operator()(const std::vector<value_ptr>&) const;
 };
 
@@ -63,8 +65,11 @@ public:
     virtual std::ostream& display(std::ostream&) const override;
 
 protected:
-    Function(const std::string&);
+    Function(const std::string& name, ssize_t arity);
 
+    virtual value_ptr apply(const std::vector<value_ptr>&) const = 0;
+
+    ssize_t arity_;
     std::string name_;
 };
 
@@ -83,6 +88,29 @@ struct type_error : std::runtime_error
     type_error(const std::string& got, const std::string& exp)
             : runtime_error("Type error: got " + got +
                             " where " + exp + " expected.") { }
+};
+
+struct arity_error : std::runtime_error
+{
+    arity_error(size_t got, ssize_t exp)
+            : runtime_error(arity_message(got, exp)) { }
+
+private:
+    static std::string arity_message(size_t got, ssize_t exp)
+    {
+        std::ostringstream msg;
+
+        msg << "Got " << got << " arguments where ";
+
+        if (exp < 0) {
+            msg << "at least ";
+            exp = -1 - exp;
+        }
+
+        msg << exp << " expected";
+
+        return msg.str();
+    }
 };
 
 }
