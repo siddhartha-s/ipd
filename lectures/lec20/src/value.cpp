@@ -6,6 +6,11 @@ namespace islpp {
  * Value members
  */
 
+bool Value::as_bool() const
+{
+    throw type_error(type(), "boolean");
+}
+
 int Value::as_int() const
 {
     throw type_error(type(), "integer");
@@ -39,6 +44,45 @@ const value_ptr& Value::get_field(const Symbol&)
 value_ptr Value::operator()(const std::vector<value_ptr>&) const
 {
     throw type_error(type(), "function");
+}
+
+/*
+ * Boolean class
+ */
+
+class Boolean : public Value
+{
+public:
+    Boolean(bool val) : val_(val) { }
+
+    virtual bool as_bool() const override;
+
+    virtual std::string type() const override;
+
+    virtual std::ostream& display(std::ostream&) const override;
+
+private:
+    bool val_;
+};
+
+value_ptr mk_boolean(bool val)
+{
+    return value_ptr{new Boolean{val}};
+}
+
+bool Boolean::as_bool() const
+{
+    return val_;
+}
+
+std::string Boolean::type() const
+{
+    return "boolean";
+}
+
+std::ostream& Boolean::display(std::ostream& o) const
+{
+    return o << (val_ ? "#true" : "#false");
 }
 
 /*
@@ -198,6 +242,34 @@ std::string Empty::type() const
 std::ostream& Empty::display(std::ostream& o) const
 {
     return o << "'()";
+}
+
+/*
+ * Void class
+ */
+
+struct Void : public Value
+{
+public:
+    virtual std::string type() const override;
+
+    virtual std::ostream& display(std::ostream&) const override;
+};
+
+value_ptr get_void()
+{
+    static value_ptr instance{new Void};
+    return instance;
+}
+
+std::string Void::type() const
+{
+    return "void";
+}
+
+std::ostream& Void::display(std::ostream& o) const
+{
+    return o << "#<void>";
 }
 
 /*

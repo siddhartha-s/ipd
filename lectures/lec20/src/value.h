@@ -15,21 +15,27 @@ class Value;
 
 using value_ptr = std::shared_ptr<Value>;
 
+value_ptr mk_boolean(bool);
+
 value_ptr mk_integer(int);
 
 value_ptr mk_string(const std::string&);
 
 value_ptr mk_cons(const value_ptr&, const value_ptr&);
 
+value_ptr mk_struct(const struct_id_ptr&, std::vector<value_ptr>);
+
 value_ptr get_empty();
 
-value_ptr mk_struct(const struct_id_ptr&, std::vector<value_ptr>);
+value_ptr get_void();
 
 struct Value
 {
     virtual std::string type() const = 0;
 
     virtual std::ostream& display(std::ostream&) const = 0;
+
+    virtual bool as_bool() const;
 
     virtual int as_int() const;
 
