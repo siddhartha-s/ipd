@@ -28,6 +28,7 @@ add_test_program(primops_test
 
 add_test_program(ast_test
         test/ast_test.cpp
+        src/eval.cpp
         src/ast.h src/ast.cpp
         src/env.h
         src/struct.h

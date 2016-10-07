@@ -4,12 +4,12 @@ namespace islpp {
 
 Expr mk_variable(const Symbol& name)
 {
-    return std::make_shared<Variable>(name); // {new Variable{name}};
+    return std::make_shared<Variable>(name);
 }
 
-Expr mk_application(const Expr& rator, const Expr& rand)
+Expr mk_application(const Expr& fun, const std::vector<Expr>& actuals)
 {
-    return std::make_shared<Application>(rator, rand);
+    return std::make_shared<Application>(fun, actuals);
 }
 
 Expr mk_lambda(const std::vector<Symbol>& formals, const Expr& body)
