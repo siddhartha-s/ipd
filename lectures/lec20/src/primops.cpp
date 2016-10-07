@@ -2,7 +2,7 @@
 
 namespace islpp {
 
-namespace primops {
+namespace primop {
 
 typedef value_ptr (* native_function_t)(const std::vector<value_ptr>&);
 
@@ -49,7 +49,14 @@ value_ptr fn_plus(const std::vector<value_ptr>& args)
 
 value_ptr plus{nf("+", -1, fn_plus)};
 
+value_ptr fn_num_eq(const std::vector<value_ptr>& args)
+{
+    return get_boolean(args[0]->to_int() == args[1]->to_int());
 }
 
-}
+value_ptr num_eq{nf("=", 2, fn_num_eq)};
+
+} // end namespace primop
+
+} // end namespace islpp
 

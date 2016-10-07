@@ -91,9 +91,12 @@ private:
     bool val_;
 };
 
-value_ptr mk_boolean(bool val)
+value_ptr get_boolean(bool val)
 {
-    return value_ptr{new Boolean{val}};
+    static value_ptr true_instance{new Boolean{true}};
+    static value_ptr false_instance{new Boolean{false}};
+
+    return val ? true_instance : false_instance;
 }
 
 bool Boolean::as_bool() const
