@@ -68,6 +68,16 @@ protected:
     std::string name_;
 };
 
+inline std::ostream& operator<<(std::ostream& o, const Value& v)
+{
+    return v.display(o);
+}
+
+inline std::ostream& operator<<(std::ostream& o, const value_ptr& v)
+{
+    return v->display(o);
+}
+
 struct type_error : std::runtime_error
 {
     type_error(const std::string& got, const std::string& exp)
