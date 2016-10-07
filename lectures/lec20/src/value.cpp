@@ -13,10 +13,12 @@ std::string to_string(value_type vt)
             return "string";
         case value_type::Cons:
             return "cons";
-        case value_type::Struct:
-            return "struct";
         case value_type::Empty:
             return "empty";
+        case value_type::Struct:
+            return "struct";
+        case value_type::Function:
+            return "function";
         case value_type::Void:
             return "void";
     }
@@ -311,7 +313,7 @@ value_ptr mk_struct(const struct_id_ptr& id, std::vector<value_ptr> vals)
 
 value_type Struct::type() const
 {
-    return "struct";
+    return value_type::Struct;
 }
 
 std::ostream& Struct::display(std::ostream& o) const
@@ -340,7 +342,7 @@ value_ptr Function::operator()(const std::vector<value_ptr>&) const
 
 value_type Function::type() const
 {
-    return "function";
+    return value_type::Function;
 }
 
 std::ostream& Function::display(std::ostream& o) const

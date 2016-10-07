@@ -17,8 +17,9 @@ enum class value_type
     Integer,
     String,
     Cons,
-    Struct,
     Empty,
+    Struct,
+    Function,
     Void,
 };
 
@@ -33,6 +34,7 @@ value_ptr mk_integer(int);
 value_ptr mk_string(const std::string&);
 value_ptr mk_cons(const value_ptr&, const value_ptr&);
 value_ptr mk_struct(const struct_id_ptr&, std::vector<value_ptr>);
+
 value_ptr get_empty();
 value_ptr get_void();
 
