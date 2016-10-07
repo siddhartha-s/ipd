@@ -17,7 +17,7 @@ TEST(LookupBound)
            b = intern("b"),
            c = intern("c"),
            d = intern("d");
-    env_ptr<int> env = env_ptr<int>{}.bind(a, 2).bind(b, 3).bind(c, 4);
+    env_ptr<int> env = env_ptr<int>{}.extend(a, 2).extend(b, 3).extend(c, 4);
 
     CHECK_EQUAL(2, env.lookup(a));
     CHECK_EQUAL(3, env.lookup(b));
@@ -29,8 +29,8 @@ TEST(LookupShadow)
 {
     Symbol a = intern("a"),
            b = intern("b");
-    env_ptr<int> env1 = env_ptr<int>{}.bind(a, 2).bind(b, 3);
-    env_ptr<int> env2 = env1.bind(a, 5);
+    env_ptr<int> env1 = env_ptr<int>{}.extend(a, 2).extend(b, 3);
+    env_ptr<int> env2 = env1.extend(a, 5);
 
     CHECK_EQUAL(2, env1.lookup(a));
     CHECK_EQUAL(3, env1.lookup(b));
@@ -42,8 +42,8 @@ TEST(Update)
 {
     Symbol a = intern("a"),
            b = intern("b");
-    env_ptr<int> env1 = env_ptr<int>{}.bind(a, 2).bind(b, 3);
-    env_ptr<int> env2 = env1.bind(a, 5);
+    env_ptr<int> env1 = env_ptr<int>{}.extend(a, 2).extend(b, 3);
+    env_ptr<int> env2 = env1.extend(a, 5);
 
     env2.update(a, 6);
     CHECK_EQUAL(2, env1.lookup(a));

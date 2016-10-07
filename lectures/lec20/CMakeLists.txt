@@ -13,5 +13,7 @@ add_test_program(env_test
 
 add_test_program(value_test
         test/value_test.cpp
+        src/symbol.h src/symbol.cpp
+        src/env.h
         src/struct.h
         src/value.h src/value.cpp)

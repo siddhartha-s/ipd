@@ -1,10 +1,9 @@
 #pragma once
 
-// Environments are reference counted linked lists.
-
 #include "symbol.h"
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 namespace islpp {
@@ -19,12 +18,16 @@ template<typename V>
 class env_ptr
 {
 public:
+    // The empty environment
     env_ptr();
 
-    env_ptr bind(const Symbol&, const V&) const;
+    // Creates a new environment with an additional binding.
+    env_ptr extend(const Symbol&, const V&) const;
 
+    // Updates an existing binding; throws `binding_not_found` otherwise.
     void update(const Symbol&, const V&);
 
+    // Looks up the value of a binding or throws `binding_not_found`.
     const V& lookup(const Symbol&) const;
 
 private:
@@ -66,7 +69,7 @@ const V& env_ptr<V>::lookup(const Symbol& key) const
 }
 
 template<typename V>
-env_ptr<V> env_ptr<V>::bind(const Symbol& key, const V& value) const
+env_ptr<V> env_ptr<V>::extend(const Symbol& key, const V& value) const
 {
     return env_ptr<V>{key, value, head_};
 }
