@@ -16,6 +16,11 @@ std::ostream& operator<<(std::ostream& o, const Symbol& sym)
     return o << sym.name();
 }
 
+Symbol intern(const std::string& name)
+{
+    return Intern_table::INSTANCE().intern(name);
+}
+
 Symbol Intern_table::intern(const std::string& name)
 {
     auto iter = table_.find(name);

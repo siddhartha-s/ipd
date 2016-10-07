@@ -27,6 +27,8 @@ private:
     std::shared_ptr<std::string> ptr_;
 };
 
+Symbol intern(const std::string&);
+
 inline bool operator!=(const Symbol& a, const Symbol& b)
 {
     return !(a == b);
