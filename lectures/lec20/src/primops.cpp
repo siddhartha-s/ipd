@@ -99,18 +99,22 @@ PRIMOP("cons?", cons_huh, 1)
 
 env_ptr<value_ptr> environment =
         env_ptr<value_ptr>{}
+                .extend("empty",  get_empty())
+                .extend("true",   get_boolean(true))
+                .extend("false",  get_boolean(false))
+                .extend("#t",     get_boolean(true))
+                .extend("#f",     get_boolean(false))
                 .extend("cons",   cons)
-                .extend("+",      plus)
                 .extend("=",      num_eq)
                 .extend("equal?", equal_huh)
-                .extend("empty",  get_empty())
+                .extend("+",      plus)
                 .extend("-",      minus)
                 .extend("*",      times)
                 .extend("zero?",  zero_huh)
                 .extend("first",  first)
                 .extend("rest",   rest)
                 .extend("empty?", empty_huh)
-                .extend("cons?", cons_huh);
+                .extend("cons?",  cons_huh);
 
 } // end namespace primop
 
