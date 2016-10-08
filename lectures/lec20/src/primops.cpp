@@ -32,19 +32,19 @@ static value_ptr nf(const std::string& name,
     return value_ptr{new Native_function{intern(name), arity, code}};
 }
 
-#define PRIMFUN(name) value_ptr fn_##name(const std::vector<value_ptr>& args)
+#define PRIMOP_PROTO(name) value_ptr fn_##name(const std::vector<value_ptr>& args)
 
-#define NAMED_PRIMFUN(sym, name, arity) \
-    PRIMFUN(name); \
+#define PRIMOP(sym, name, arity) \
+    PRIMOP_PROTO(name); \
     value_ptr name{nf(sym, arity, fn_##name)}; \
-    PRIMFUN(name)
+    PRIMOP_PROTO(name)
 
-NAMED_PRIMFUN("cons", cons, 2)
+PRIMOP("cons", cons, 2)
 {
     return mk_cons(args[0], args[1]);
 }
 
-NAMED_PRIMFUN("+", plus, -1)
+PRIMOP("+", plus, -1)
 {
     int result = 0;
     for (const auto& v : args)
@@ -52,43 +52,50 @@ NAMED_PRIMFUN("+", plus, -1)
     return mk_integer(result);
 }
 
-NAMED_PRIMFUN("=", num_eq, 2)
+PRIMOP("=", num_eq, 2)
 {
     return get_boolean(args[0]->as_int() == args[1]->as_int());
 }
 
-NAMED_PRIMFUN("equal?", equal_huh, 2)
+PRIMOP("equal?", equal_huh, 2)
 {
     return get_boolean(args[0]->equal(args[1]));
 }
 
-NAMED_PRIMFUN("-", minus, 2)
+PRIMOP("-", minus, 2)
 {
     return mk_integer(args[0]->as_int() - args[1]->as_int());
 }
 
-NAMED_PRIMFUN("*", times, 2)
+PRIMOP("*", times, 2)
 {
     return mk_integer(args[0]->as_int() * args[1]->as_int());
 }
 
-NAMED_PRIMFUN("zero?", zero_huh, 1)
+PRIMOP("zero?", zero_huh, 1)
 {
     return get_boolean(args[0]->as_int() == 0);
 }
 
-NAMED_PRIMFUN("first", first, 1)
+PRIMOP("first", first, 1)
 {
     return args[0]->first();
 }
 
-NAMED_PRIMFUN("rest", rest, 1)
+PRIMOP("rest", rest, 1)
 {
     return args[0]->rest();
 }
 
-#define EXTEND(sym, name, arity) \
-    extend(sym, nf(sym, arity, fn_##name))
+PRIMOP("empty?", empty_huh, 1)
+{
+    return get_boolean(args[0]->type() == value_type::Empty);
+}
+
+PRIMOP("cons?", cons_huh, 1)
+{
+    return get_boolean(args[0]->type() == value_type::Cons);
+}
 
 env_ptr<value_ptr> environment =
         env_ptr<value_ptr>{}
@@ -102,7 +109,8 @@ env_ptr<value_ptr> environment =
                 .extend("zero?",  zero_huh)
                 .extend("first",  first)
                 .extend("rest",   rest)
-;
+                .extend("empty?", empty_huh)
+                .extend("cons?", cons_huh);
 
 } // end namespace primop
 
