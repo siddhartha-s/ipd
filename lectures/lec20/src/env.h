@@ -24,6 +24,9 @@ public:
     // Creates a new environment with an additional binding.
     env_ptr extend(const Symbol&, const V&) const;
 
+    // Creates a new environment with an additional binding.
+    env_ptr extend(const std::string&, const V&) const;
+
     // Updates an existing binding; throws `binding_not_found` otherwise.
     void update(const Symbol&, const V&);
 
@@ -72,6 +75,11 @@ template<typename V>
 env_ptr<V> env_ptr<V>::extend(const Symbol& key, const V& value) const
 {
     return env_ptr<V>{key, value, head_};
+}
+
+template<typename V>
+env_ptr<V> env_ptr<V>::extend(const std::string& key, const V& value) const {
+    return extend(intern(key), value);
 }
 
 template<typename V>

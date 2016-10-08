@@ -193,10 +193,10 @@ Environment Define_struct::extend(const Environment& env0) const
 {
     Environment env = env0;
 
-    env = env.extend(intern("make-" + name_.name()), get_void());
-    env = env.extend(intern(name_.name() + "?"), get_void());
+    env = env.extend("make-" + name_.name(), get_void());
+    env = env.extend(name_.name() + "?", get_void());
     for (const auto& field : fields_)
-        env = env.extend(intern(name_.name() + "-" + field.name()), get_void());
+        env = env.extend(name_.name() + "-" + field.name(), get_void());
 
     return env;
 }

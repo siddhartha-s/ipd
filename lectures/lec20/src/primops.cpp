@@ -9,9 +9,9 @@ typedef value_ptr (* native_function_t)(const std::vector<value_ptr>&);
 class Native_function : public Function
 {
 public:
-    Native_function(const std::string& name,
-                   ssize_t arity,
-                   native_function_t code)
+    Native_function(const Symbol& name,
+                    ssize_t arity,
+                    native_function_t code)
             : Function(name, arity), code_{code} { }
 
     virtual value_ptr apply(const std::vector<value_ptr>&) const;
@@ -29,17 +29,22 @@ static value_ptr nf(const std::string& name,
                     ssize_t arity,
                     native_function_t code)
 {
-    return value_ptr{new Native_function{name, arity, code}};
+    return value_ptr{new Native_function{intern(name), arity, code}};
 }
 
-value_ptr fn_cons(const std::vector<value_ptr>& args)
+#define PRIMFUN(name) value_ptr fn_##name(const std::vector<value_ptr>& args)
+
+#define NAMED_PRIMFUN(sym, name, arity) \
+    PRIMFUN(name); \
+    value_ptr name{nf(sym, arity, fn_##name)}; \
+    PRIMFUN(name)
+
+NAMED_PRIMFUN("cons", cons, 2)
 {
     return mk_cons(args[0], args[1]);
 }
 
-value_ptr cons{nf("cons", 2, fn_cons)};
-
-value_ptr fn_plus(const std::vector<value_ptr>& args)
+NAMED_PRIMFUN("+", plus, -1)
 {
     int result = 0;
     for (const auto& v : args)
@@ -47,21 +52,57 @@ value_ptr fn_plus(const std::vector<value_ptr>& args)
     return mk_integer(result);
 }
 
-value_ptr plus{nf("+", -1, fn_plus)};
-
-value_ptr fn_num_eq(const std::vector<value_ptr>& args)
+NAMED_PRIMFUN("=", num_eq, 2)
 {
     return get_boolean(args[0]->as_int() == args[1]->as_int());
 }
 
-value_ptr num_eq{nf("=", 2, fn_num_eq)};
-
-value_ptr fn_equal_huh(const std::vector<value_ptr>& args)
+NAMED_PRIMFUN("equal?", equal_huh, 2)
 {
     return get_boolean(args[0]->equal(args[1]));
 }
 
-value_ptr equal_huh{nf("equal?", 2, fn_equal_huh)};
+NAMED_PRIMFUN("-", minus, 2)
+{
+    return mk_integer(args[0]->as_int() - args[1]->as_int());
+}
+
+NAMED_PRIMFUN("*", times, 2)
+{
+    return mk_integer(args[0]->as_int() * args[1]->as_int());
+}
+
+NAMED_PRIMFUN("zero?", zero_huh, 1)
+{
+    return get_boolean(args[0]->as_int() == 0);
+}
+
+NAMED_PRIMFUN("first", first, 1)
+{
+    return args[0]->first();
+}
+
+NAMED_PRIMFUN("rest", rest, 1)
+{
+    return args[0]->rest();
+}
+
+#define EXTEND(sym, name, arity) \
+    extend(sym, nf(sym, arity, fn_##name))
+
+env_ptr<value_ptr> environment =
+        env_ptr<value_ptr>{}
+                .extend("cons",   cons)
+                .extend("+",      plus)
+                .extend("=",      num_eq)
+                .extend("equal?", equal_huh)
+                .extend("empty",  get_empty())
+                .extend("-",      minus)
+                .extend("*",      times)
+                .extend("zero?",  zero_huh)
+                .extend("first",  first)
+                .extend("rest",   rest)
+;
 
 } // end namespace primop
 

@@ -2,12 +2,12 @@
 
 namespace islpp {
 
-Expr mk_variable(const Symbol& name)
+Expr mk_var(const Symbol& name)
 {
     return std::make_shared<Variable>(name);
 }
 
-Expr mk_application(const Expr& fun, const std::vector<Expr>& actuals)
+Expr mk_app(const Expr& fun, const std::vector<Expr>& actuals)
 {
     return std::make_shared<Application>(fun, actuals);
 }
@@ -27,7 +27,7 @@ Expr mk_cond(const std::vector<std::pair<Expr, Expr>>& alts)
     return std::make_shared<Cond>(alts);
 }
 
-Expr mk_integer_literal(int val)
+Expr mk_int_lit(int val)
 {
     return std::make_shared<Integer_literal>(val);
 }
@@ -37,7 +37,7 @@ Expr mk_string_literal(const std::string& val)
     return std::make_shared<String_literal>(val);
 }
 
-Expr mk_boolean_literal(bool val)
+Expr mk_bool_lit(bool val)
 {
     return std::make_shared<Boolean_literal>(val);
 }

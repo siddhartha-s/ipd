@@ -33,4 +33,5 @@ add_test_program(eval_test
         src/env.h
         src/struct.h
         src/symbol.h src/symbol.cpp
-        src/value.h src/value.cpp)
+        src/value.h src/value.cpp
+        src/primops.h src/primops.cpp)
