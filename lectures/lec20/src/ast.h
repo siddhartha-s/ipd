@@ -32,7 +32,7 @@ public:
 };
 
 Expr mk_variable(const Symbol& name);
-Expr mk_application(const Expr& rator, const Expr& rand);
+Expr mk_application(const Expr& fun, const std::vector<Expr>& actuals);
 Expr mk_lambda(const std::vector<Symbol>& formals, const Expr& body);
 Expr mk_local(const std::vector<Decl>& decls, const Expr& body);
 Expr mk_cond(const std::vector<std::pair<Expr, Expr>>& alts);
