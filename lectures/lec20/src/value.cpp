@@ -33,45 +33,51 @@ std::ostream& operator<<(std::ostream& o, value_type vt)
  * Value members
  */
 
+std::string Value::type_name() const
+{
+    return to_string(type());
+}
+
 bool Value::as_bool() const
 {
-    throw type_error(to_string(type()), "boolean");
+    throw type_error(type_name(), "boolean");
 }
 
 int Value::as_int() const
 {
-    throw type_error(to_string(type()), "integer");
+    throw type_error(type_name(), "integer");
 }
 
 const std::string& Value::as_string() const
 {
-    throw type_error(to_string(type()), "string");
+    throw type_error(type_name(), "string");
 }
 
 const value_ptr& Value::first() const
 {
-    throw type_error(to_string(type()), "cons");
+    throw type_error(type_name(), "cons");
 }
 
 const value_ptr& Value::rest() const
 {
-    throw type_error(to_string(type()), "cons");
+    throw type_error(type_name(), "cons");
 }
 
 const struct_id_ptr& Value::struct_id() const
 {
-    throw type_error(to_string(type()), "struct");
+    throw type_error(type_name(), "struct");
 }
 
 const std::vector<value_ptr>& Value::get_fields() const
 {
-    throw type_error(to_string(type()), "struct");
+    throw type_error(type_name(), "struct");
 }
 
 value_ptr Value::operator()(const std::vector<value_ptr>&) const
 {
-    throw type_error(to_string(type()), "function");
+    throw type_error(type_name(), "function");
 }
+
 
 /*
  * Boolean class
@@ -349,7 +355,8 @@ public:
     virtual const struct_id_ptr         & struct_id() const override;
     virtual const std::vector<value_ptr>& get_fields() const override;
 
-    virtual value_type type() const override;
+    virtual value_type  type() const override;
+    virtual std::string type_name() const override;
     virtual std::ostream& display(std::ostream&) const override;
     virtual bool equal(const value_ptr&) const override;
 
@@ -378,6 +385,11 @@ value_type Struct::type() const
     return value_type::Struct;
 }
 
+std::string Struct::type_name() const
+{
+    return "struct " + id_->name.name();
+}
+
 std::ostream& Struct::display(std::ostream& o) const
 {
     o << "(make-";
@@ -401,8 +413,7 @@ bool Struct::equal(const value_ptr& other) const
 
     for (auto i = vals_.begin(), j = other->get_fields().begin();
          i != vals_.end();
-         ++i, ++j)
-    {
+         ++i, ++j) {
         if (!(*i)->equal(*j)) return false;
     }
 
@@ -436,7 +447,7 @@ bool Function::equal(const value_ptr&) const
     return false;
 }
 
-Function::Function(const std::string& name, ssize_t arity)
+Function::Function(const Symbol& name, ssize_t arity)
         : arity_{arity}, name_{name} { }
 
 }

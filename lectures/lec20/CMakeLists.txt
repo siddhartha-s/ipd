@@ -32,4 +32,5 @@ add_test_program(ast_test
         src/ast.h src/ast.cpp
         src/env.h
         src/struct.h
-        src/symbol.h src/symbol.cpp)
+        src/symbol.h src/symbol.cpp
+        src/value.h src/value.cpp)

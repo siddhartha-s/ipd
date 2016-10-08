@@ -11,6 +11,9 @@ namespace islpp
 
 struct Struct_id
 {
+    Struct_id(const Symbol& n, const std::vector<Symbol>& f)
+            : name(n), fields(f) { }
+
     Symbol name;
     std::vector<Symbol> fields;
 };

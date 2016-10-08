@@ -44,6 +44,7 @@ class Value
 {
 public:
     virtual value_type type() const = 0;
+    virtual std::string type_name() const;
 
     virtual std::ostream& display(std::ostream&) const = 0;
     virtual bool equal(const value_ptr&) const = 0;
@@ -68,12 +69,12 @@ public:
     virtual bool equal(const value_ptr&) const override;
 
 protected:
-    Function(const std::string& name, ssize_t arity);
+    Function(const Symbol& name, ssize_t arity);
 
     virtual value_ptr apply(const std::vector<value_ptr>&) const = 0;
 
-    ssize_t     arity_;
-    std::string name_;
+    ssize_t arity_;
+    Symbol  name_;
 };
 
 inline std::ostream& operator<<(std::ostream& o, const Value& v)
