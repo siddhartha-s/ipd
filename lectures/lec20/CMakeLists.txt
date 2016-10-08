@@ -35,3 +35,7 @@ add_test_program(eval_test
         src/symbol.h src/symbol.cpp
         src/value.h src/value.cpp
         src/primops.h src/primops.cpp)
+
+add_test_program(lexer_test
+        src/lexer.h src/lexer.cpp
+        test/lexer_test.cpp)
