@@ -34,6 +34,7 @@ using value_ptr = std::shared_ptr<Value>;
 
 value_ptr mk_integer(int);
 value_ptr mk_string(const std::string&);
+value_ptr mk_symbol(const Symbol&);
 value_ptr mk_cons(const value_ptr&, const value_ptr&);
 value_ptr mk_struct(const struct_id_ptr&, std::vector<value_ptr>);
 

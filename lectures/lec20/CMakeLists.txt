@@ -41,12 +41,14 @@ add_test_program(lexer_test
         test/lexer_test.cpp)
 
 add_test_program(reader_test
+        test/reader_test.cpp
         src/reader.h src/reader.cpp
         src/lexer.h src/lexer.cpp
         src/value.h src/value.cpp
         src/symbol.h src/symbol.cpp)
 
 add_test_program(parser_test
+        test/parser_test.cpp
         src/parser.h src/parser.cpp
         src/lexer.h src/lexer.cpp
         src/value.h src/value.cpp
