@@ -50,6 +50,7 @@ add_test_program(reader_test
 add_test_program(parser_test
         test/parser_test.cpp
         src/parser.h src/parser.cpp
+        src/reader.h src/reader.cpp
         src/lexer.h src/lexer.cpp
         src/value.h src/value.cpp
         src/symbol.h src/symbol.cpp
