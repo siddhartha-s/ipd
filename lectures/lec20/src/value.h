@@ -17,6 +17,7 @@ enum class value_type
     Boolean,
     Integer,
     String,
+    Symbol,
     Cons,
     Empty,
     Struct,
@@ -52,6 +53,7 @@ public:
     virtual bool as_bool() const;
     virtual int  as_int() const;
     virtual const std::string           & as_string() const;
+    virtual const Symbol                & as_symbol() const;
     virtual const value_ptr             & first() const;
     virtual const value_ptr             & rest() const;
     virtual const struct_id_ptr         & struct_id() const;

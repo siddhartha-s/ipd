@@ -39,3 +39,17 @@ add_test_program(eval_test
 add_test_program(lexer_test
         src/lexer.h src/lexer.cpp
         test/lexer_test.cpp)
+
+add_test_program(reader_test
+        src/reader.h src/reader.cpp
+        src/lexer.h src/lexer.cpp
+        src/value.h src/value.cpp
+        src/symbol.h src/symbol.cpp)
+
+add_test_program(parser_test
+        src/parser.h src/parser.cpp
+        src/lexer.h src/lexer.cpp
+        src/value.h src/value.cpp
+        src/symbol.h src/symbol.cpp
+        src/eval.cpp
+        src/ast.h src/ast.cpp)

@@ -11,6 +11,8 @@ const char* to_string(value_type vt)
             return "integer";
         case value_type::String:
             return "string";
+        case value_type::Symbol:
+            return "symbol";
         case value_type::Cons:
             return "cons";
         case value_type::Empty:
@@ -51,6 +53,11 @@ int Value::as_int() const
 const std::string& Value::as_string() const
 {
     throw type_error(type_name(), "string");
+}
+
+const Symbol& Value::as_symbol() const
+{
+    throw type_error(type_name(), "symbol");
 }
 
 const value_ptr& Value::first() const
@@ -213,6 +220,51 @@ bool String::equal(const value_ptr& other) const
 }
 
 std::ostream& String::display(std::ostream& o) const
+{
+    return o << val_;
+}
+
+/*
+ * Symbol class
+ */
+
+class Symbol_value : public Value
+{
+public:
+    Symbol_value(const Symbol& val) : val_(val) { }
+
+    virtual const Symbol& as_symbol() const override;
+
+    virtual value_type type() const override;
+    virtual std::ostream& display(std::ostream&) const override;
+    virtual bool equal(const value_ptr&) const override;
+
+private:
+    Symbol val_;
+};
+
+value_ptr mk_symbol(const Symbol& val)
+{
+    return value_ptr{new Symbol_value{val}};
+}
+
+const Symbol& Symbol_value::as_symbol() const
+{
+    return val_;
+}
+
+value_type Symbol_value::type() const
+{
+    return value_type::Symbol;
+}
+
+bool Symbol_value::equal(const value_ptr& other) const
+{
+    return other->type() == value_type::Symbol
+           && val_ == other->as_symbol();
+}
+
+std::ostream& Symbol_value::display(std::ostream& o) const
 {
     return o << val_;
 }
