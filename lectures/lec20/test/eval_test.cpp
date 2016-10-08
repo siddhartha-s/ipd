@@ -50,3 +50,26 @@ TEST(Factorial)
 
     CHECK_EQUAL(120, e->eval(primop::environment)->as_int());
 }
+
+TEST(Posn)
+{
+    Symbol posn = intern("posn");
+
+    Decl decl1 = mk_define_struct(posn, {intern("x"), intern("y")});
+    Decl decl2 = mk_define_var(intern("p"),
+                               mk_app(mk_var(intern("make-posn")),
+                                      {mk_int_lit(3), mk_int_lit(4)}));
+
+    CHECK_EQUAL(get_boolean(true),
+                mk_local({decl1, decl2},
+                         mk_app(mk_var(intern("posn?")), {mk_var(intern("p"))}))
+                ->eval(primop::environment));
+    CHECK_EQUAL(get_boolean(false),
+                mk_local({decl1, decl2},
+                         mk_app(mk_var(intern("cons?")), {mk_var(intern("p"))}))
+                        ->eval(primop::environment));
+    CHECK_EQUAL(3,
+                mk_local({decl1, decl2},
+                         mk_app(mk_var(intern("posn-x")), {mk_var(intern("p"))}))
+                        ->eval(primop::environment)->as_int());
+}
