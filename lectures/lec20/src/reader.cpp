@@ -78,8 +78,6 @@ value_ptr read(Lexer& lex)
         case token_type::error:
             throw syntax_error("lexical error", "token");
     }
-
-    throw syntax_error("read error", "token");
 }
 
 }
