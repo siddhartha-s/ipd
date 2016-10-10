@@ -1,7 +1,15 @@
 Binomial Heaps at Priority Queues
 ---------------------------------
 
-A priority queue is an ADT supporting these operations:
+A priority queue is an ADT that looks like a bunch elements enclosed
+in curly braces (meant to evoke a set), where we write the elements
+in sorted order, e.g.:
+
+     {0, 1, 2}
+     {}
+     {10, 11, 3151, 424242}
+
+   supporting these operations:
 
   - empty-heap     -- gets us started
   - (is-empty? h)  -- still empty?
@@ -9,8 +17,18 @@ A priority queue is an ADT supporting these operations:
   - (find-min h)   -- returns the smallest value in the heap
   - (remove-min h) -- builds a new heap, without the smallest entry
 
-The tricky part here is no matter what order we add values to the
-heap, the find-min operation always returns the smallest element.
+  Laws:
+
+   (is-empty? {}) = #true
+   (is-empty? {x1 x2 ...}) = #false
+   (insert {x ...} y) = {xs ... y xl ...}
+       where xs is the elements of {x ...} < y and
+             xl is the elements of {x ...} > y
+   (find-min {x1 x2 ...}) = x1
+   (remove-min {x1 x2 ...}) = x2
+
+The main thing to note here is no matter what order we add values to
+the heap, the find-min operation always returns the smallest element.
 
 Today I'll explain how binomial heaps provide us with an
 implementation of this ADT.
