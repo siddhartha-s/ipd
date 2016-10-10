@@ -11,19 +11,19 @@ value_ptr read_list(Lexer& lex, token_type open)
             if (open == token_type::lparen)
                 return get_empty();
             else
-                throw syntax_error(tok.value, "right parenthesis");
+                throw syntax_error("unmatched delimiters");
 
         case token_type::rbrack:
             if (open == token_type::lbrack)
                 return get_empty();
             else
-                throw syntax_error(tok.value, "right square bracket");
+                throw syntax_error("unmatched delimiters");
 
         case token_type::rbrace:
             if (open == token_type::lbrace)
                 return get_empty();
             else
-                throw syntax_error(tok.value, "right curly brace");
+                throw syntax_error("unmatched delimiters");
 
         default:
             lex.push_back(tok);
