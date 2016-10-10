@@ -76,10 +76,9 @@ TEST(Define_struct)
     CHECK_EXPR("(local [(define-struct posn [x y])] (make-posn 3 4))");
 }
 
-//TEST(Things_that_do_not_parse)
-//{
-//    CHECK_THROW(parse_string("(+ a 5"), syntax_error);
-//    CHECK_THROW(parse_string("(local (define a 5) (+ a 6))"),
-//                syntax_error);
-//
-//}
+TEST(Things_that_do_not_parse)
+{
+    CHECK_THROW(rt_expr("(+ a 5"), syntax_error);
+    CHECK_THROW(rt_expr("(local (define a 5) (+ a 6))"),
+                syntax_error);
+}
