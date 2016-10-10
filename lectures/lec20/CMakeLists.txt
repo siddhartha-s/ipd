@@ -35,16 +35,6 @@ add_test_program(ast_test
         src/symbol.h src/symbol.cpp
         src/value.h src/value.cpp)
 
-add_test_program(eval_test
-        test/eval_test.cpp
-        src/eval.cpp
-        src/ast.h src/ast.cpp
-        src/env.h
-        src/struct.h
-        src/symbol.h src/symbol.cpp
-        src/value.h src/value.cpp
-        src/primops.h src/primops.cpp)
-
 add_test_program(lexer_test
         src/lexer.h src/lexer.cpp
         test/lexer_test.cpp)
@@ -65,3 +55,17 @@ add_test_program(parser_test
         src/symbol.h src/symbol.cpp
         src/eval.cpp
         src/ast.h src/ast.cpp)
+
+add_test_program(eval_test
+        test/eval_test.cpp
+        src/eval.cpp
+        src/ast.h src/ast.cpp
+        src/env.h
+        src/struct.h
+        src/parser.h src/parser.cpp
+        src/reader.h src/reader.cpp
+        src/lexer.h src/lexer.cpp
+        src/symbol.h src/symbol.cpp
+        src/value.h src/value.cpp
+        src/primops.h src/primops.cpp)
+
