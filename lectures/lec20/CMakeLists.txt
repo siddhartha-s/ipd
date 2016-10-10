@@ -26,6 +26,15 @@ add_test_program(primops_test
         src/value.h src/value.cpp
         src/primops.h src/primops.cpp)
 
+add_test_program(ast_test
+        test/ast_test.cpp
+        src/eval.cpp
+        src/ast.h src/ast.cpp
+        src/env.h
+        src/struct.h
+        src/symbol.h src/symbol.cpp
+        src/value.h src/value.cpp)
+
 add_test_program(eval_test
         test/eval_test.cpp
         src/eval.cpp

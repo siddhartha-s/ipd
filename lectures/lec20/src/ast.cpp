@@ -2,6 +2,16 @@
 
 namespace islpp {
 
+std::ostream& operator<<(std::ostream& o, const Expr_node& e)
+{
+    return e.display(o);
+}
+
+std::ostream& operator<<(std::ostream& o, const Decl_node& d)
+{
+    return d.display(o);
+}
+
 Expr var(const Symbol& name)
 {
     return std::make_shared<Variable>(name);
@@ -56,6 +66,111 @@ Decl define_fun(const Symbol& name, const std::vector<Symbol>& formals,
 Decl define_struct(const Symbol& name, const std::vector<Symbol>& fields)
 {
     return std::make_shared<Define_struct>(name, fields);
+}
+
+std::ostream& Variable::display(std::ostream& o) const
+{
+    return o << name_;
+}
+
+std::ostream& Application::display(std::ostream& o) const
+{
+    o << '(' << *fun_;
+    for (const auto& actual : actuals_) o << ' ' << *actual;
+    return o << ')';
+}
+
+std::ostream& Lambda::display(std::ostream& o) const
+{
+    o << "(lambda (";
+    for (size_t i = 0; i < formals_.size(); ++i) {
+        if (i != 0) o << ' ';
+        o << formals_[i];
+    }
+    return o << ") " << *body_ << ')';
+}
+
+std::ostream& Local::display(std::ostream& o) const
+{
+    o << "(local [";
+    for (size_t i = 0; i < decls_.size(); ++i) {
+        if (i != 0) o << ' ';
+        o << *decls_[i];
+    }
+    return o << "] " << *body_ << ')';
+}
+
+std::ostream& Cond::display(std::ostream& o) const
+{
+    o << "(cond";
+    for (const auto& alt : alts_) {
+        o << " [" << *alt.first << ' ' << *alt.second << ']';
+    }
+    return o << ')';
+}
+
+std::ostream& Integer_literal::display(std::ostream& o) const
+{
+    return o << val_;
+}
+
+std::ostream& String_literal::display(std::ostream& o) const
+{
+    o << '"';
+
+    for (char c : val_) {
+        switch (c) {
+            case '"': case '\\':
+                o << '\\' << c;
+                break;
+
+            case '\n':
+                o << "\\n";
+                break;
+
+            case '\t':
+                o << "\\t";
+                break;
+
+            case '\r':
+                o << "\\r";
+                break;
+
+            default:
+                o << c;
+        }
+    }
+
+    return o << '"';
+}
+
+std::ostream& Boolean_literal::display(std::ostream& o) const
+{
+    return o << (val_ ? "#true" : "#false");
+}
+
+std::ostream& Define_var::display(std::ostream& o) const
+{
+    return o << "(define " << name_ << ' ' << *rhs_ << ')';
+}
+
+std::ostream& Define_fun::display(std::ostream& o) const
+{
+    o << "(define (";
+    o << name_;
+    for (const auto& formal : formals_)
+        o << ' ' << formal;
+    return o << ") " << *body_ << ')';
+}
+
+std::ostream& Define_struct::display(std::ostream& o) const
+{
+    o << "(define-struct " << name_ << " [";
+    for (size_t i = 0; i < fields_.size(); ++i) {
+        if (i != 0) o << ' ';
+        o << fields_[i];
+    }
+    return o << "])";
 }
 
 }
