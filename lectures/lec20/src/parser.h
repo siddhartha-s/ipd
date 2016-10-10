@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lexer.h"
+#include "reader.h"
 #include "ast.h"
 
 #include <stdexcept>
