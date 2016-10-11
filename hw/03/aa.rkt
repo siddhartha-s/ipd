@@ -119,7 +119,7 @@ The new node should have level 1.
 
 |#
 ;; insert-wrong : [AA-node X] X [X X -> Boolean] -> [AA-node X]
-;; inserts 'value' into 'tree' using 'less-than' without
+;; inserts 'value' into 'node' using 'less-than' without
 ;; regard to the AA invariant.
 (define (insert-wrong node value less-than) "...")
 
