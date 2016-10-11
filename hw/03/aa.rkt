@@ -72,26 +72,26 @@ And, of course, the binary search tree invariant also holds:
 ;; Examples.
 
 ;; Define the example [AA-tree number] that has only the number 0
-;; in it and uses < and = as the less than and comparison operation.
+;; in it and use < as the comparison operation.
 (define zero "...")
 
 ;; There is only one [AA-tree number] that has the numbers 1, 2, and 3 in
-;; it, using < and = as the less than and comparison operation. Define it.
+;; it, using < as the comparison operation. Define it.
 (define one-two-three "...")
 
 ;; Similarly, there is only one that has the strings "one" "two" and "three"
-;; in it, using string<? as the comparison predicate. Define it.
+;; in it, using string<? as the comparison operation. Define it.
 (define one-two-three-string "...")
 
 ;; There are two [AA-tree number]s that have the numbers 1, 2, 3, and
-;; 4 in them (when using < and =). Define them both. The constraint
+;; 4 in them (when using <). Define them both. The constraint
 ;; that all "leaf"s have level 0 means that many of the trees that
 ;; you might think are AA trees really are not.
 (define one-two-three-four-a "...")
 (define one-two-three-four-b "...")
 
 ;; Define an [AA-tree number] that has at least 6 numbers in it.
-;; Use > and = as the comparsion and equality.
+;; Use < as the comparsion function.
 (define six-nodes "...")
 
 #|
@@ -235,7 +235,7 @@ Note that when you write test cases, you are not allowed to pass functions
 (or structures that have functions inside them) to check-expect. So,
 for example, this:
 
-  (check-expect (make-tree "leaf" 0 < =) (make-tree "leaf" 0 < =))
+  (check-expect (make-tree "leaf" 0 <) (make-tree "leaf" 0 <))
 
 will raise an error. To avoid this problem, write test cases that check
 only the root field and size field of your insertion function (by calling
