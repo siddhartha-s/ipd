@@ -10,6 +10,7 @@ namespace ipd {
 template<typename T>
 class Binomial_heap
 {
+public:
     bool empty() const;
     size_t size() const;
 
@@ -25,7 +26,7 @@ private:
     using row_  = std::vector<tree_>;
 
     row_   roots_;
-    size_t size_;
+    size_t size_ = 0;
 
     size_t find_min_index_() const;
 
@@ -73,7 +74,7 @@ template<typename T>
 void Binomial_heap<T>::remove_min()
 {
     tree_ victim = std::move(roots_[find_min_index_()]);
-    row_ result = merge_rows_(roots_, victim->children);
+    row_  result = merge_rows_(roots_, victim->children);
     std::swap(roots_, result);
 
     --size_;
@@ -85,7 +86,9 @@ size_t Binomial_heap<T>::find_min_index_() const
     size_t best = 0;
 
     for (size_t i = 1; i < roots_.size(); ++i) {
-        if (roots_[i]->data < roots_[best]->data) {
+        if (roots_[best] == nullptr ||
+            (roots_[i] != nullptr &&
+             roots_[i]->data < roots_[best]->data)) {
             best = i;
         }
     }
@@ -103,7 +106,7 @@ void Binomial_heap<T>::merge(Binomial_heap& other)
 }
 
 template<typename T>
-Binomial_heap<T>::tree_ Binomial_heap<T>::merge_trees_(tree_ a, tree_ b)
+auto Binomial_heap<T>::merge_trees_(tree_ a, tree_ b) -> tree_
 {
     if (a->data < b->data) {
         a->children.push_back(std::move(b));
@@ -118,13 +121,13 @@ template<typename T>
 auto Binomial_heap<T>::merge_rows_(row_& a, row_& b) -> row_
 {
     std::vector<tree_> carry;
-    row_ result;
+    row_               result;
 
     size_t limit = std::max(a.size(), b.size());
 
     for (size_t i = 0; i < limit; ++i) {
-        if (i < a.size()) carry.push_back(std::move(a[i]));
-        if (i < b.size()) carry.push_back(std::move(b[i]));
+        if (i < a.size() && a[i] != nullptr) carry.push_back(std::move(a[i]));
+        if (i < b.size() && b[i] != nullptr) carry.push_back(std::move(b[i]));
 
         switch (carry.size()) {
             case 0:
@@ -137,17 +140,23 @@ auto Binomial_heap<T>::merge_rows_(row_& a, row_& b) -> row_
                 carry.clear();
                 break;
 
-            case 2:
+            case 2: {
                 result.push_back(nullptr);
-                carry = { merge_trees_(std::move(carry[0]),
-                                       std::move(carry[1])) };
+                tree_ merged = merge_trees_(std::move(carry[0]),
+                                            std::move(carry[1]));
+                carry.clear();
+                carry.push_back(std::move(merged));
                 break;
+            }
 
-            case 3:
-                result.push_back(carry[2]);
-                carry = { merge_trees_(std::move(carry[0]),
-                                       std::move(carry[1])) };
+            case 3: {
+                result.push_back(std::move(carry[2]));
+                tree_ merged = merge_trees_(std::move(carry[0]),
+                                            std::move(carry[1]));
+                carry.clear();
+                carry.push_back(std::move(merged));
                 break;
+            }
 
             default:
                 assert(false);
@@ -159,6 +168,8 @@ auto Binomial_heap<T>::merge_rows_(row_& a, row_& b) -> row_
 
     a.clear();
     b.clear();
+
+    return result;
 }
 
 }
