@@ -71,7 +71,7 @@ TEST(Remove_changes_min)
 
 TEST(Many_insertions)
 {
-    Binomial_heap<int> h;
+    Binomial_heap<size_t> h;
 
     for (size_t i = 1000; i >= 1; --i) {
         h.add(i);
@@ -81,4 +81,46 @@ TEST(Many_insertions)
         CHECK_EQUAL(i, h.get_min());
         h.remove_min();
     }
+}
+
+TEST(Merge)
+{
+    Binomial_heap<size_t> h1, h2;
+
+    for (size_t i = 0; i < 1000; ++i) {
+        if (i % 2 == 0)
+            h2.add(i);
+        else
+            h1.add(i);
+    }
+
+    h1.merge(h2);
+
+    CHECK(h2.empty());
+    CHECK_EQUAL(1000, h1.size());
+
+    for (size_t i = 0; i < 1000; ++i) {
+        CHECK_EQUAL(i, h1.get_min());
+        h1.remove_min();
+    }
+}
+
+TEST(Repeated)
+{
+    Binomial_heap<int> h;
+
+    h.add(1);
+    h.add(1);
+    h.add(1);
+
+    CHECK_EQUAL(3, h.size());
+
+    CHECK_EQUAL(1, h.get_min());
+    h.remove_min();
+    CHECK_EQUAL(1, h.get_min());
+    h.remove_min();
+    CHECK_EQUAL(1, h.get_min());
+    h.remove_min();
+
+    CHECK(h.empty());
 }
