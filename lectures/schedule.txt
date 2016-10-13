@@ -24,4 +24,4 @@
 18  11/22: binomial heap (R); final project discussion
  11/24: – Thanksgiving —
 19  11/29: object-oriented graphics library (J)
-20  12/01: ISL+λ interpreter (R)
+20  12/01: ISL+λ interpreter (D)
