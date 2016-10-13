@@ -110,13 +110,19 @@ void Bst<T>::remove(const T& key)
         if (key < (*curr)->data) curr = &(*curr)->left;
         else if (key > (*curr)->data) curr = &(*curr)->right;
         else {
+            // To remove a node that has no right child, we replace it with
+            // its left child. Otherwise, we find the successor node by going
+            // to the right once and to the left as far as possible. Then we
+            // swap the contents with the successor node and delete the
+            // successor by replacing it with its right child.
             if ((*curr)->right == nullptr) {
                 *curr = std::move((*curr)->left);
             } else {
-                ptr_* other = &(*curr)->right;
-                while ((*other)->left != nullptr) other = &(*other)->left;
-                std::swap((*other)->data, (*curr)->data);
-                *other = std::move((*other)->right);
+                ptr_* succ = &(*curr)->right;
+                while ((*succ)->left != nullptr)
+                    succ = &(*succ)->left;
+                std::swap((*succ)->data, (*curr)->data);
+                *succ = std::move((*succ)->right);
             }
 
             size_--;
