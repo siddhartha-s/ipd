@@ -164,9 +164,6 @@ auto Binomial_heap<T>::merge_rows_(row_& a, row_& b) -> row_
     if (carry != nullptr)
         result.push_back(std::move(carry));
 
-    a.clear();
-    b.clear();
-
     return result;
 }
 
