@@ -7,17 +7,25 @@
 
 namespace ipd {
 
+// Implements a min-priority queue as a binomial heap.
 template<typename T>
 class Binomial_heap
 {
 public:
+    // Is this heap empty?
     bool empty() const;
+    // Returns the number of elements in the heap.
     size_t size() const;
 
+    // Adds an element to the heap.
     void add(const T&);
+    // Returns the minimum element; undefined if the heap is empty.
     const T& get_min() const;
+    // Removes the minimum element; undefined if the heap is empty;
     void remove_min();
 
+    // Merges the contents of another heap into this heap, leaving the other
+    // heap empty.
     void merge(Binomial_heap&);
 
 private:
