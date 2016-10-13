@@ -86,3 +86,63 @@ TEST(Pop_back_removes_back)
     CHECK(dq.empty());
 }
 
+TEST(Can_push_after_pop)
+{
+    deque<int> dq;
+    dq.push_back(5);
+    dq.push_back(6);
+    dq.push_back(7);
+    dq.pop_front();
+    dq.push_back(8);
+    CHECK_EQUAL(6, dq.front());
+    CHECK_EQUAL(8, dq.back());
+    dq.pop_front();
+    CHECK_EQUAL(7, dq.front());
+    CHECK_EQUAL(8, dq.back());
+    dq.pop_front();
+    CHECK_EQUAL(8, dq.front());
+    CHECK_EQUAL(8, dq.back());
+    dq.pop_front();
+    CHECK(dq.empty());
+    dq.push_back(9);
+    dq.push_back(10);
+    CHECK_EQUAL(9, dq.front());
+    CHECK_EQUAL(10, dq.back());
+}
+
+TEST(Copy)
+{
+    deque<int> dq1;
+    dq1.push_back(5);
+    dq1.push_back(6);
+
+    deque<int> dq2(dq1);
+    CHECK_EQUAL(5, dq2.front());
+    CHECK_EQUAL(6, dq2.back());
+
+    dq2.push_back(7);
+    CHECK_EQUAL(5, dq2.front());
+    CHECK_EQUAL(7, dq2.back());
+    CHECK_EQUAL(5, dq1.front());
+    CHECK_EQUAL(6, dq1.back());
+}
+
+TEST(Assign)
+{
+    deque<int> dq1;
+    dq1.push_back(5);
+    dq1.push_back(6);
+
+    deque<int> dq2;
+    dq2.push_back(10);
+
+    dq2 = dq1;
+    CHECK_EQUAL(5, dq2.front());
+    CHECK_EQUAL(6, dq2.back());
+
+    dq2.push_back(7);
+    CHECK_EQUAL(5, dq2.front());
+    CHECK_EQUAL(7, dq2.back());
+    CHECK_EQUAL(5, dq1.front());
+    CHECK_EQUAL(6, dq1.back());
+}

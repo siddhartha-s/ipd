@@ -68,18 +68,18 @@ template<typename T>
 deque<T>::deque() { }
 
 template<typename T>
-deque<T>::deque(const deque&)
+deque<T>::deque(const deque& other)
 {
-    for (node_* curr = head_; curr != nullptr; curr = curr->next)
+    for (node_* curr = other.head_; curr != nullptr; curr = curr->next)
         push_back(curr->data);
 }
 
 template<typename T>
-deque<T>& deque<T>::operator=(const deque&)
+deque<T>& deque<T>::operator=(const deque& other)
 {
     erase();
 
-    for (node_* curr = head_; curr != nullptr; curr = curr->next)
+    for (node_* curr = other.head_; curr != nullptr; curr = curr->next)
         push_back(curr->data);
 
     return *this;
