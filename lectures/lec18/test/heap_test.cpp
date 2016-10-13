@@ -68,3 +68,17 @@ TEST(Remove_changes_min)
     h.remove_min();
     CHECK(h.empty());
 }
+
+TEST(Many_insertions)
+{
+    Binomial_heap<int> h;
+
+    for (size_t i = 1000; i >= 1; --i) {
+        h.add(i);
+    }
+
+    for (size_t i = 1; i <= 1000; ++i) {
+        CHECK_EQUAL(i, h.get_min());
+        h.remove_min();
+    }
+}

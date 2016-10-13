@@ -75,7 +75,7 @@ void Binomial_heap<T>::remove_min()
 {
     tree_ victim = std::move(roots_[find_min_index_()]);
     row_  result = merge_rows_(roots_, victim->children);
-    std::swap(roots_, result);
+    std::swap(result, roots_);
 
     --size_;
 }
