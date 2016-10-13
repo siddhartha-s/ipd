@@ -41,12 +41,11 @@ template<typename T>
 struct Bst<T>::node_
 {
     node_(const T& value)
-            : data(value), left(nullptr), right(nullptr), size(1) {}
+            : data(value), left(nullptr), right(nullptr) {}
 
     T      data;
     ptr_   left;
     ptr_   right;
-    size_t size;
 };
 
 template<typename T>
