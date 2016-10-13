@@ -134,33 +134,28 @@ auto Binomial_heap<T>::merge_rows_(row_& a, row_& b) -> row_
     size_t limit = std::max(a.size(), b.size());
 
     for (size_t i = 0; i < limit; ++i) {
-        std::vector<tree_> curr;
+        bool has_carry = carry != nullptr;
+        bool has_a     = i < a.size() && a[i] != nullptr;
+        bool has_b     = i < b.size() && b[i] != nullptr;
 
-        if (carry != nullptr) curr.push_back(std::move(carry));
-        if (i < a.size() && a[i] != nullptr) curr.push_back(std::move(a[i]));
-        if (i < b.size() && b[i] != nullptr) curr.push_back(std::move(b[i]));
-
-        switch (curr.size()) {
-            case 0:
-                result.push_back(nullptr);
-                break;
-
-            case 1:
-                result.push_back(std::move(curr[0]));
-                break;
-
-            case 2:
-                result.push_back(nullptr);
-                carry = merge_trees_(std::move(curr[0]), std::move(curr[1]));
-                break;
-
-            case 3:
-                result.push_back(std::move(curr[2]));
-                carry = merge_trees_(std::move(curr[0]), std::move(curr[1]));
-                break;
-
-            default:
-                assert(false);
+        if (has_a && has_b) {
+            result.push_back(std::move(carry));
+            carry = merge_trees_(std::move(a[i]), std::move(b[i]));
+        } else if (has_a && has_carry) {
+            result.push_back(nullptr);
+            carry = merge_trees_(std::move(carry), std::move(a[i]));
+        } else if (has_b && has_carry) {
+            result.push_back(nullptr);
+            carry = merge_trees_(std::move(carry), std::move(b[i]));
+        } else if (has_a) {
+            result.push_back(std::move(a[i]));
+            carry = nullptr;
+        } else if (has_b) {
+            result.push_back(std::move(b[i]));
+            carry = nullptr;
+        } else {
+            result.push_back(std::move(carry));
+            carry = nullptr;
         }
     }
 
