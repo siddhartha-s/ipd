@@ -128,51 +128,44 @@ auto Binomial_heap<T>::merge_trees_(tree_ a, tree_ b) -> tree_
 template<typename T>
 auto Binomial_heap<T>::merge_rows_(row_& a, row_& b) -> row_
 {
-    std::vector<tree_> carry;
-    row_               result;
+    tree_ carry;
+    row_  result;
 
     size_t limit = std::max(a.size(), b.size());
 
     for (size_t i = 0; i < limit; ++i) {
-        if (i < a.size() && a[i] != nullptr) carry.push_back(std::move(a[i]));
-        if (i < b.size() && b[i] != nullptr) carry.push_back(std::move(b[i]));
+        std::vector<tree_> curr;
 
-        switch (carry.size()) {
+        if (carry != nullptr) curr.push_back(std::move(carry));
+        if (i < a.size() && a[i] != nullptr) curr.push_back(std::move(a[i]));
+        if (i < b.size() && b[i] != nullptr) curr.push_back(std::move(b[i]));
+
+        switch (curr.size()) {
             case 0:
                 result.push_back(nullptr);
-                carry.clear();
                 break;
 
             case 1:
-                result.push_back(std::move(carry[0]));
-                carry.clear();
+                result.push_back(std::move(curr[0]));
                 break;
 
-            case 2: {
+            case 2:
                 result.push_back(nullptr);
-                tree_ merged = merge_trees_(std::move(carry[0]),
-                                            std::move(carry[1]));
-                carry.clear();
-                carry.push_back(std::move(merged));
+                carry = merge_trees_(std::move(curr[0]), std::move(curr[1]));
                 break;
-            }
 
-            case 3: {
-                result.push_back(std::move(carry[2]));
-                tree_ merged = merge_trees_(std::move(carry[0]),
-                                            std::move(carry[1]));
-                carry.clear();
-                carry.push_back(std::move(merged));
+            case 3:
+                result.push_back(std::move(curr[2]));
+                carry = merge_trees_(std::move(curr[0]), std::move(curr[1]));
                 break;
-            }
 
             default:
                 assert(false);
         }
     }
 
-    if (!carry.empty())
-        result.push_back(std::move(carry[0]));
+    if (carry != nullptr)
+        result.push_back(std::move(carry));
 
     a.clear();
     b.clear();
