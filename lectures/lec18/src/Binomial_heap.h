@@ -91,6 +91,8 @@ void Binomial_heap<T>::remove_min()
 template<typename T>
 size_t Binomial_heap<T>::find_min_index_() const
 {
+    assert(!empty());
+
     size_t best = 0;
 
     for (size_t i = 1; i < roots_.size(); ++i) {
