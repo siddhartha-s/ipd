@@ -4,4 +4,4 @@ include(.ipd/CMakeLists.txt)
 
 add_test_program(deque_test
         test/deque_test.cpp
-        src/deque.h)
+        src/Deque.h)

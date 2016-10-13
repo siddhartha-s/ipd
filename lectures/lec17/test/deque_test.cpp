@@ -1,4 +1,4 @@
-#include "deque.h"
+#include "Deque.h"
 
 #include <UnitTest++/UnitTest++.h>
 
@@ -6,19 +6,19 @@ using namespace ipd;
 
 TEST(New_is_empty)
 {
-    deque<int> dq;
+    Deque<int> dq;
     CHECK(dq.empty());
 }
 
 TEST(New_has_size_0)
 {
-    deque<int> dq;
+    Deque<int> dq;
     CHECK_EQUAL(0, dq.size());
 }
 
 TEST(Push_front_changes_size)
 {
-    deque<int> dq;
+    Deque<int> dq;
     dq.push_front(5);
     CHECK_EQUAL(1, dq.size());
     CHECK(!dq.empty());
@@ -29,7 +29,7 @@ TEST(Push_front_changes_size)
 
 TEST(Push_back_changes_size)
 {
-    deque<int> dq;
+    Deque<int> dq;
     dq.push_back(5);
     CHECK_EQUAL(1, dq.size());
     CHECK(!dq.empty());
@@ -40,7 +40,7 @@ TEST(Push_back_changes_size)
 
 TEST(Push_front_changes_front)
 {
-    deque<int> dq;
+    Deque<int> dq;
     dq.push_front(5);
     CHECK_EQUAL(5, dq.front());
     dq.push_front(6);
@@ -49,7 +49,7 @@ TEST(Push_front_changes_front)
 
 TEST(Push_back_changes_back)
 {
-    deque<int> dq;
+    Deque<int> dq;
     dq.push_back(5);
     CHECK_EQUAL(5, dq.back());
     dq.push_back(6);
@@ -58,7 +58,7 @@ TEST(Push_back_changes_back)
 
 TEST(Pop_front_removes_front)
 {
-    deque<int> dq;
+    Deque<int> dq;
     dq.push_back(5);
     dq.push_back(6);
     dq.push_back(7);
@@ -73,7 +73,7 @@ TEST(Pop_front_removes_front)
 
 TEST(Pop_back_removes_back)
 {
-    deque<int> dq;
+    Deque<int> dq;
     dq.push_front(5);
     dq.push_front(6);
     dq.push_front(7);
@@ -88,7 +88,7 @@ TEST(Pop_back_removes_back)
 
 TEST(Can_push_after_pop)
 {
-    deque<int> dq;
+    Deque<int> dq;
     dq.push_back(5);
     dq.push_back(6);
     dq.push_back(7);
@@ -112,11 +112,11 @@ TEST(Can_push_after_pop)
 
 TEST(Copy)
 {
-    deque<int> dq1;
+    Deque<int> dq1;
     dq1.push_back(5);
     dq1.push_back(6);
 
-    deque<int> dq2(dq1);
+    Deque<int> dq2(dq1);
     CHECK_EQUAL(5, dq2.front());
     CHECK_EQUAL(6, dq2.back());
 
@@ -129,11 +129,11 @@ TEST(Copy)
 
 TEST(Assign)
 {
-    deque<int> dq1;
+    Deque<int> dq1;
     dq1.push_back(5);
     dq1.push_back(6);
 
-    deque<int> dq2;
+    Deque<int> dq2;
     dq2.push_back(10);
 
     dq2 = dq1;

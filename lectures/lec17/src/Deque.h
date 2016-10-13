@@ -8,15 +8,15 @@ namespace ipd {
 // A deque is a double-ended queue. It is a sequence that supports
 // constant-time insertion, observation, and removal at both ends.
 template<typename T>
-class deque
+class Deque
 {
 public:
     // Constructs a new, empty deque.
-    deque();
+    Deque();
     // Copy constructor.
-    deque(const deque&);
+    Deque(const Deque&);
     // Copy-assignment operator.
-    deque& operator=(const deque&);
+    Deque& operator=(const Deque&);
 
     // Returns true if the deque is empty.
     bool empty() const;
@@ -46,12 +46,12 @@ public:
     // Removes all elements from the deque.
     void erase();
 
-    ~deque();
+    ~Deque();
 
 private:
     struct node_
     {
-        node_(const T& value)
+        explicit node_(const T& value)
                 : data(value), prev(nullptr), next(nullptr) {}
 
         T data;
@@ -65,17 +65,17 @@ private:
 };
 
 template<typename T>
-deque<T>::deque() { }
+Deque<T>::Deque() { }
 
 template<typename T>
-deque<T>::deque(const deque& other)
+Deque<T>::Deque(const Deque& other)
 {
     for (node_* curr = other.head_; curr != nullptr; curr = curr->next)
         push_back(curr->data);
 }
 
 template<typename T>
-deque<T>& deque<T>::operator=(const deque& other)
+Deque<T>& Deque<T>::operator=(const Deque& other)
 {
     erase();
 
@@ -86,43 +86,43 @@ deque<T>& deque<T>::operator=(const deque& other)
 }
 
 template<typename T>
-bool deque<T>::empty() const
+bool Deque<T>::empty() const
 {
     return size_ == 0;
 }
 
 template<typename T>
-size_t deque<T>::size() const
+size_t Deque<T>::size() const
 {
     return size_;
 }
 
 template<typename T>
-const T& deque<T>::front() const
+const T& Deque<T>::front() const
 {
     return head_->data;
 }
 
 template<typename T>
-T& deque<T>::front()
+T& Deque<T>::front()
 {
     return head_->data;
 }
 
 template<typename T>
-const T& deque<T>::back() const
+const T& Deque<T>::back() const
 {
     return tail_->data;
 }
 
 template<typename T>
-T& deque<T>::back()
+T& Deque<T>::back()
 {
     return tail_->data;
 }
 
 template<typename T>
-void deque<T>::push_front(const T& value)
+void Deque<T>::push_front(const T& value)
 {
     auto new_node = new node_(value);
 
@@ -137,7 +137,7 @@ void deque<T>::push_front(const T& value)
 }
 
 template<typename T>
-void deque<T>::push_back(const T& value)
+void Deque<T>::push_back(const T& value)
 {
     auto new_node = new node_(value);
 
@@ -152,7 +152,7 @@ void deque<T>::push_back(const T& value)
 }
 
 template<typename T>
-void deque<T>::pop_front()
+void Deque<T>::pop_front()
 {
     node_* new_head = head_->next;
     delete head_;
@@ -163,7 +163,7 @@ void deque<T>::pop_front()
 }
 
 template<typename T>
-void deque<T>::pop_back()
+void Deque<T>::pop_back()
 {
     node_* new_tail = tail_->prev;
     delete tail_;
@@ -174,13 +174,13 @@ void deque<T>::pop_back()
 }
 
 template<typename T>
-void deque<T>::erase()
+void Deque<T>::erase()
 {
     while (!empty()) pop_front();
 }
 
 template<typename T>
-deque<T>::~deque()
+Deque<T>::~Deque()
 {
     erase();
 }
