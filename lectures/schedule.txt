@@ -20,8 +20,8 @@
 14  11/08: Dijkstra’s algorithm (J); binary heap (J); making heap generic (J)
 15  11/10: hashing (R); vector hash table (R); open-addressing hash table (R)
 16  11/15: Bloom filter (J); memory and pointers (J); linked list queue (J)
-17  11/17: doubly-linked list deque (R); binary search tree (R); Huffman (R)
-18  11/22: binomial heap (R); final project discussion
+17  11/17: binary search tree (R); binomial heap (R); Huffman (R)
+18  11/22: doubly-linked list deque (J); final project discussion
  11/24: – Thanksgiving —
 19  11/29: object-oriented graphics library (J)
 20  12/01: ISL+λ interpreter (D)

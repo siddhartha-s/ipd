@@ -18,6 +18,11 @@ public:
     // Copy-assignment operator.
     Deque& operator=(const Deque&);
 
+    // Move constructor.
+    Deque(Deque&&);
+    // Move assignment operator.
+    Deque& operator=(Deque&&);
+
     // Returns true if the deque is empty.
     bool empty() const;
     // Returns the number of elements in the deque.
@@ -35,14 +40,28 @@ public:
 
     // Inserts a new element at the front of the deque.
     void push_front(const T&);
+    void push_front(T&&);
+
+    // Constructs a new element at the front of the queue.
+    template<typename... Args>
+    void emplace_front(Args&& ...);
+
     // Inserts a new element at the back of the deque.
     void push_back(const T&);
-    // Removes and returns the first element of the deque. Undefined if the
+    void push_back(T&&);
+
+    // Constructs a new element at the back of the queue.
+    template<typename... Args>
+    void emplace_back(Args&& ...);
+
+    // Removes the first element of the deque. Undefined if the
     // deque is empty.
     void pop_front();
-    // Removes and returns the last element of the deque. Undefined if the
+
+    // Removes the last element of the deque. Undefined if the
     // deque is empty.
     void pop_back();
+
     // Removes all elements from the deque.
     void erase();
 
@@ -54,6 +73,14 @@ private:
         explicit node_(const T& value)
                 : data(value), prev(nullptr), next(nullptr) {}
 
+        explicit node_(T&& value)
+                : data(std::move(value)), prev(nullptr), next(nullptr) {}
+
+        template<typename... Args>
+        explicit node_(bool, Args&& ... args)
+                : data(std::forward<Args>(args)...), prev(nullptr),
+                  next(nullptr) {}
+
         T data;
         node_* prev;
         node_* next;
@@ -62,10 +89,13 @@ private:
     node_* head_ = nullptr;
     node_* tail_ = nullptr;
     size_t size_ = 0;
+
+    void push_front_(node_*);
+    void push_back_(node_*);
 };
 
 template<typename T>
-Deque<T>::Deque() { }
+Deque<T>::Deque() {}
 
 template<typename T>
 Deque<T>::Deque(const Deque& other)
@@ -83,6 +113,27 @@ Deque<T>& Deque<T>::operator=(const Deque& other)
         push_back(curr->data);
 
     return *this;
+}
+
+template<typename T>
+Deque<T>::Deque(Deque&& other)
+        : head_(other.head_), tail_(other.tail_), size_(other.size_)
+{
+    other.head_ = other.tail_ = nullptr;
+    other.size_ = 0;
+}
+
+template<typename T>
+Deque<T>& Deque<T>::operator=(Deque&& other)
+{
+    erase();
+
+    head_ = other.head_;
+    tail_ = other.tail_;
+    size_ = other.size_;
+
+    other.head_ = other.tail_ = nullptr;
+    other.size_ = 0;
 }
 
 template<typename T>
@@ -122,10 +173,8 @@ T& Deque<T>::back()
 }
 
 template<typename T>
-void Deque<T>::push_front(const T& value)
+void Deque<T>::push_front_(node_* new_node)
 {
-    auto new_node = new node_(value);
-
     new_node->next = head_;
     if (head_ == nullptr)
         tail_ = new_node;
@@ -137,10 +186,27 @@ void Deque<T>::push_front(const T& value)
 }
 
 template<typename T>
-void Deque<T>::push_back(const T& value)
+void Deque<T>::push_front(const T& value)
 {
-    auto new_node = new node_(value);
+    push_front_(new node_(value));
+}
 
+template<typename T>
+void Deque<T>::push_front(T&& value)
+{
+    push_front_(new node_(std::move(value)));
+}
+
+template<typename T>
+template<typename... Args>
+void Deque<T>::emplace_front(Args&& ... args)
+{
+    push_front_(new node_(true, std::forward(args)...));
+}
+
+template<typename T>
+void Deque<T>::push_back_(node_* new_node)
+{
     new_node->prev = tail_;
     if (tail_ == nullptr)
         head_ = new_node;
@@ -149,6 +215,25 @@ void Deque<T>::push_back(const T& value)
 
     tail_ = new_node;
     ++size_;
+}
+
+template<typename T>
+void Deque<T>::push_back(const T& value)
+{
+    push_back_(new node_(value));
+}
+
+template<typename T>
+void Deque<T>::push_back(T&& value)
+{
+    push_back_(new node_(std::move(value)));
+}
+
+template<typename T>
+template<typename... Args>
+void Deque<T>::emplace_back(Args&& ... args)
+{
+    push_back_(new node_(true, std::forward<Args>(args)...));
 }
 
 template<typename T>

@@ -1,4 +1,4 @@
-#include "Deque.h"
+#include "../../lec18/src/Deque.h"
 
 #include <UnitTest++/UnitTest++.h>
 
@@ -145,4 +145,22 @@ TEST(Assign)
     CHECK_EQUAL(7, dq2.back());
     CHECK_EQUAL(5, dq1.front());
     CHECK_EQUAL(6, dq1.back());
+}
+
+TEST(Emplace)
+{
+    struct posn
+    {
+        posn(int nx, int ny) : x(nx), y(ny) {}
+        int x, y;
+    };
+
+    Deque<posn> dq;
+    dq.emplace_back(3, 4);
+    dq.emplace_back(5, 6);
+
+    CHECK_EQUAL(3, dq.front().x);
+    CHECK_EQUAL(4, dq.front().y);
+    CHECK_EQUAL(5, dq.back().x);
+    CHECK_EQUAL(6, dq.back().y);
 }
