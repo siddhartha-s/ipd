@@ -164,3 +164,43 @@ TEST(Emplace)
     CHECK_EQUAL(5, dq.back().x);
     CHECK_EQUAL(6, dq.back().y);
 }
+
+TEST(Iterator)
+{
+    Deque<int> dq{3, 4, 5};
+
+    auto i = dq.begin();
+    CHECK_EQUAL(3, *i);
+
+    ++i;
+    CHECK_EQUAL(4, *i);
+    *i = 6;
+    CHECK_EQUAL(6, *i);
+
+    ++i;
+    CHECK_EQUAL(5, *i);
+
+    CHECK(i != dq.end());
+    ++i;
+    CHECK(i == dq.end());
+}
+
+TEST(ReverseIterator)
+{
+    Deque<int> dq{5, 4, 3};
+
+    auto i = dq.rbegin();
+    CHECK_EQUAL(3, *i);
+
+    ++i;
+    CHECK_EQUAL(4, *i);
+    *i = 6;
+    CHECK_EQUAL(6, *i);
+
+    ++i;
+    CHECK_EQUAL(5, *i);
+
+    CHECK(i != dq.rend());
+    ++i;
+    CHECK(i == dq.rend());
+}
