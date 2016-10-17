@@ -204,3 +204,20 @@ TEST(ReverseIterator)
     ++i;
     CHECK(i == dq.rend());
 }
+
+TEST(ConstIterator)
+{
+    const Deque<int> dq{3, 4, 5};
+
+    auto i = dq.begin();
+    CHECK_EQUAL(3, *i);
+
+    ++i;
+    CHECK_EQUAL(4, *i);
+    ++i;
+    CHECK_EQUAL(5, *i);
+
+    CHECK(i != dq.end());
+    ++i;
+    CHECK(i == dq.end());
+}

@@ -10,6 +10,9 @@ namespace ipd {
 template<typename T>
 class Deque_iterator;
 
+template<typename T>
+class Deque_const_iterator;
+
 // A deque is a double-ended queue. It is a sequence that supports
 // constant-time insertion, observation, and removal at both ends.
 template<typename T>
@@ -76,12 +79,24 @@ public:
 
     // Iterators over Deques.
     using iterator = Deque_iterator<T>;
+    using const_iterator = Deque_const_iterator<T>;
     using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     iterator begin();
     iterator end();
     reverse_iterator rbegin();
     reverse_iterator rend();
+
+    const_iterator begin() const;
+    const_iterator end() const;
+    const_reverse_iterator rbegin() const;
+    const_reverse_iterator rend() const;
+
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+    const_reverse_iterator crbegin() const;
+    const_reverse_iterator crend() const;
 
     ~Deque();
 
@@ -112,6 +127,7 @@ private:
     void push_back_(node_*);
 
     friend class Deque_iterator<T>;
+    friend class Deque_const_iterator<T>;
 };
 
 template<typename T>
@@ -140,6 +156,39 @@ private:
 
     friend class Deque<T>;
 };
+
+template<typename T>
+bool operator!=(Deque_iterator<T>, Deque_iterator<T>);
+
+template<typename T>
+class Deque_const_iterator : public std::iterator<
+        std::bidirectional_iterator_tag,
+        const T>
+{
+public:
+    bool operator==(Deque_const_iterator);
+
+    const T& operator*() const;
+
+    Deque_const_iterator& operator++();
+    Deque_const_iterator operator++(int);
+    Deque_const_iterator& operator--();
+    Deque_const_iterator operator--(int);
+
+private:
+    using node_ = typename Deque<T>::node_;
+
+    const node_* current_;
+    const node_* tail_;
+
+    Deque_const_iterator(const node_* current, const node_* tail)
+            : current_(current), tail_(tail) {}
+
+    friend class Deque<T>;
+};
+
+template<typename T>
+bool operator!=(Deque_const_iterator<T>, Deque_const_iterator<T>);
 
 ///
 /// IMPLEMENTATIONS
@@ -343,17 +392,62 @@ auto Deque<T>::end() -> iterator
 template<typename T>
 auto Deque<T>::rbegin() -> reverse_iterator
 {
-    return std::reverse_iterator<iterator>(iterator(nullptr, tail_));
+    return std::reverse_iterator<iterator>(end());
 }
 
 template<typename T>
 auto Deque<T>::rend() -> reverse_iterator
 {
-    return std::reverse_iterator<iterator>(iterator(head_, tail_));
+    return std::reverse_iterator<iterator>(begin());
 }
 
 template<typename T>
-bool operator!=(Deque_iterator<T>, Deque_iterator<T>);
+auto Deque<T>::begin() const -> const_iterator
+{
+    return cbegin();
+}
+
+template<typename T>
+auto Deque<T>::end() const -> const_iterator
+{
+    return cend();
+}
+
+template<typename T>
+auto Deque<T>::rbegin() const -> const_reverse_iterator
+{
+    return crbegin();
+}
+
+template<typename T>
+auto Deque<T>::rend() const -> const_reverse_iterator
+{
+    return crend();
+}
+
+template<typename T>
+auto Deque<T>::cbegin() const -> const_iterator
+{
+    return const_iterator(head_, tail_);
+}
+
+template<typename T>
+auto Deque<T>::cend() const -> const_iterator
+{
+    return const_iterator(nullptr, tail_);
+}
+
+template<typename T>
+auto Deque<T>::crbegin() const -> const_reverse_iterator
+{
+    return std::reverse_iterator<const_iterator>(cend());
+}
+
+template<typename T>
+auto Deque<T>::crend() const -> const_reverse_iterator
+{
+    return std::reverse_iterator<const_iterator>(cbegin());
+}
 
 template<typename T>
 bool Deque_iterator<T>::operator==(Deque_iterator other)
@@ -403,6 +497,58 @@ Deque_iterator<T> Deque_iterator<T>::operator--(int)
 
 template<typename T>
 bool operator!=(Deque_iterator<T> i, Deque_iterator<T> j)
+{
+    return !(i == j);
+}
+
+template<typename T>
+bool Deque_const_iterator<T>::operator==(Deque_const_iterator other)
+{
+    return current_ == other.current_ && tail_ == other.tail_;
+}
+
+template<typename T>
+const T& Deque_const_iterator<T>::operator*() const
+{
+    return current_->data;
+}
+
+template<typename T>
+Deque_const_iterator<T>& Deque_const_iterator<T>::operator++()
+{
+    current_ = current_->next;
+    return *this;
+}
+
+template<typename T>
+Deque_const_iterator<T> Deque_const_iterator<T>::operator++(int)
+{
+    Deque_const_iterator result(*this);
+    ++*this;
+    return result;
+}
+
+template<typename T>
+Deque_const_iterator<T>& Deque_const_iterator<T>::operator--()
+{
+    if (current_ == nullptr)
+        current_ = tail_;
+    else
+        current_ = current_->prev;
+
+    return *this;
+}
+
+template<typename T>
+Deque_const_iterator<T> Deque_const_iterator<T>::operator--(int)
+{
+    Deque_const_iterator result(*this);
+    --*this;
+    return result;
+}
+
+template<typename T>
+bool operator!=(Deque_const_iterator<T> i, Deque_const_iterator<T> j)
 {
     return !(i == j);
 }
