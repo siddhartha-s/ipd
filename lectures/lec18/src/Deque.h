@@ -146,10 +146,13 @@ public:
     Deque_iterator operator--(int);
 
 private:
-    Deque<T>::node_* current_;
-    Deque<T>* owner_;
+    using deque_ = Deque<T>;
+    using node_  = typename deque_::node_;
 
-    Deque_iterator(Deque<T>::node_* current, Deque<T>* owner)
+    node_* current_;
+    deque_* owner_;
+
+    Deque_iterator(node_* current, deque_* owner)
             : current_(current), owner_(owner) {}
 
     friend class Deque<T>;
@@ -174,10 +177,13 @@ public:
     Deque_const_iterator operator--(int);
 
 private:
-    const Deque<T>::node_* current_;
-    const Deque<T>* owner_;
+    using deque_ = Deque<T>;
+    using node_  = typename deque_::node_;
 
-    Deque_const_iterator(const Deque<T>::node_* current, const Deque<T>* owner)
+    const node_* current_;
+    const deque_* owner_;
+
+    Deque_const_iterator(const node_* current, const deque_* owner)
             : current_(current), owner_(owner) {}
 
     friend class Deque<T>;
@@ -388,13 +394,13 @@ auto Deque<T>::end() -> iterator
 template<typename T>
 auto Deque<T>::rbegin() -> reverse_iterator
 {
-    return std::reverse_iterator(end());
+    return reverse_iterator(end());
 }
 
 template<typename T>
 auto Deque<T>::rend() -> reverse_iterator
 {
-    return std::reverse_iterator(begin());
+    return reverse_iterator(begin());
 }
 
 template<typename T>
@@ -436,13 +442,13 @@ auto Deque<T>::cend() const -> const_iterator
 template<typename T>
 auto Deque<T>::crbegin() const -> const_reverse_iterator
 {
-    return std::reverse_iterator<const_iterator>(cend());
+    return reverse_iterator(cend());
 }
 
 template<typename T>
 auto Deque<T>::crend() const -> const_reverse_iterator
 {
-    return std::reverse_iterator<const_iterator>(cbegin());
+    return reverse_iterator(cbegin());
 }
 
 template<typename T>
