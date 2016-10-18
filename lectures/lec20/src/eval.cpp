@@ -230,7 +230,7 @@ Environment Expr_decl::extend(const Environment& env0) const
 
 void Expr_decl::eval(Environment& env) const
 {
-    std::cout << expr_->eval(env) << '\n';
+    std::cout << expr_->eval(env) << std::endl;
 }
 
 Environment eval_prog(const Prog& prog, const Environment& env0)
