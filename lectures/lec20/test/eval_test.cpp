@@ -113,3 +113,11 @@ TEST(SumList)
             "  (sum (cons 1 (cons 2 (cons 3 (cons 4 empty))))))")
                 ->as_int());
 }
+
+TEST(UsedBeforeDefine)
+{
+    CHECK_THROW(ev_string(
+            "(local [(define a b)"
+            "        (define b 5)] b)"),
+                std::runtime_error);
+}

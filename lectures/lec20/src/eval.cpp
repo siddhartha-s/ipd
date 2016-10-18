@@ -111,7 +111,12 @@ value_ptr Selector::apply(const std::vector<value_ptr>& actuals) const
 
 value_ptr Variable::eval(const Environment& env) const
 {
-    return env.lookup(name_);
+    value_ptr result = env.lookup(name_);
+
+    if (result->type() == value_type::Undefined)
+        throw std::runtime_error("used not-yet-defined variable");
+
+    return result;
 }
 
 value_ptr Application::eval(const Environment& env) const
