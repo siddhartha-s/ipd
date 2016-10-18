@@ -10,10 +10,10 @@ Expr parse_expr(std::istream& i)
     return parse_expr(lex);
 }
 
-Decl parse_decl(std::istream& i)
+Decl parse_decl(std::istream& i, bool allow_expr)
 {
     Lexer lex{i};
-    return parse_decl(lex);
+    return parse_decl(lex, allow_expr);
 }
 
 Expr parse_expr(Lexer& lex)
@@ -21,9 +21,9 @@ Expr parse_expr(Lexer& lex)
     return parse_expr(read(lex));
 }
 
-Decl parse_decl(Lexer& lex)
+Decl parse_decl(Lexer& lex, bool allow_expr)
 {
-    return parse_decl(read(lex));
+    return parse_decl(read(lex), allow_expr);
 }
 
 static std::vector<value_ptr> list2vector(const value_ptr& vp)
@@ -183,22 +183,25 @@ static Decl parse_define_struct(const std::vector<value_ptr>& vps)
     return define_struct(vps[0]->as_symbol(), list2params(vps[1]));
 }
 
-Decl parse_decl(const value_ptr& vp)
+Decl parse_decl(const value_ptr& vp, bool allow_expr)
 {
-    if (vp->type() != value_type::Cons)
-        throw syntax_error("not a declaration");
+    if (vp->type() == value_type::Cons) {
+        const value_ptr& first = vp->first();
+        auto rest = list2vector(vp->rest());
 
-    const value_ptr& first = vp->first();
-    auto rest = list2vector(vp->rest());
+        if (first->type() == value_type::Symbol) {
+            const Symbol& head = first->as_symbol();
 
-    if (first->type() == value_type::Symbol) {
-        const Symbol& head = first->as_symbol();
-
-        if (head == intern("define")) return parse_define(rest);
-        if (head == intern("define-struct")) return parse_define_struct(rest);
+            if (head == intern("define")) return parse_define(rest);
+            if (head == intern("define-struct"))
+                return parse_define_struct(rest);
+        }
     }
 
-    throw syntax_error("not a declaration");
+    if (allow_expr)
+        return expr_decl(parse_expr(vp));
+    else
+        throw syntax_error("not a declaration");
 }
 
 }

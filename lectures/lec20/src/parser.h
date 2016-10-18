@@ -12,8 +12,8 @@ Expr parse_expr(const value_ptr&);
 Expr parse_expr(Lexer&);
 Expr parse_expr(std::istream&);
 
-Decl parse_decl(const value_ptr&);
-Decl parse_decl(Lexer&);
-Decl parse_decl(std::istream&);
+Decl parse_decl(const value_ptr&, bool allow_expr = false);
+Decl parse_decl(Lexer&, bool allow_expr = false);
+Decl parse_decl(std::istream&, bool allow_expr = false);
 
 }
