@@ -16,6 +16,12 @@ Decl parse_decl(std::istream& i, bool allow_expr)
     return parse_decl(lex, allow_expr);
 }
 
+Prog parse_prog(std::istream& i)
+{
+    Lexer lex{i};
+    return parse_prog(lex);
+}
+
 Expr parse_expr(Lexer& lex)
 {
     return parse_expr(read(lex));
@@ -24,6 +30,19 @@ Expr parse_expr(Lexer& lex)
 Decl parse_decl(Lexer& lex, bool allow_expr)
 {
     return parse_decl(read(lex), allow_expr);
+}
+
+Prog parse_prog(Lexer& lex)
+{
+    Prog result;
+
+    for (;;) {
+        Token tok = lex.next();
+        if (tok.type == token_type::eof) return result;
+
+        lex.push_back(tok);
+        result.push_back(parse_decl(lex, true));
+    }
 }
 
 static std::vector<value_ptr> list2vector(const value_ptr& vp)

@@ -17,6 +17,7 @@ class Decl_node;
 
 using Expr = std::shared_ptr<Expr_node>;
 using Decl = std::shared_ptr<Decl_node>;
+using Prog = std::vector<Decl>;
 
 class Expr_node
 {
