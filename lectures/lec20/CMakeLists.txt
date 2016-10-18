@@ -69,3 +69,16 @@ add_test_program(eval_test
         src/value.h src/value.cpp
         src/primops.h src/primops.cpp)
 
+add_program(islpp
+        src/repl.cpp
+        src/eval.cpp
+        src/ast.h src/ast.cpp
+        src/env.h
+        src/struct.h
+        src/parser.h src/parser.cpp
+        src/reader.h src/reader.cpp
+        src/lexer.h src/lexer.cpp
+        src/symbol.h src/symbol.cpp
+        src/value.h src/value.cpp
+        src/primops.h src/primops.cpp)
+

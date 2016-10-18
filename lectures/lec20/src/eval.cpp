@@ -2,6 +2,7 @@
 #include "value.h"
 
 #include <cassert>
+#include <iostream>
 #include <stdexcept>
 
 namespace islpp {
@@ -229,7 +230,7 @@ Environment Expr_decl::extend(const Environment& env0) const
 
 void Expr_decl::eval(Environment& env) const
 {
-    expr_->eval(env);
+    std::cout << expr_->eval(env) << '\n';
 }
 
 }
