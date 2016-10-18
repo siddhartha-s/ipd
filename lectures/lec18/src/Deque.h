@@ -75,7 +75,7 @@ public:
     void pop_back();
 
     // Removes all elements from the deque.
-    void erase();
+    void clear();
 
     // Iterators over Deques.
     using iterator = Deque_iterator<T>;
@@ -216,7 +216,7 @@ Deque<T>::Deque(const Deque& other)
 template<typename T>
 Deque<T>& Deque<T>::operator=(const Deque& other)
 {
-    erase();
+    clear();
 
     for (node_* curr = other.head_; curr != nullptr; curr = curr->next)
         push_back(curr->data);
@@ -235,7 +235,7 @@ Deque<T>::Deque(Deque&& other)
 template<typename T>
 Deque<T>& Deque<T>::operator=(Deque&& other)
 {
-    erase();
+    clear();
 
     head_ = other.head_;
     tail_ = other.tail_;
@@ -368,7 +368,7 @@ void Deque<T>::pop_back()
 }
 
 template<typename T>
-void Deque<T>::erase()
+void Deque<T>::clear()
 {
     while (!empty()) pop_front();
 }
@@ -376,7 +376,7 @@ void Deque<T>::erase()
 template<typename T>
 Deque<T>::~Deque()
 {
-    erase();
+    clear();
 }
 
 template<typename T>
