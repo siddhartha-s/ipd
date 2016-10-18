@@ -77,6 +77,9 @@ public:
     // Removes all elements from the deque.
     void clear();
 
+    // Exchanges the contents of two deques.
+    void swap(Deque&);
+
     // Iterators over Deques.
     using iterator = Deque_iterator<T>;
     using const_iterator = Deque_const_iterator<T>;
@@ -129,6 +132,9 @@ private:
     friend class Deque_iterator<T>;
     friend class Deque_const_iterator<T>;
 };
+
+template<typename T>
+void swap(Deque<T>& a, Deque<T>& b);
 
 template<typename T>
 class Deque_iterator : public std::iterator<
@@ -371,6 +377,20 @@ template<typename T>
 void Deque<T>::clear()
 {
     while (!empty()) pop_front();
+}
+
+template<typename T>
+void Deque<T>::swap(Deque& other)
+{
+    std::swap(head_, other.head_);
+    std::swap(tail_, other.tail_);
+    std::swap(size_, other.size_);
+}
+
+template<typename T>
+void swap(Deque<T>& a, Deque<T>& b)
+{
+    a.swap(b);
 }
 
 template<typename T>
