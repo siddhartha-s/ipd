@@ -21,8 +21,8 @@ const char* to_string(value_type vt)
             return "struct";
         case value_type::Function:
             return "function";
-        case value_type::Void:
-            return "void";
+        case value_type::Undefined:
+            return "undefined";
     }
 }
 
@@ -362,10 +362,10 @@ bool Empty::equal(const value_ptr& other) const
 }
 
 /*
- * Void class
+ * Undefined class
  */
 
-struct Void : public Value
+struct Undefined : public Value
 {
 public:
     virtual value_type type() const override;
@@ -373,25 +373,25 @@ public:
     virtual bool equal(const value_ptr&) const override;
 };
 
-value_ptr get_void()
+value_ptr get_undefined()
 {
-    static value_ptr instance{new Void};
+    static value_ptr instance{new Undefined};
     return instance;
 }
 
-value_type Void::type() const
+value_type Undefined::type() const
 {
-    return value_type::Void;
+    return value_type::Undefined;
 }
 
-std::ostream& Void::display(std::ostream& o) const
+std::ostream& Undefined::display(std::ostream& o) const
 {
-    return o << "#<void>";
+    return o << "#<undefined>";
 }
 
-bool Void::equal(const value_ptr& other) const
+bool Undefined::equal(const value_ptr& other) const
 {
-    return other->type() == value_type::Void;
+    return other->type() == value_type::Undefined;
 }
 
 /*

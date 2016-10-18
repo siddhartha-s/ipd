@@ -171,7 +171,7 @@ value_ptr Boolean_literal::eval(const Environment&) const
 
 Environment Define_var::extend(const Environment& env) const
 {
-    return env.extend(name_, get_void());
+    return env.extend(name_, get_undefined());
 }
 
 void Define_var::eval(Environment& env) const
@@ -181,7 +181,7 @@ void Define_var::eval(Environment& env) const
 
 Environment Define_fun::extend(const Environment& env) const
 {
-    return env.extend(name_, get_void());
+    return env.extend(name_, get_undefined());
 }
 
 void Define_fun::eval(Environment& env) const
@@ -193,10 +193,10 @@ Environment Define_struct::extend(const Environment& env0) const
 {
     Environment env = env0;
 
-    env = env.extend("make-" + name_.name(), get_void());
-    env = env.extend(name_.name() + "?", get_void());
+    env = env.extend("make-" + name_.name(), get_undefined());
+    env = env.extend(name_.name() + "?", get_undefined());
     for (const auto& field : fields_)
-        env = env.extend(name_.name() + "-" + field.name(), get_void());
+        env = env.extend(name_.name() + "-" + field.name(), get_undefined());
 
     return env;
 }

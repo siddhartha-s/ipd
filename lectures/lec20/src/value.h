@@ -22,7 +22,7 @@ enum class value_type
     Empty,
     Struct,
     Function,
-    Void,
+    Undefined,
 };
 
 const char* to_string(value_type);
@@ -40,7 +40,7 @@ value_ptr mk_struct(const struct_id_ptr&, std::vector<value_ptr>);
 
 value_ptr get_boolean(bool);
 value_ptr get_empty();
-value_ptr get_void();
+value_ptr get_undefined();
 
 class Value
 {

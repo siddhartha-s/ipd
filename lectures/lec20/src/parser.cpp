@@ -139,7 +139,7 @@ Expr parse_expr(const value_ptr& vp)
 
         case value_type::Struct:
         case value_type::Function:
-        case value_type::Void:
+        case value_type::Undefined:
             throw std::logic_error("3-D syntax?");
 
         case value_type::Cons:
