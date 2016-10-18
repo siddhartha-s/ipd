@@ -84,13 +84,13 @@ public:
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     iterator begin();
-    iterator end();
-    reverse_iterator rbegin();
-    reverse_iterator rend();
-
     const_iterator begin() const;
+    iterator end();
     const_iterator end() const;
+
+    reverse_iterator rbegin();
     const_reverse_iterator rbegin() const;
+    reverse_iterator rend();
     const_reverse_iterator rend() const;
 
     const_iterator cbegin() const;
@@ -386,9 +386,21 @@ auto Deque<T>::begin() -> iterator
 }
 
 template<typename T>
+auto Deque<T>::begin() const -> const_iterator
+{
+    return const_iterator(head_, this);
+}
+
+template<typename T>
 auto Deque<T>::end() -> iterator
 {
     return iterator(nullptr, this);
+}
+
+template<typename T>
+auto Deque<T>::end() const -> const_iterator
+{
+    return const_iterator(nullptr, this);
 }
 
 template<typename T>
@@ -398,57 +410,45 @@ auto Deque<T>::rbegin() -> reverse_iterator
 }
 
 template<typename T>
+auto Deque<T>::rbegin() const -> const_reverse_iterator
+{
+    return const_reverse_iterator(end());
+}
+
+template<typename T>
 auto Deque<T>::rend() -> reverse_iterator
 {
     return reverse_iterator(begin());
 }
 
 template<typename T>
-auto Deque<T>::begin() const -> const_iterator
-{
-    return cbegin();
-}
-
-template<typename T>
-auto Deque<T>::end() const -> const_iterator
-{
-    return cend();
-}
-
-template<typename T>
-auto Deque<T>::rbegin() const -> const_reverse_iterator
-{
-    return crbegin();
-}
-
-template<typename T>
 auto Deque<T>::rend() const -> const_reverse_iterator
 {
-    return crend();
+    return const_reverse_iterator(begin());
 }
 
 template<typename T>
 auto Deque<T>::cbegin() const -> const_iterator
 {
-    return const_iterator(head_, this);
+    return begin();
 }
 
 template<typename T>
 auto Deque<T>::cend() const -> const_iterator
 {
-    return const_iterator(nullptr, this);
+    return end();
 }
 
 template<typename T>
 auto Deque<T>::crbegin() const -> const_reverse_iterator
 {
-    return reverse_iterator(cend());
+    return rbegin();
 }
 
 template<typename T>
 auto Deque<T>::crend() const -> const_reverse_iterator
 {
-    return reverse_iterator(cbegin());
+    return rend();
 }
 
 template<typename T>
