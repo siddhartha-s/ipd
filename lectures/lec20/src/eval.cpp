@@ -233,4 +233,12 @@ void Expr_decl::eval(Environment& env) const
     std::cout << expr_->eval(env) << '\n';
 }
 
+Environment eval_prog(const Prog& prog, const Environment& env0)
+{
+    Environment env = env0;
+    for (const Decl& decl : prog) env = decl->extend(env);
+    for (const Decl& decl : prog) decl->eval(env);
+    return env;
+}
+
 }

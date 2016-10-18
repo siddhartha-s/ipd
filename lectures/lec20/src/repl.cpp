@@ -1,3 +1,4 @@
+#include "ast.h"
 #include "parser.h"
 #include "primops.h"
 
@@ -18,8 +19,7 @@ int main()
         std::istringstream is(entry);
         try {
             auto program = parse_prog(is);
-            for (const auto& decl : program) env = decl->extend(env);
-            for (const auto& decl : program) decl->eval(env);
+            env = eval_prog(program, env);
         } catch (const std::exception& e) {
             std::cerr << "Error: " << e.what() << '\n';
         }

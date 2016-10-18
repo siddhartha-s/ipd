@@ -34,6 +34,8 @@ public:
     virtual std::ostream& display(std::ostream&) const = 0;
 };
 
+Environment eval_prog(const Prog&, const Environment&);
+
 std::ostream& operator<<(std::ostream&, const Expr_node&);
 std::ostream& operator<<(std::ostream&, const Decl_node&);
 
