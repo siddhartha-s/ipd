@@ -49,6 +49,7 @@ Decl define_var(const Symbol& name, const Expr& rhs);
 Decl define_fun(const Symbol& name, const std::vector<Symbol>& formals,
                 const Expr& body);
 Decl define_struct(const Symbol& name, const std::vector<Symbol>& fields);
+Decl expr_decl(const Expr& expr);
 
 /*
  * Expressions
@@ -209,6 +210,20 @@ public:
 private:
     Symbol              name_;
     std::vector<Symbol> fields_;
+};
+
+class Expr_decl : public Decl_node
+{
+public:
+    Expr_decl(const Expr& expr)
+            : expr_(expr) { }
+
+    virtual Environment extend(const Environment&) const override;
+    virtual void eval(Environment&) const override;
+    virtual std::ostream& display(std::ostream&) const override;
+
+private:
+    Expr expr_;
 };
 
 }

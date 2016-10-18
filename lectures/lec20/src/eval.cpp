@@ -222,4 +222,14 @@ void Define_struct::eval(Environment& env) const
     }
 }
 
+Environment Expr_decl::extend(const Environment& env0) const
+{
+    return env0;
+}
+
+void Expr_decl::eval(Environment& env) const
+{
+    expr_->eval(env);
+}
+
 }

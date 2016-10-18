@@ -68,6 +68,11 @@ Decl define_struct(const Symbol& name, const std::vector<Symbol>& fields)
     return std::make_shared<Define_struct>(name, fields);
 }
 
+Decl expr_decl(const Expr& expr)
+{
+    return std::make_shared<Expr_decl>(expr);
+}
+
 std::ostream& Variable::display(std::ostream& o) const
 {
     return o << name_;
@@ -171,6 +176,11 @@ std::ostream& Define_struct::display(std::ostream& o) const
         o << fields_[i];
     }
     return o << "])";
+}
+
+std::ostream& Expr_decl::display(std::ostream& o) const
+{
+    return o << expr_;
 }
 
 }
