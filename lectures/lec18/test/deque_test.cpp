@@ -1,4 +1,5 @@
-#include "../../lec18/src/Deque.h"
+#include "Deque.h"
+#include "Sentinel.h"
 
 #include <UnitTest++/UnitTest++.h>
 
