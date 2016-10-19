@@ -1,9 +1,12 @@
 #pragma once
 
 /*
- * This file contains an implementation of a deque ("double-ended queue",
- * pronounced like "deck") represented as a doubly-linked list. It is
- * intended to demonstrate a full-bells-and-whistles generic container.
+ * A deque (pronounced like "deck") is a double-ended queue. This file
+ * This file contains an implementation of a deque represented as a
+ * doubly-linked list. It is intended to demonstrate a
+ * full-bells-and-whistles generic container. (It doesn't do everything that
+ * STL containers do. For example, they allow the use of custom allocators,
+ * but the `Deque` class below just uses `new`.)
  */
 
 #include <cstddef>
@@ -23,8 +26,10 @@ class Deque_iterator;
 template<typename T>
 class Deque_const_iterator;
 
-// A deque is a double-ended queue. It is a sequence that supports
-// constant-time insertion, observation, and removal at both ends.
+//
+// The main `Deque` class
+//
+
 template<typename T>
 class Deque
 {
@@ -87,10 +92,11 @@ public:
     // Removes all elements from the deque.
     void clear() noexcept;
 
-    // Exchanges the contents of two deques.
+    // Exchanges the contents of two deques without copying.
     void swap(Deque&) noexcept;
 
-    // Iterators over Deques.
+    // Iterators over Deques. There are four kinds, all combinations of
+    // const-ness and reverse-ness.
     using iterator = Deque_iterator<T>;
     using const_iterator = Deque_const_iterator<T>;
     using reverse_iterator = std::reverse_iterator<iterator>;
@@ -111,15 +117,20 @@ public:
     const_reverse_iterator crbegin() const noexcept;
     const_reverse_iterator crend() const noexcept;
 
+    // The destructor.
     ~Deque();
 
 private:
+    // The linked list is made out of nodes, each of which contains a data
+    // element and pointers to next and previous nodes.
     struct node_
     {
         T data;
         node_* prev;
         node_* next;
 
+        // Constructs a new node, forwarding the arguments to construct the
+        // data element. The prev and next pointers are initialized to nullptr.
         template<typename... Args>
         explicit node_(Args&& ... args)
         noexcept(noexcept(T(std::forward<Args>(args)...)))
@@ -128,11 +139,14 @@ private:
                   next(nullptr) {}
     };
 
+    // Private member variables:
     node_* head_ = nullptr;
     node_* tail_ = nullptr;
     size_t size_ = 0;
 
+    // Attaches a new node to the front of the list.
     void push_front_(node_*) noexcept;
+    // Attaches a new node to the back of the list.
     void push_back_(node_*) noexcept;
 
     friend class Deque_iterator<T>;
@@ -140,9 +154,59 @@ private:
     friend class Deque_const_iterator<T>;
 };
 
+// Exchanges the contents of two deques without copying.
 template<typename T>
 void swap(Deque<T>& a, Deque<T>& b) noexcept;
 
+// Helper class for Deque<T>::iterator.
+template<typename T>
+class Deque_iterator : public std::iterator<
+        std::bidirectional_iterator_tag,
+        T>
+{
+public:
+    // Compares two iterators.
+    bool operator==(Deque_iterator) noexcept;
+
+    // Gets the value of the current node.
+    T& operator*() const noexcept;
+    // Gets a pointer to the value of the current node.
+    T* operator->() const noexcept;
+
+    // Advances to the next node.
+    Deque_iterator& operator++() noexcept;
+    // Advances to the next node.
+    Deque_iterator operator++(int) noexcept;
+    // Retreats to the previous node.
+    Deque_iterator& operator--() noexcept;
+    // Retreats to the previous node.
+    Deque_iterator operator--(int) noexcept;
+
+private:
+    using deque_ = Deque<T>;
+    using node_  = typename deque_::node_;
+
+    // We represent an iterator as a pointer to the current node and a
+    // pointer to the deque as a whole. The reason we need the pointer to the
+    // deque is so that we can go back to the tail be decrementing the end
+    // iterator, which points past the end. That is, in the result of the
+    // end() function (and friends) the current_ node is nullptr, but the
+    // owner_ can be used to find the tail when autodecremented.
+    node_ * current_;
+    deque_* owner_;
+
+    Deque_iterator(node_* current, deque_* owner) noexcept
+            : current_(current), owner_(owner) {}
+
+    friend class Deque<T>;
+
+    friend class Deque_const_iterator<T>;
+};
+
+template<typename T>
+bool operator!=(Deque_iterator<T>, Deque_iterator<T>) noexcept;
+
+// Helper class for Deque<T>::const_iterator.
 template<typename T>
 class Deque_const_iterator : public std::iterator<
         std::bidirectional_iterator_tag,
@@ -155,6 +219,7 @@ public:
     bool operator==(Deque_const_iterator) noexcept;
 
     const T& operator*() const noexcept;
+    const T* operator->() const noexcept;
 
     Deque_const_iterator& operator++() noexcept;
     Deque_const_iterator operator++(int) noexcept;
@@ -176,39 +241,6 @@ private:
 
 template<typename T>
 bool operator!=(Deque_const_iterator<T>, Deque_const_iterator<T>) noexcept;
-
-template<typename T>
-class Deque_iterator : public std::iterator<
-        std::bidirectional_iterator_tag,
-        T>
-{
-public:
-    bool operator==(Deque_iterator) noexcept;
-
-    T& operator*() const noexcept;
-
-    Deque_iterator& operator++() noexcept;
-    Deque_iterator operator++(int) noexcept;
-    Deque_iterator& operator--() noexcept;
-    Deque_iterator operator--(int) noexcept;
-
-private:
-    using deque_ = Deque<T>;
-    using node_  = typename deque_::node_;
-
-    node_ * current_;
-    deque_* owner_;
-
-    Deque_iterator(node_* current, deque_* owner) noexcept
-            : current_(current), owner_(owner) {}
-
-    friend class Deque<T>;
-
-    friend class Deque_const_iterator<T>;
-};
-
-template<typename T>
-bool operator!=(Deque_iterator<T>, Deque_iterator<T>) noexcept;
 
 ///
 /// IMPLEMENTATIONS
@@ -496,6 +528,12 @@ T& Deque_iterator<T>::operator*() const noexcept
 }
 
 template<typename T>
+T* Deque_iterator<T>::operator->() const noexcept
+{
+    return &current_->data;
+}
+
+template<typename T>
 Deque_iterator<T>& Deque_iterator<T>::operator++() noexcept
 {
     current_ = current_->next;
@@ -545,6 +583,12 @@ template<typename T>
 const T& Deque_const_iterator<T>::operator*() const noexcept
 {
     return current_->data;
+}
+
+template<typename T>
+const T* Deque_const_iterator<T>::operator->() const noexcept
+{
+    return &current_->data;
 }
 
 template<typename T>
