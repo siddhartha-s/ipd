@@ -137,6 +137,40 @@ template<typename T>
 void swap(Deque<T>& a, Deque<T>& b);
 
 template<typename T>
+class Deque_const_iterator : public std::iterator<
+        std::bidirectional_iterator_tag,
+        const T>
+{
+public:
+    Deque_const_iterator(Deque_iterator<T> other)
+            : current_(other.current_), owner_(other.owner_) {}
+
+    bool operator==(Deque_const_iterator);
+
+    const T& operator*() const;
+
+    Deque_const_iterator& operator++();
+    Deque_const_iterator operator++(int);
+    Deque_const_iterator& operator--();
+    Deque_const_iterator operator--(int);
+
+private:
+    using deque_ = Deque<T>;
+    using node_  = typename deque_::node_;
+
+    const node_* current_;
+    const deque_* owner_;
+
+    Deque_const_iterator(const node_* current, const deque_* owner)
+            : current_(current), owner_(owner) {}
+
+    friend class Deque<T>;
+};
+
+template<typename T>
+bool operator!=(Deque_const_iterator<T>, Deque_const_iterator<T>);
+
+template<typename T>
 class Deque_iterator : public std::iterator<
         std::bidirectional_iterator_tag,
         T>
@@ -162,41 +196,11 @@ private:
             : current_(current), owner_(owner) {}
 
     friend class Deque<T>;
+    friend class Deque_const_iterator<T>;
 };
 
 template<typename T>
 bool operator!=(Deque_iterator<T>, Deque_iterator<T>);
-
-template<typename T>
-class Deque_const_iterator : public std::iterator<
-        std::bidirectional_iterator_tag,
-        const T>
-{
-public:
-    bool operator==(Deque_const_iterator);
-
-    const T& operator*() const;
-
-    Deque_const_iterator& operator++();
-    Deque_const_iterator operator++(int);
-    Deque_const_iterator& operator--();
-    Deque_const_iterator operator--(int);
-
-private:
-    using deque_ = Deque<T>;
-    using node_  = typename deque_::node_;
-
-    const node_* current_;
-    const deque_* owner_;
-
-    Deque_const_iterator(const node_* current, const deque_* owner)
-            : current_(current), owner_(owner) {}
-
-    friend class Deque<T>;
-};
-
-template<typename T>
-bool operator!=(Deque_const_iterator<T>, Deque_const_iterator<T>);
 
 ///
 /// IMPLEMENTATIONS
