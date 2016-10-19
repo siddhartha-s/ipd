@@ -14,7 +14,7 @@
 #include <iterator>
 #include <utility>
 
-namespace ipd {
+namespace sentinel {
 
 //
 // Forward declarations of helper classes
@@ -121,33 +121,44 @@ public:
     ~Deque();
 
 private:
+    struct node_base_
+    {
+        node_base_* prev = nullptr;
+        node_base_* next = nullptr;
+    };
+
     // The linked list is made out of nodes, each of which contains a data
     // element and pointers to next and previous nodes.
-    struct node_
+    struct node_ : node_base_
     {
         T data;
-        node_* prev;
-        node_* next;
 
         // Constructs a new node, forwarding the arguments to construct the
         // data element. The prev and next pointers are initialized to nullptr.
         template<typename... Args>
         explicit node_(Args&& ... args)
         noexcept(noexcept(T(std::forward<Args>(args)...)))
-                : data(std::forward<Args>(args)...),
-                  prev(nullptr),
-                  next(nullptr) {}
+                : data(std::forward<Args>(args)...) {}
     };
 
     // Private member variables:
-    node_* head_ = nullptr;
-    node_* tail_ = nullptr;
+    node_base_ sentinel_;
     size_t size_ = 0;
 
     // Attaches a new node to the front of the list.
     void push_front_(node_*) noexcept;
     // Attaches a new node to the back of the list.
     void push_back_(node_*) noexcept;
+
+    node_* head_() const noexcept
+    {
+        return static_cast<node_*>(&sentinel_.next);
+    }
+
+    node_* tail_() const noexcept
+    {
+        return static_cast<node_*>(&sentinel_.prev);
+    }
 
     friend class Deque_iterator<T>;
 
@@ -183,8 +194,7 @@ public:
     Deque_iterator operator--(int) noexcept;
 
 private:
-    using deque_ = Deque<T>;
-    using node_  = typename deque_::node_;
+    using node_base_ = typename Deque<T>::node_base_;
 
     // We represent an iterator as a pointer to the current node and a
     // pointer to the deque as a whole. The reason we need the pointer to the
@@ -192,11 +202,10 @@ private:
     // iterator, which points past the end. That is, in the result of the
     // end() function (and friends) the current_ node is nullptr, but the
     // owner_ can be used to find the tail when autodecremented.
-    node_ * current_;
-    deque_* owner_;
+    node_base_* current_;
 
-    Deque_iterator(node_* current, deque_* owner) noexcept
-            : current_(current), owner_(owner) {}
+    Deque_iterator(node_base_* current) noexcept
+            : current_(current) {}
 
     friend class Deque<T>;
 
@@ -215,7 +224,7 @@ class Deque_const_iterator : public std::iterator<
 public:
     // Coercion from Deque<T>::iterator to Deque<T>::const_iterator.
     Deque_const_iterator(Deque_iterator<T> other) noexcept
-            : current_(other.current_), owner_(other.owner_) {}
+            : current_(other.current_) {}
 
     bool operator==(Deque_const_iterator) noexcept;
 
@@ -228,14 +237,12 @@ public:
     Deque_const_iterator operator--(int) noexcept;
 
 private:
-    using deque_ = Deque<T>;
-    using node_  = typename deque_::node_;
+    using node_base_  = typename Deque<T>::node_base_;
 
-    const node_ * current_;
-    const deque_* owner_;
+    const node_base_* current_;
 
-    Deque_const_iterator(const node_* current, const deque_* owner) noexcept
-            : current_(current), owner_(owner) {}
+    Deque_const_iterator(const node_base_* current) noexcept
+            : current_(current) {}
 
     friend class Deque<T>;
 };
@@ -248,20 +255,24 @@ bool operator!=(Deque_const_iterator<T>, Deque_const_iterator<T>) noexcept;
 ///
 
 template<typename T>
-Deque<T>::Deque() noexcept {}
+Deque<T>::Deque() noexcept {
+    sentinel_.next = sentinel_.prev = &sentinel_;
+}
 
 template<typename T>
-Deque<T>::Deque(std::initializer_list<T> args)
+Deque<T>::Deque(std::initializer_list<T> args) : Deque()
 {
     for (const auto& arg : args)
         push_back(arg);
 }
 
 template<typename T>
-Deque<T>::Deque(const Deque& other)
+Deque<T>::Deque(const Deque& other) : Deque()
 {
-    for (node_* curr = other.head_; curr != nullptr; curr = curr->next)
-        push_back(curr->data);
+    for (node_base_* curr = other.sentinel_.next;
+         curr != &other.sentinel_;
+         curr = curr->next)
+        push_back(static_cast<node_*>(curr)->data);
 }
 
 template<typename T>
@@ -269,17 +280,26 @@ Deque<T>& Deque<T>::operator=(const Deque& other)
 {
     clear();
 
-    for (node_* curr = other.head_; curr != nullptr; curr = curr->next)
-        push_back(curr->data);
+    for (node_base_* curr = other.sentinel_.next;
+         curr != &other.sentinel_;
+         curr = curr->next)
+        push_back(static_cast<node_*>(curr)->data);
 
     return *this;
 }
 
 template<typename T>
 Deque<T>::Deque(Deque&& other) noexcept
-        : head_(other.head_), tail_(other.tail_), size_(other.size_)
+        :  size_(other.size_)
 {
-    other.head_ = other.tail_ = nullptr;
+    if (other.sentinel_.next == &other.sentinel_) {
+        sentinel_.next = sentinel_.prev = &sentinel_;
+    } else {
+        sentinel_ = other.sentinel_;
+        other.sentinel_.next = other.sentinel_.prev = &other.sentinel_;
+    }
+
+    size_ = other.size_;
     other.size_ = 0;
 }
 
@@ -288,11 +308,14 @@ Deque<T>& Deque<T>::operator=(Deque&& other) noexcept
 {
     clear();
 
-    head_ = other.head_;
-    tail_ = other.tail_;
-    size_ = other.size_;
+    if (other.sentinel_.next == &other.sentinel_) {
+        sentinel_.next = sentinel_.prev = &sentinel_;
+    } else {
+        sentinel_ = other.sentinel_;
+        other.sentinel_.next = other.sentinel_.prev = &other.sentinel_;
+    }
 
-    other.head_ = other.tail_ = nullptr;
+    size_ = other.size_;
     other.size_ = 0;
 }
 
@@ -311,37 +334,34 @@ size_t Deque<T>::size() const noexcept
 template<typename T>
 const T& Deque<T>::front() const noexcept
 {
-    return head_->data;
+    return head_()->data;
 }
 
 template<typename T>
 T& Deque<T>::front() noexcept
 {
-    return head_->data;
+    return head_()->data;
 }
 
 template<typename T>
 const T& Deque<T>::back() const noexcept
 {
-    return tail_->data;
+    return tail_()->data;
 }
 
 template<typename T>
 T& Deque<T>::back() noexcept
 {
-    return tail_->data;
+    return tail_()->data;
 }
 
 template<typename T>
 void Deque<T>::push_front_(node_* new_node) noexcept
 {
-    new_node->next = head_;
-    if (head_ == nullptr)
-        tail_ = new_node;
-    else
-        head_->prev = new_node;
-
-    head_ = new_node;
+    new_node->next = sentinel_.next;
+    new_node->prev = &sentinel_;
+    new_node->next->prev = new_node;
+    new_node->prev->next = new_node;
     ++size_;
 }
 
@@ -367,13 +387,10 @@ void Deque<T>::emplace_front(Args&& ... args)
 template<typename T>
 void Deque<T>::push_back_(node_* new_node) noexcept
 {
-    new_node->prev = tail_;
-    if (tail_ == nullptr)
-        head_ = new_node;
-    else
-        tail_->next = new_node;
-
-    tail_ = new_node;
+    new_node->prev = sentinel_.prev;
+    new_node->next = &sentinel_;
+    new_node->next->prev = new_node;
+    new_node->prev->next = new_node;
     ++size_;
 }
 
@@ -399,15 +416,12 @@ void Deque<T>::emplace_back(Args&& ... args)
 template<typename T>
 void Deque<T>::pop_front() noexcept
 {
-    node_* new_head = head_->next;
+    node_* head = head_();
+    node_base_* new_head = head->next;
     delete head_;
-    head_ = new_head;
 
-    if (head_ == nullptr)
-        tail_ = nullptr;
-    else
-        head_->prev = nullptr;
 
+    if (head_ == nullptr) tail_ = nullptr;
     --size_;
 }
 
@@ -418,11 +432,7 @@ void Deque<T>::pop_back() noexcept
     delete tail_;
     tail_ = new_tail;
 
-    if (tail_ == nullptr)
-        head_ = nullptr;
-    else
-        tail_->next = nullptr;
-
+    if (tail_ == nullptr) head_ = nullptr;
     --size_;
 }
 
