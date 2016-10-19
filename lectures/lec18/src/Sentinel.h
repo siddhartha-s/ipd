@@ -129,6 +129,7 @@ private:
         node_base_* next = nullptr;
 
         node_* as_node() { return static_cast<node_*>(this); }
+
         const node_* as_node() const { return static_cast<const node_*>(this); }
     };
 
@@ -148,14 +149,18 @@ private:
 
     // Private member variables:
     node_base_ sentinel_;
-    size_t     size_ = 0;
+    size_t     size_;
 
     // Attaches a new node to the front of the list.
     void push_front_(node_*) noexcept;
     // Attaches a new node to the back of the list.
     void push_back_(node_*) noexcept;
 
-    // Moves the elements of the other deque to this deque.
+    // Sets this deque to empty without deleting any nodes. Will leak of the
+    // nodes haven't been adopted by another deque.
+    void set_empty_() noexcept;
+    // Moves the elements of the other deque to this deque, setting the other
+    // deque to empty.
     void move_from_(Deque&&) noexcept;
 
     // Gets a reference to the first node (next of sentinel_), downcast to
@@ -272,9 +277,28 @@ auto Deque<T>::tail_() const noexcept -> node_*
 }
 
 template<typename T>
+void Deque<T>::set_empty_() noexcept
+{
+    size_ = 0;
+    sentinel_.next = sentinel_.prev = &sentinel_;
+}
+
+template<typename T>
+void Deque<T>::move_from_(Deque&& other) noexcept
+{
+    if (other.empty()) {
+        set_empty_();
+    } else {
+        sentinel_ = other.sentinel_;
+        size_     = other.size_;
+        other.set_empty_();
+    }
+}
+
+template<typename T>
 Deque<T>::Deque() noexcept
 {
-    sentinel_.next = sentinel_.prev = &sentinel_;
+    set_empty_();
 }
 
 template<typename T>
@@ -300,20 +324,6 @@ Deque<T>& Deque<T>::operator=(const Deque& other)
         push_back(elt);
 
     return *this;
-}
-
-template<typename T>
-void Deque<T>::move_from_(Deque&& other) noexcept
-{
-    if (other.sentinel_.next == &other.sentinel_) {
-        sentinel_.next = sentinel_.prev = &sentinel_;
-    } else {
-        sentinel_ = other.sentinel_;
-        other.sentinel_.next = other.sentinel_.prev = &other.sentinel_;
-    }
-
-    size_ = other.size_;
-    other.size_ = 0;
 }
 
 template<typename T>
@@ -459,14 +469,18 @@ void Deque<T>::clear() noexcept
 template<typename T>
 void Deque<T>::swap(Deque& other) noexcept
 {
-    std::swap(sentinel_, other.sentinel_);
-    std::swap(size_, other.size_);
-
-    if (sentinel_.next == &other.sentinel_)
-        sentinel_.next = sentinel_.prev = &sentinel_;
-
-    if (other.sentinel_.next == &sentinel_)
-        other.sentinel_.next = other.sentinel_.prev = &other.sentinel_;
+    if (empty())
+        move_from_(std::move(other));
+    else if (other.empty())
+        other.move_from_(std::move(*this));
+    else {
+        std::swap(sentinel_, other.sentinel_);
+        std::swap(size_, other.size_);
+        sentinel_.next->prev = &sentinel_;
+        sentinel_.prev->next = &sentinel_;
+        other.sentinel_.next->prev = &other.sentinel_;
+        other.sentinel_.prev->next = &other.sentinel_;
+    }
 }
 
 template<typename T>
