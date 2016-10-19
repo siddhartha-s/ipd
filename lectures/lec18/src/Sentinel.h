@@ -57,13 +57,13 @@ public:
 
     // Returns a reference to the first element of the deque. If the deque is
     // empty then the behavior is undefined.
-    const T& front() const noexcept;
-    T& front() noexcept;
+    const T& front() const;
+    T& front();
 
     // Returns a reference to the last element of the deque. If the deque is
     // empty then the behavior is undefined.
-    const T& back() const noexcept;
-    T& back() noexcept;
+    const T& back() const;
+    T& back();
 
     // Inserts a new element at the front of the deque.
     void push_front(const T&);
@@ -83,11 +83,11 @@ public:
 
     // Removes the first element of the deque. Undefined if the
     // deque is empty.
-    void pop_front() noexcept;
+    void pop_front();
 
     // Removes the last element of the deque. Undefined if the
     // deque is empty.
-    void pop_back() noexcept;
+    void pop_back();
 
     // Removes all elements from the deque.
     void clear() noexcept;
@@ -337,25 +337,25 @@ size_t Deque<T>::size() const noexcept
 }
 
 template<typename T>
-const T& Deque<T>::front() const noexcept
+const T& Deque<T>::front() const
 {
     return head_()->data;
 }
 
 template<typename T>
-T& Deque<T>::front() noexcept
+T& Deque<T>::front()
 {
     return head_()->data;
 }
 
 template<typename T>
-const T& Deque<T>::back() const noexcept
+const T& Deque<T>::back() const
 {
     return tail_()->data;
 }
 
 template<typename T>
-T& Deque<T>::back() noexcept
+T& Deque<T>::back()
 {
     return tail_()->data;
 }
@@ -419,7 +419,7 @@ void Deque<T>::emplace_back(Args&& ... args)
 }
 
 template<typename T>
-void Deque<T>::pop_front() noexcept
+void Deque<T>::pop_front()
 {
     node_* head = head_();
     node_base_* new_head = head->next;
@@ -432,7 +432,7 @@ void Deque<T>::pop_front() noexcept
 }
 
 template<typename T>
-void Deque<T>::pop_back() noexcept
+void Deque<T>::pop_back()
 {
     node_* tail = tail_();
     node_base_* new_tail = tail->prev;
