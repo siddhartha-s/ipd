@@ -155,6 +155,9 @@ private:
     // Attaches a new node to the back of the list.
     void push_back_(node_*) noexcept;
 
+    // Moves the elements of the other deque to this deque.
+    void move_from_(Deque&&) noexcept;
+
     node_* head_() const noexcept
     {
         return sentinel_.next->down();
@@ -274,10 +277,8 @@ Deque<T>::Deque(std::initializer_list<T> args) : Deque()
 template<typename T>
 Deque<T>::Deque(const Deque& other) : Deque()
 {
-    for (node_base_* curr = other.sentinel_.next;
-         curr != &other.sentinel_;
-         curr = curr->next)
-        push_back(curr->down()->data);
+    for (const auto& elt : other)
+        push_back(elt);
 }
 
 template<typename T>
@@ -285,17 +286,14 @@ Deque<T>& Deque<T>::operator=(const Deque& other)
 {
     clear();
 
-    for (node_base_* curr = other.sentinel_.next;
-         curr != &other.sentinel_;
-         curr = curr->next)
-        push_back(curr->down()->data);
+    for (const auto& elt : other)
+        push_back(elt);
 
     return *this;
 }
 
 template<typename T>
-Deque<T>::Deque(Deque&& other) noexcept
-        :  size_(other.size_)
+void Deque<T>::move_from_(Deque&& other) noexcept
 {
     if (other.sentinel_.next == &other.sentinel_) {
         sentinel_.next = sentinel_.prev = &sentinel_;
@@ -306,22 +304,20 @@ Deque<T>::Deque(Deque&& other) noexcept
 
     size_ = other.size_;
     other.size_ = 0;
+}
+
+template<typename T>
+Deque<T>::Deque(Deque&& other) noexcept
+{
+    move_from_(other);
 }
 
 template<typename T>
 Deque<T>& Deque<T>::operator=(Deque&& other) noexcept
 {
     clear();
-
-    if (other.sentinel_.next == &other.sentinel_) {
-        sentinel_.next = sentinel_.prev = &sentinel_;
-    } else {
-        sentinel_ = other.sentinel_;
-        other.sentinel_.next = other.sentinel_.prev = &other.sentinel_;
-    }
-
-    size_ = other.size_;
-    other.size_ = 0;
+    move_from_(other);
+    return *this;
 }
 
 template<typename T>
