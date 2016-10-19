@@ -1,11 +1,21 @@
 #pragma once
 
+/*
+ * This file contains an implementation of a deque ("double-ended queue",
+ * pronounced like "deck") represented as a doubly-linked list. It is
+ * intended to demonstrate a full-bells-and-whistles generic container.
+ */
+
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
 #include <utility>
 
 namespace ipd {
+
+//
+// Forward declarations of helper classes
+//
 
 template<typename T>
 class Deque_iterator;
@@ -91,36 +101,31 @@ public:
     iterator end() noexcept;
     const_iterator end() const noexcept;
 
-    reverse_iterator rbegin();
-    const_reverse_iterator rbegin() const;
-    reverse_iterator rend();
-    const_reverse_iterator rend() const;
+    reverse_iterator rbegin() noexcept;
+    const_reverse_iterator rbegin() const noexcept;
+    reverse_iterator rend() noexcept;
+    const_reverse_iterator rend() const noexcept;
 
     const_iterator cbegin() const noexcept;
     const_iterator cend() const noexcept;
-    const_reverse_iterator crbegin() const;
-    const_reverse_iterator crend() const;
+    const_reverse_iterator crbegin() const noexcept;
+    const_reverse_iterator crend() const noexcept;
 
     ~Deque();
 
 private:
     struct node_
     {
-        explicit node_(const T& value) noexcept
-                : data(value), prev(nullptr), next(nullptr) {}
-
-        explicit node_(T&& value) noexcept
-                : data(std::move(value)), prev(nullptr), next(nullptr) {}
-
-        template<typename... Args>
-        explicit node_(bool, Args&& ... args)
-                noexcept(noexcept(T(std::forward<Args>(args)...)))
-                : data(std::forward<Args>(args)...), prev(nullptr),
-                  next(nullptr) {}
-
         T data;
         node_* prev;
         node_* next;
+
+        template<typename... Args>
+        explicit node_(Args&& ... args)
+        noexcept(noexcept(T(std::forward<Args>(args)...)))
+                : data(std::forward<Args>(args)...),
+                  prev(nullptr),
+                  next(nullptr) {}
     };
 
     node_* head_ = nullptr;
@@ -323,7 +328,7 @@ template<typename T>
 template<typename... Args>
 void Deque<T>::emplace_front(Args&& ... args)
 {
-    push_front_(new node_(true, std::forward(args)...));
+    push_front_(new node_(std::forward(args)...));
 }
 
 template<typename T>
@@ -355,7 +360,7 @@ template<typename T>
 template<typename... Args>
 void Deque<T>::emplace_back(Args&& ... args)
 {
-    push_back_(new node_(true, std::forward<Args>(args)...));
+    push_back_(new node_(std::forward<Args>(args)...));
 }
 
 template<typename T>
@@ -431,25 +436,25 @@ auto Deque<T>::end() const noexcept -> const_iterator
 }
 
 template<typename T>
-auto Deque<T>::rbegin() -> reverse_iterator
+auto Deque<T>::rbegin() noexcept -> reverse_iterator
 {
     return reverse_iterator(end());
 }
 
 template<typename T>
-auto Deque<T>::rbegin() const -> const_reverse_iterator
+auto Deque<T>::rbegin() const noexcept -> const_reverse_iterator
 {
     return const_reverse_iterator(end());
 }
 
 template<typename T>
-auto Deque<T>::rend() -> reverse_iterator
+auto Deque<T>::rend() noexcept -> reverse_iterator
 {
     return reverse_iterator(begin());
 }
 
 template<typename T>
-auto Deque<T>::rend() const -> const_reverse_iterator
+auto Deque<T>::rend() const noexcept -> const_reverse_iterator
 {
     return const_reverse_iterator(begin());
 }
@@ -467,13 +472,13 @@ auto Deque<T>::cend() const noexcept -> const_iterator
 }
 
 template<typename T>
-auto Deque<T>::crbegin() const -> const_reverse_iterator
+auto Deque<T>::crbegin() const noexcept -> const_reverse_iterator
 {
     return rbegin();
 }
 
 template<typename T>
-auto Deque<T>::crend() const -> const_reverse_iterator
+auto Deque<T>::crend() const noexcept -> const_reverse_iterator
 {
     return rend();
 }
