@@ -213,6 +213,7 @@ class Deque_const_iterator : public std::iterator<
         const T>
 {
 public:
+    // Coercion from Deque<T>::iterator to Deque<T>::const_iterator.
     Deque_const_iterator(Deque_iterator<T> other) noexcept
             : current_(other.current_), owner_(other.owner_) {}
 
