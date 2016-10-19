@@ -3,7 +3,7 @@
 
 #include <UnitTest++/UnitTest++.h>
 
-using namespace ipd;
+using namespace sentinel;
 
 TEST(New_is_empty)
 {
