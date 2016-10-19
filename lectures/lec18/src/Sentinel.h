@@ -466,6 +466,9 @@ void Deque<T>::clear() noexcept
     while (!empty()) pop_front();
 }
 
+// The sentinel node makes other operations easier, but it makes swap harder,
+// because we have pointers to the internal sentinel_ node that need to be
+// adjusted.
 template<typename T>
 void Deque<T>::swap(Deque& other) noexcept
 {
