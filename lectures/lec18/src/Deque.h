@@ -20,7 +20,7 @@ class Deque
 {
 public:
     // Constructs a new, empty deque.
-    Deque();
+    Deque() noexcept;
 
     // Constructs a deque with the given elements;
     Deque(std::initializer_list<T>);
@@ -31,24 +31,24 @@ public:
     Deque& operator=(const Deque&);
 
     // Move constructor.
-    Deque(Deque&&);
+    Deque(Deque&&) noexcept;
     // Move assignment operator.
-    Deque& operator=(Deque&&);
+    Deque& operator=(Deque&&) noexcept;
 
     // Returns true if the deque is empty.
-    bool empty() const;
+    bool empty() const noexcept;
     // Returns the number of elements in the deque.
-    size_t size() const;
+    size_t size() const noexcept;
 
     // Returns a reference to the first element of the deque. If the deque is
     // empty then the behavior is undefined.
-    const T& front() const;
-    T& front();
+    const T& front() const noexcept;
+    T& front() noexcept;
 
     // Returns a reference to the last element of the deque. If the deque is
     // empty then the behavior is undefined.
-    const T& back() const;
-    T& back();
+    const T& back() const noexcept;
+    T& back() noexcept;
 
     // Inserts a new element at the front of the deque.
     void push_front(const T&);
@@ -68,17 +68,17 @@ public:
 
     // Removes the first element of the deque. Undefined if the
     // deque is empty.
-    void pop_front();
+    void pop_front() noexcept;
 
     // Removes the last element of the deque. Undefined if the
     // deque is empty.
-    void pop_back();
+    void pop_back() noexcept;
 
     // Removes all elements from the deque.
-    void clear();
+    void clear() noexcept;
 
     // Exchanges the contents of two deques.
-    void swap(Deque&);
+    void swap(Deque&) noexcept;
 
     // Iterators over Deques.
     using iterator = Deque_iterator<T>;
@@ -86,18 +86,18 @@ public:
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    iterator begin();
-    const_iterator begin() const;
-    iterator end();
-    const_iterator end() const;
+    iterator begin() noexcept;
+    const_iterator begin() const noexcept;
+    iterator end() noexcept;
+    const_iterator end() const noexcept;
 
     reverse_iterator rbegin();
     const_reverse_iterator rbegin() const;
     reverse_iterator rend();
     const_reverse_iterator rend() const;
 
-    const_iterator cbegin() const;
-    const_iterator cend() const;
+    const_iterator cbegin() const noexcept;
+    const_iterator cend() const noexcept;
     const_reverse_iterator crbegin() const;
     const_reverse_iterator crend() const;
 
@@ -106,14 +106,15 @@ public:
 private:
     struct node_
     {
-        explicit node_(const T& value)
+        explicit node_(const T& value) noexcept
                 : data(value), prev(nullptr), next(nullptr) {}
 
-        explicit node_(T&& value)
+        explicit node_(T&& value) noexcept
                 : data(std::move(value)), prev(nullptr), next(nullptr) {}
 
         template<typename... Args>
         explicit node_(bool, Args&& ... args)
+                noexcept(noexcept(T(std::forward<Args>(args)...)))
                 : data(std::forward<Args>(args)...), prev(nullptr),
                   next(nullptr) {}
 
@@ -126,15 +127,16 @@ private:
     node_* tail_ = nullptr;
     size_t size_ = 0;
 
-    void push_front_(node_*);
-    void push_back_(node_*);
+    void push_front_(node_*) noexcept;
+    void push_back_(node_*) noexcept;
 
     friend class Deque_iterator<T>;
+
     friend class Deque_const_iterator<T>;
 };
 
 template<typename T>
-void swap(Deque<T>& a, Deque<T>& b);
+void swap(Deque<T>& a, Deque<T>& b) noexcept;
 
 template<typename T>
 class Deque_const_iterator : public std::iterator<
@@ -142,33 +144,33 @@ class Deque_const_iterator : public std::iterator<
         const T>
 {
 public:
-    Deque_const_iterator(Deque_iterator<T> other)
+    Deque_const_iterator(Deque_iterator<T> other) noexcept
             : current_(other.current_), owner_(other.owner_) {}
 
-    bool operator==(Deque_const_iterator);
+    bool operator==(Deque_const_iterator) noexcept;
 
-    const T& operator*() const;
+    const T& operator*() const noexcept;
 
-    Deque_const_iterator& operator++();
-    Deque_const_iterator operator++(int);
-    Deque_const_iterator& operator--();
-    Deque_const_iterator operator--(int);
+    Deque_const_iterator& operator++() noexcept;
+    Deque_const_iterator operator++(int) noexcept;
+    Deque_const_iterator& operator--() noexcept;
+    Deque_const_iterator operator--(int) noexcept;
 
 private:
     using deque_ = Deque<T>;
     using node_  = typename deque_::node_;
 
-    const node_* current_;
+    const node_ * current_;
     const deque_* owner_;
 
-    Deque_const_iterator(const node_* current, const deque_* owner)
+    Deque_const_iterator(const node_* current, const deque_* owner) noexcept
             : current_(current), owner_(owner) {}
 
     friend class Deque<T>;
 };
 
 template<typename T>
-bool operator!=(Deque_const_iterator<T>, Deque_const_iterator<T>);
+bool operator!=(Deque_const_iterator<T>, Deque_const_iterator<T>) noexcept;
 
 template<typename T>
 class Deque_iterator : public std::iterator<
@@ -176,38 +178,39 @@ class Deque_iterator : public std::iterator<
         T>
 {
 public:
-    bool operator==(Deque_iterator);
+    bool operator==(Deque_iterator) noexcept;
 
-    T& operator*() const;
+    T& operator*() const noexcept;
 
-    Deque_iterator& operator++();
-    Deque_iterator operator++(int);
-    Deque_iterator& operator--();
-    Deque_iterator operator--(int);
+    Deque_iterator& operator++() noexcept;
+    Deque_iterator operator++(int) noexcept;
+    Deque_iterator& operator--() noexcept;
+    Deque_iterator operator--(int) noexcept;
 
 private:
     using deque_ = Deque<T>;
     using node_  = typename deque_::node_;
 
-    node_* current_;
+    node_ * current_;
     deque_* owner_;
 
-    Deque_iterator(node_* current, deque_* owner)
+    Deque_iterator(node_* current, deque_* owner) noexcept
             : current_(current), owner_(owner) {}
 
     friend class Deque<T>;
+
     friend class Deque_const_iterator<T>;
 };
 
 template<typename T>
-bool operator!=(Deque_iterator<T>, Deque_iterator<T>);
+bool operator!=(Deque_iterator<T>, Deque_iterator<T>) noexcept;
 
 ///
 /// IMPLEMENTATIONS
 ///
 
 template<typename T>
-Deque<T>::Deque() {}
+Deque<T>::Deque() noexcept {}
 
 template<typename T>
 Deque<T>::Deque(std::initializer_list<T> args)
@@ -235,7 +238,7 @@ Deque<T>& Deque<T>::operator=(const Deque& other)
 }
 
 template<typename T>
-Deque<T>::Deque(Deque&& other)
+Deque<T>::Deque(Deque&& other) noexcept
         : head_(other.head_), tail_(other.tail_), size_(other.size_)
 {
     other.head_ = other.tail_ = nullptr;
@@ -243,7 +246,7 @@ Deque<T>::Deque(Deque&& other)
 }
 
 template<typename T>
-Deque<T>& Deque<T>::operator=(Deque&& other)
+Deque<T>& Deque<T>::operator=(Deque&& other) noexcept
 {
     clear();
 
@@ -256,43 +259,43 @@ Deque<T>& Deque<T>::operator=(Deque&& other)
 }
 
 template<typename T>
-bool Deque<T>::empty() const
+bool Deque<T>::empty() const noexcept
 {
     return size_ == 0;
 }
 
 template<typename T>
-size_t Deque<T>::size() const
+size_t Deque<T>::size() const noexcept
 {
     return size_;
 }
 
 template<typename T>
-const T& Deque<T>::front() const
+const T& Deque<T>::front() const noexcept
 {
     return head_->data;
 }
 
 template<typename T>
-T& Deque<T>::front()
+T& Deque<T>::front() noexcept
 {
     return head_->data;
 }
 
 template<typename T>
-const T& Deque<T>::back() const
+const T& Deque<T>::back() const noexcept
 {
     return tail_->data;
 }
 
 template<typename T>
-T& Deque<T>::back()
+T& Deque<T>::back() noexcept
 {
     return tail_->data;
 }
 
 template<typename T>
-void Deque<T>::push_front_(node_* new_node)
+void Deque<T>::push_front_(node_* new_node) noexcept
 {
     new_node->next = head_;
     if (head_ == nullptr)
@@ -324,7 +327,7 @@ void Deque<T>::emplace_front(Args&& ... args)
 }
 
 template<typename T>
-void Deque<T>::push_back_(node_* new_node)
+void Deque<T>::push_back_(node_* new_node) noexcept
 {
     new_node->prev = tail_;
     if (tail_ == nullptr)
@@ -356,7 +359,7 @@ void Deque<T>::emplace_back(Args&& ... args)
 }
 
 template<typename T>
-void Deque<T>::pop_front()
+void Deque<T>::pop_front() noexcept
 {
     node_* new_head = head_->next;
     delete head_;
@@ -367,7 +370,7 @@ void Deque<T>::pop_front()
 }
 
 template<typename T>
-void Deque<T>::pop_back()
+void Deque<T>::pop_back() noexcept
 {
     node_* new_tail = tail_->prev;
     delete tail_;
@@ -378,13 +381,13 @@ void Deque<T>::pop_back()
 }
 
 template<typename T>
-void Deque<T>::clear()
+void Deque<T>::clear() noexcept
 {
     while (!empty()) pop_front();
 }
 
 template<typename T>
-void Deque<T>::swap(Deque& other)
+void Deque<T>::swap(Deque& other) noexcept
 {
     std::swap(head_, other.head_);
     std::swap(tail_, other.tail_);
@@ -392,7 +395,7 @@ void Deque<T>::swap(Deque& other)
 }
 
 template<typename T>
-void swap(Deque<T>& a, Deque<T>& b)
+void swap(Deque<T>& a, Deque<T>& b) noexcept
 {
     a.swap(b);
 }
@@ -404,25 +407,25 @@ Deque<T>::~Deque()
 }
 
 template<typename T>
-auto Deque<T>::begin() -> iterator
+auto Deque<T>::begin() noexcept -> iterator
 {
     return iterator(head_, this);
 }
 
 template<typename T>
-auto Deque<T>::begin() const -> const_iterator
+auto Deque<T>::begin() const noexcept -> const_iterator
 {
     return const_iterator(head_, this);
 }
 
 template<typename T>
-auto Deque<T>::end() -> iterator
+auto Deque<T>::end() noexcept -> iterator
 {
     return iterator(nullptr, this);
 }
 
 template<typename T>
-auto Deque<T>::end() const -> const_iterator
+auto Deque<T>::end() const noexcept -> const_iterator
 {
     return const_iterator(nullptr, this);
 }
@@ -452,13 +455,13 @@ auto Deque<T>::rend() const -> const_reverse_iterator
 }
 
 template<typename T>
-auto Deque<T>::cbegin() const -> const_iterator
+auto Deque<T>::cbegin() const noexcept -> const_iterator
 {
     return begin();
 }
 
 template<typename T>
-auto Deque<T>::cend() const -> const_iterator
+auto Deque<T>::cend() const noexcept -> const_iterator
 {
     return end();
 }
@@ -476,26 +479,26 @@ auto Deque<T>::crend() const -> const_reverse_iterator
 }
 
 template<typename T>
-bool Deque_iterator<T>::operator==(Deque_iterator other)
+bool Deque_iterator<T>::operator==(Deque_iterator other) noexcept
 {
     return current_ == other.current_ && owner_ == other.owner_;
 }
 
 template<typename T>
-T& Deque_iterator<T>::operator*() const
+T& Deque_iterator<T>::operator*() const noexcept
 {
     return current_->data;
 }
 
 template<typename T>
-Deque_iterator<T>& Deque_iterator<T>::operator++()
+Deque_iterator<T>& Deque_iterator<T>::operator++() noexcept
 {
     current_ = current_->next;
     return *this;
 }
 
 template<typename T>
-Deque_iterator<T> Deque_iterator<T>::operator++(int)
+Deque_iterator<T> Deque_iterator<T>::operator++(int) noexcept
 {
     Deque_iterator result(*this);
     ++*this;
@@ -503,7 +506,7 @@ Deque_iterator<T> Deque_iterator<T>::operator++(int)
 }
 
 template<typename T>
-Deque_iterator<T>& Deque_iterator<T>::operator--()
+Deque_iterator<T>& Deque_iterator<T>::operator--() noexcept
 {
     if (current_ == nullptr)
         current_ = owner_->tail_;
@@ -514,7 +517,7 @@ Deque_iterator<T>& Deque_iterator<T>::operator--()
 }
 
 template<typename T>
-Deque_iterator<T> Deque_iterator<T>::operator--(int)
+Deque_iterator<T> Deque_iterator<T>::operator--(int) noexcept
 {
     Deque_iterator result(*this);
     --*this;
@@ -522,32 +525,32 @@ Deque_iterator<T> Deque_iterator<T>::operator--(int)
 }
 
 template<typename T>
-bool operator!=(Deque_iterator<T> i, Deque_iterator<T> j)
+bool operator!=(Deque_iterator<T> i, Deque_iterator<T> j) noexcept
 {
     return !(i == j);
 }
 
 template<typename T>
-bool Deque_const_iterator<T>::operator==(Deque_const_iterator other)
+bool Deque_const_iterator<T>::operator==(Deque_const_iterator other) noexcept
 {
     return current_ == other.current_ && owner_ == other.owner_;
 }
 
 template<typename T>
-const T& Deque_const_iterator<T>::operator*() const
+const T& Deque_const_iterator<T>::operator*() const noexcept
 {
     return current_->data;
 }
 
 template<typename T>
-Deque_const_iterator<T>& Deque_const_iterator<T>::operator++()
+Deque_const_iterator<T>& Deque_const_iterator<T>::operator++() noexcept
 {
     current_ = current_->next;
     return *this;
 }
 
 template<typename T>
-Deque_const_iterator<T> Deque_const_iterator<T>::operator++(int)
+Deque_const_iterator<T> Deque_const_iterator<T>::operator++(int) noexcept
 {
     Deque_const_iterator result(*this);
     ++*this;
@@ -555,7 +558,7 @@ Deque_const_iterator<T> Deque_const_iterator<T>::operator++(int)
 }
 
 template<typename T>
-Deque_const_iterator<T>& Deque_const_iterator<T>::operator--()
+Deque_const_iterator<T>& Deque_const_iterator<T>::operator--() noexcept
 {
     if (current_ == nullptr)
         current_ = owner_->tail_;
@@ -566,7 +569,7 @@ Deque_const_iterator<T>& Deque_const_iterator<T>::operator--()
 }
 
 template<typename T>
-Deque_const_iterator<T> Deque_const_iterator<T>::operator--(int)
+Deque_const_iterator<T> Deque_const_iterator<T>::operator--(int) noexcept
 {
     Deque_const_iterator result(*this);
     --*this;
@@ -574,7 +577,7 @@ Deque_const_iterator<T> Deque_const_iterator<T>::operator--(int)
 }
 
 template<typename T>
-bool operator!=(Deque_const_iterator<T> i, Deque_const_iterator<T> j)
+bool operator!=(Deque_const_iterator<T> i, Deque_const_iterator<T> j) noexcept
 {
     return !(i == j);
 }
