@@ -69,28 +69,6 @@ struct Circular : Projector
     }
 };
 
-// Adapts a shape to fill it with a color gradient.
-class Gradient : public Drawing_decorator
-{
-public:
-    Gradient(drawing_ptr, color start, color end,
-             const Projector& = Horizontal{},
-             const Modulator& = Linear{});
-
-    using sample = graphics::sample;
-
-    color color_at(posn) const override;
-
-protected:
-    virtual color color_at(sample, sample) const;
-    virtual color color_at(sample) const;
-
-    color           start_;
-    color           end_;
-    const Modulator& modulator_;
-    const Projector& projector_;
-};
-
 drawing_ptr gradient(drawing_ptr, Drawing::color start, Drawing::color end,
                      const Projector& = Horizontal{},
                      const Modulator& = Linear{});
