@@ -1,15 +1,7 @@
 // Example that renders several circles under various transformations.
 
 #include "drawings.h"
-#include "Background.h"
-#include "Circle.h"
-#include "Fill.h"
-#include "Gradient.h"
-#include "Opacity.h"
-#include "Overlay.h"
-#include "Polygon.h"
-#include "Rectangle.h"
-#include "Transform.h"
+#include "gradients.h"
 
 #include "render.h"
 
@@ -37,13 +29,14 @@ int main()
                             color::black, color::white);
     auto c2      = gradient(circle({300, 500}, 100),
                             color::black, color::white,
-                            Vertical{});
+                            vertical_projector());
     auto c3      = gradient(circle({500, 500}, 100),
                             color::black, color::white,
-                            Circular{});
+                            circular_projector());
     auto c4      = gradient(rectangle(400, 800, 600, 600),
                             color::black, color::white,
-                            Circular{}, Sinusoidal{3});
+                            circular_projector(),
+                            sinusoidal_modulator(3));
 
     auto row1    = overlay({red, green, blue, white});
     auto row2    = overlay({cyan, magenta, yellow, black});

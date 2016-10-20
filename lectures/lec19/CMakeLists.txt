@@ -14,8 +14,8 @@ set(SHAPES
         src/drawings.cpp
         src/Drawing_decorator.h
         src/Drawing_decorator.cpp
-        src/Gradient.h
-        src/Gradient.cpp
+        src/gradients.h
+        src/gradients.cpp
         src/render.h
         src/render.cpp
         )

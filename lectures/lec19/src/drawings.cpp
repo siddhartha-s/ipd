@@ -390,14 +390,13 @@ public:
     // Constructs a rectangle with the given top, right, bottom, and left
     // coordinates.
     Rectangle(double top, double right, double bottom, double left)
-            : Polygon{std::vector<posn>{{left, top}, {right, top}, {right, bottom},
-                                        {left, bottom}}}
+            : Polygon{{{left, top}, {right, top},
+                       {right, bottom}, {left, bottom}}}
     { }
 
     // Constructs a rectangle with the given positions as opposing vertices.
     Rectangle(posn p, posn q)
-            : Polygon{std::vector<posn>{{p.x, p.y}, {p.x, q.y}, {q.x, q.y}, {q.x, p
-            .y}}}
+            : Polygon{{{p.x, p.y}, {p.x, q.y}, {q.x, q.y}, {q.x, p.y}}}
     { }
 
     bool contains(posn) const override;
@@ -411,6 +410,11 @@ bool Rectangle::contains(posn point) const
 drawing_ptr rectangle(double top, double right, double bottom, double left)
 {
     return std::make_shared<Rectangle>(top, right, bottom, left);
+}
+
+drawing_ptr rectangle(Drawing::posn v1, Drawing::posn v2)
+{
+    return std::make_shared<Rectangle>(v1, v2);
 }
 
 // Applies an affine transformation (e.g., rotation, scaling, translation,
