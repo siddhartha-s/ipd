@@ -30,7 +30,7 @@ Picture::color Background::color_at(posn) const
     return color_;
 }
 
-drawing_ptr background(const Picture::color& fill)
+picture_ptr background(const Picture::color& fill)
 {
     return std::make_shared<Background>(fill);
 }
@@ -67,7 +67,7 @@ bool Circle::contains(posn point) const
     return distance(center_, point) <= radius_;
 }
 
-drawing_ptr circle(Picture::posn center, double radius)
+picture_ptr circle(Picture::posn center, double radius)
 {
     return std::make_shared<Circle>(center, radius);
 }
@@ -75,17 +75,17 @@ drawing_ptr circle(Picture::posn center, double radius)
 class Difference : public Picture
 {
 public:
-    Difference(drawing_ptr base, drawing_ptr mask);
+    Difference(picture_ptr base, picture_ptr mask);
     bool contains(posn) const override;
     color color_at(posn) const override;
 
 private:
-    drawing_ptr base_;
-    drawing_ptr mask_;
+    picture_ptr base_;
+    picture_ptr mask_;
 };
 
-Difference::Difference(drawing_ptr base, drawing_ptr mask)
-        : Picture{base->get_bbox() * mask->get_bbox()}
+Difference::Difference(picture_ptr base, picture_ptr mask)
+        : Picture{base->get_bbox()}
         , base_{base}
         , mask_{mask}
 { }
@@ -103,7 +103,7 @@ Picture::color Difference::color_at(posn point) const
         return color::transparent;
 }
 
-drawing_ptr difference(drawing_ptr base, drawing_ptr mask)
+picture_ptr difference(picture_ptr base, picture_ptr mask)
 {
     return std::make_shared<Difference>(base, mask);
 }
@@ -112,16 +112,16 @@ drawing_ptr difference(drawing_ptr base, drawing_ptr mask)
 class Fill : public Picture
 {
 public:
-    Fill(drawing_ptr, const color&);
+    Fill(picture_ptr, const color&);
     bool contains(posn) const override;
     color color_at(posn) const override;
 
 private:
-    const drawing_ptr base_;
+    const picture_ptr base_;
     const color color_;
 };
 
-Fill::Fill(drawing_ptr base, const color& color)
+Fill::Fill(picture_ptr base, const color& color)
         : Picture(base->get_bbox())
         , base_{base}
         , color_{color}
@@ -140,7 +140,7 @@ Picture::color Fill::color_at(posn point) const
         return color::transparent;
 }
 
-drawing_ptr fill(drawing_ptr base, const Picture::color& color)
+picture_ptr fill(picture_ptr base, const Picture::color& color)
 {
     return std::make_shared<Fill>(base, color);
 }
@@ -148,16 +148,16 @@ drawing_ptr fill(drawing_ptr base, const Picture::color& color)
 class Intersection : public Picture
 {
 public:
-    Intersection(drawing_ptr base, drawing_ptr mask);
+    Intersection(picture_ptr base, picture_ptr mask);
     bool contains(posn) const override;
     color color_at(posn) const override;
 
 private:
-    drawing_ptr base_;
-    drawing_ptr mask_;
+    picture_ptr base_;
+    picture_ptr mask_;
 };
 
-Intersection::Intersection(drawing_ptr base, drawing_ptr mask)
+Intersection::Intersection(picture_ptr base, picture_ptr mask)
         : Picture{base->get_bbox() * mask->get_bbox()}
         , base_{base}
         , mask_{mask}
@@ -176,7 +176,7 @@ Picture::color Intersection::color_at(posn point) const
         return color::transparent;
 }
 
-drawing_ptr intersection(drawing_ptr base, drawing_ptr mask)
+picture_ptr intersection(picture_ptr base, picture_ptr mask)
 {
     return std::make_shared<Intersection>(base, mask);
 }
@@ -198,7 +198,7 @@ bool Nothing::contains(posn) const
     return false;
 }
 
-drawing_ptr nothing()
+picture_ptr nothing()
 {
     return std::make_shared<Nothing>();
 }
@@ -207,14 +207,14 @@ drawing_ptr nothing()
 class Opacity : public Picture_decorator
 {
 public:
-    Opacity(drawing_ptr, graphics::sample);
+    Opacity(picture_ptr, graphics::sample);
     color color_at(posn) const override;
 
 private:
     graphics::sample opacity_;
 };
 
-Opacity::Opacity(drawing_ptr base, graphics::sample opacity)
+Opacity::Opacity(picture_ptr base, graphics::sample opacity)
         : Picture_decorator{base}
         , opacity_{opacity}
 { }
@@ -228,7 +228,7 @@ Picture::color Opacity::color_at(posn point) const
                  opacity_ * base_color.alpha()};
 }
 
-drawing_ptr opacity(drawing_ptr base, graphics::sample opacity)
+picture_ptr opacity(picture_ptr base, graphics::sample opacity)
 {
     return std::make_shared<Opacity>(base, opacity);
 }
@@ -238,17 +238,17 @@ class Overlay : public Picture
 {
 public:
     // Places `over` over `under`.
-    Overlay(drawing_ptr over, drawing_ptr under);
+    Overlay(picture_ptr over, picture_ptr under);
 
     bool contains(posn) const override;
     color color_at(posn) const override;
 
 private:
-    const drawing_ptr over_;
-    const drawing_ptr under_;
+    const picture_ptr over_;
+    const picture_ptr under_;
 };
 
-Overlay::Overlay(drawing_ptr over, drawing_ptr under)
+Overlay::Overlay(picture_ptr over, picture_ptr under)
         : Picture{{&*over, &*under}}
         , over_{over}
         , under_{under}
@@ -278,14 +278,14 @@ graphics::color Overlay::color_at(posn point) const
     }
 }
 
-drawing_ptr overlay(drawing_ptr over, drawing_ptr under)
+picture_ptr overlay(picture_ptr over, picture_ptr under)
 {
     return std::make_shared<Overlay>(over, under);
 }
 
-drawing_ptr overlay(std::initializer_list<drawing_ptr> layers)
+picture_ptr overlay(std::initializer_list<picture_ptr> layers)
 {
-    drawing_ptr result = nothing();
+    picture_ptr result = nothing();
 
     for (auto layer : layers)
         result = overlay(result, layer);
@@ -358,17 +358,17 @@ bool Polygon::contains(posn p) const
     return crossings % 2 == 1;
 }
 
-drawing_ptr polygon(const std::vector<Picture::posn>& sequence)
+picture_ptr polygon(const std::vector<Picture::posn>& sequence)
 {
     return std::make_shared<Polygon>(sequence);
 }
 
-drawing_ptr polygon(std::initializer_list<Picture::posn> vertices)
+picture_ptr polygon(std::initializer_list<Picture::posn> vertices)
 {
     return std::make_shared<Polygon>(vertices);
 }
 
-drawing_ptr regular_polygon(Polygon::posn center, double radius, size_t sides)
+picture_ptr regular_polygon(Polygon::posn center, double radius, size_t sides)
 {
     std::vector<Picture::posn> vertices;
 
@@ -407,12 +407,12 @@ bool Rectangle::contains(posn point) const
     return get_bbox().contains(point);
 }
 
-drawing_ptr rectangle(double top, double right, double bottom, double left)
+picture_ptr rectangle(double top, double right, double bottom, double left)
 {
     return std::make_shared<Rectangle>(top, right, bottom, left);
 }
 
-drawing_ptr rectangle(Picture::posn v1, Picture::posn v2)
+picture_ptr rectangle(Picture::posn v1, Picture::posn v2)
 {
     return std::make_shared<Rectangle>(v1, v2);
 }
@@ -423,7 +423,7 @@ class Transform : public Picture_decorator
 {
 public:
     // Applies the given transformation to the base shape.
-    Transform(drawing_ptr, const graphics::affinity& transform);
+    Transform(picture_ptr, const graphics::affinity& transform);
 
     bool contains(posn) const;
     color color_at(posn) const;
@@ -439,7 +439,7 @@ private:
 //  2) apply the *inverse transformation* to positions before passing them to
 //     the shape.
 
-Transform::Transform(drawing_ptr base, const graphics::affinity& transform)
+Transform::Transform(picture_ptr base, const graphics::affinity& transform)
         : Picture_decorator{base, transform(bbox{&*base})}
         , inv_{transform.inverse()}
 { }
@@ -452,7 +452,7 @@ Picture::color Transform::color_at(posn point) const {
     return Picture_decorator::color_at(inv_(point));
 }
 
-drawing_ptr transform(drawing_ptr base, const graphics::affinity& transform)
+picture_ptr transform(picture_ptr base, const graphics::affinity& transform)
 {
     return std::make_shared<Transform>(base, transform);
 }

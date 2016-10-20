@@ -10,14 +10,14 @@ class Picture_decorator : public Picture
 public:
     // Decorates the given shape, using its bounding box as the decorator's
     // bounding box.
-    Picture_decorator(drawing_ptr);
+    Picture_decorator(picture_ptr);
 
     // Decorates the given shape, using the given bounding box.
-    Picture_decorator(drawing_ptr, bbox);
+    Picture_decorator(picture_ptr, bbox);
 
     bool contains(posn) const override;
     color color_at(posn) const override;
 
 private:
-    const drawing_ptr base_;
+    const picture_ptr base_;
 };

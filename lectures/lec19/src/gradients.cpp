@@ -78,7 +78,7 @@ projector_ptr circular_projector()
 class Gradient : public Picture_decorator
 {
 public:
-    Gradient(drawing_ptr, color start, color end, projector_ptr, modulator_ptr);
+    Gradient(picture_ptr, color start, color end, projector_ptr, modulator_ptr);
 
     using sample = graphics::sample;
 
@@ -94,7 +94,7 @@ protected:
     projector_ptr   projector_;
 };
 
-Gradient::Gradient(drawing_ptr base, color start, color end,
+Gradient::Gradient(picture_ptr base, color start, color end,
                    projector_ptr projector,
                    modulator_ptr modulator)
         : Picture_decorator{base}
@@ -131,7 +131,7 @@ graphics::color Gradient::color_at(posn point) const
     }
 }
 
-drawing_ptr gradient(drawing_ptr base, Picture::color start, Picture::color end,
+picture_ptr gradient(picture_ptr base, Picture::color start, Picture::color end,
                      projector_ptr projector, modulator_ptr modulator)
 {
     return std::make_shared<Gradient>(base, start, end, projector, modulator);

@@ -1,10 +1,10 @@
 #include "Picture_decorator.h"
 
-Picture_decorator::Picture_decorator(drawing_ptr base)
+Picture_decorator::Picture_decorator(picture_ptr base)
         : Picture_decorator{base, {&*base}}
 { }
 
-Picture_decorator::Picture_decorator(drawing_ptr base, bbox box)
+Picture_decorator::Picture_decorator(picture_ptr base, bbox box)
         : Picture{box}
         , base_{base}
 { }

@@ -1,35 +1,52 @@
 #pragma once
 
+// This file contains factory functions for constructing a variety of pictures.
+
 #include "Picture.h"
 
 #include <initializer_list>
 #include <vector>
 
-drawing_ptr background(const Picture::color& fill = Picture::color::white);
+// A field of the given color filling all space.
+picture_ptr background(const Picture::color& fill = Picture::color::white);
 
-drawing_ptr circle(Picture::posn center, double radius);
+// A circle with the given center and radius.
+picture_ptr circle(Picture::posn center, double radius);
 
-drawing_ptr polygon(std::initializer_list<Picture::posn> vertices);
-drawing_ptr polygon(const std::vector<Picture::posn>& vertices);
+// A polygon with the given vertices.
+picture_ptr polygon(std::initializer_list<Picture::posn> vertices);
+picture_ptr polygon(const std::vector<Picture::posn>& vertices);
 
-// Makes a regular polygon with the given center and number of sides, where
+// A regular polygon with the given center and number of sides, where
 // `radius` is the distance from the center to each vertex.
-drawing_ptr regular_polygon(Picture::posn center, double radius, size_t sides);
+picture_ptr regular_polygon(Picture::posn center, double radius, size_t sides);
 
-drawing_ptr rectangle(double top, double right, double bottom, double left);
-drawing_ptr rectangle(Picture::posn v1, Picture::posn v2);
+// A rectangle with the given coordinates.
+picture_ptr rectangle(double top, double right, double bottom, double left);
 
-drawing_ptr overlay(drawing_ptr over, drawing_ptr under);
-drawing_ptr overlay(std::initializer_list<drawing_ptr>);
+// A rectangle with the given opposite corners.
+picture_ptr rectangle(Picture::posn v1, Picture::posn v2);
 
-drawing_ptr difference(drawing_ptr base, drawing_ptr mask);
+// Superimposes one picture over another.
+picture_ptr overlay(picture_ptr over, picture_ptr under);
 
-drawing_ptr intersection(drawing_ptr base, drawing_ptr mask);
+// Superimposes a sequence of pictures.
+picture_ptr overlay(std::initializer_list<picture_ptr>);
 
-drawing_ptr fill(drawing_ptr, const Picture::color&);
+// Set difference for pictures, removes points that are within the mask.
+picture_ptr difference(picture_ptr base, picture_ptr mask);
 
-drawing_ptr opacity(drawing_ptr, graphics::sample);
+// Set intersection for pictures, retains points that are within the mask.
+picture_ptr intersection(picture_ptr base, picture_ptr mask);
 
-drawing_ptr nothing();
+// Fills the given picture with the given color.:w
+picture_ptr fill(picture_ptr, const Picture::color&);
 
-drawing_ptr transform(drawing_ptr, const graphics::affinity&);
+// Adjusts the transparency/opacity of a picture.
+picture_ptr opacity(picture_ptr, graphics::sample);
+
+// The empty picture.
+picture_ptr nothing();
+
+// Transforms a picture via an affine transformation.
+picture_ptr transform(picture_ptr, const graphics::affinity&);
