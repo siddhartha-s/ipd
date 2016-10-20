@@ -8,12 +8,12 @@ add_program(red test/red.cpp)
 target_link_libraries(red graphics)
 
 set(SHAPES
-        src/Drawing.h
-        src/Drawing.cpp
-        src/drawings.h
-        src/drawings.cpp
-        src/Drawing_decorator.h
-        src/Drawing_decorator.cpp
+        src/Picture.h
+        src/Picture.cpp
+        src/pictures.h
+        src/pictures.cpp
+        src/Picture_decorator.h
+        src/Picture_decorator.cpp
         src/gradients.h
         src/gradients.cpp
         src/render.h

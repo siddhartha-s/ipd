@@ -5,7 +5,7 @@
 #include <memory>
 
 // Abstract base class for renderable drawings.
-class Drawing
+class Picture
 {
 public:
     using color = graphics::color;
@@ -13,7 +13,7 @@ public:
     using bbox  = graphics::bbox<double>;
 
     // Constructs a drawing with the given bounding box.
-    Drawing(const bbox&);
+    Picture(const bbox&);
 
     // Gets the bounding box of the drawing.
     const bbox& get_bbox() const;
@@ -26,10 +26,10 @@ public:
     virtual color color_at(posn) const;
 
     // Classes with virtual functions need a virtual destructor.
-    virtual ~Drawing();
+    virtual ~Picture();
 
 private:
     bbox  bbox_;
 };
 
-using drawing_ptr = std::shared_ptr<Drawing>;
+using drawing_ptr = std::shared_ptr<Picture>;

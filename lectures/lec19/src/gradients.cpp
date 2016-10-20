@@ -75,7 +75,7 @@ projector_ptr circular_projector()
 }
 
 // Adapts a shape to fill it with a color gradient.
-class Gradient : public Drawing_decorator
+class Gradient : public Picture_decorator
 {
 public:
     Gradient(drawing_ptr, color start, color end, projector_ptr, modulator_ptr);
@@ -97,7 +97,7 @@ protected:
 Gradient::Gradient(drawing_ptr base, color start, color end,
                    projector_ptr projector,
                    modulator_ptr modulator)
-        : Drawing_decorator{base}
+        : Picture_decorator{base}
         , start_{start}
         , end_{end}
         , projector_{projector}
@@ -106,14 +106,14 @@ Gradient::Gradient(drawing_ptr base, color start, color end,
 
 // Interpolates a color between start_ and end_, using the modulator
 // to alter the weight.
-Drawing::color Gradient::color_at(sample weight) const
+Picture::color Gradient::color_at(sample weight) const
 {
     return interpolate(start_, modulator_->modulate(weight), end_);
 }
 
 // Computes the color at an abstract (unit square) position by
 // projecting it to 1-D and then delegating to color_at(sample).
-Drawing::color Gradient::color_at(sample x, sample y) const
+Picture::color Gradient::color_at(sample x, sample y) const
 {
     return color_at(projector_->project(x, y));
 }
@@ -131,7 +131,7 @@ graphics::color Gradient::color_at(posn point) const
     }
 }
 
-drawing_ptr gradient(drawing_ptr base, Drawing::color start, Drawing::color end,
+drawing_ptr gradient(drawing_ptr base, Picture::color start, Picture::color end,
                      projector_ptr projector, modulator_ptr modulator)
 {
     return std::make_shared<Gradient>(base, start, end, projector, modulator);

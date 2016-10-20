@@ -1,9 +1,9 @@
-#include "drawings.h"
-#include "Drawing_decorator.h"
+#include "pictures.h"
+#include "Picture_decorator.h"
 
 // A limitless expanse of color with infinite bounding box, suitable for use
 // as a background for other shapes.
-class Background : public Drawing
+class Background : public Picture
 {
 public:
     // Constructs a background of the given color, white by default.
@@ -17,7 +17,7 @@ private:
 };
 
 Background::Background(const color& fill)
-        : Drawing{bbox::everything()}, color_{fill}
+        : Picture{bbox::everything()}, color_{fill}
 { }
 
 bool Background::contains(posn) const
@@ -25,18 +25,18 @@ bool Background::contains(posn) const
     return true;
 }
 
-Drawing::color Background::color_at(posn) const
+Picture::color Background::color_at(posn) const
 {
     return color_;
 }
 
-drawing_ptr background(const Drawing::color& fill)
+drawing_ptr background(const Picture::color& fill)
 {
     return std::make_shared<Background>(fill);
 }
 
 // A circle specified by its center and radius.
-class Circle : public Drawing
+class Circle : public Picture
 {
 public:
     // Constructs a circle with the given center position and radius.
@@ -50,14 +50,14 @@ private:
 };
 
 // Computes the bounding box of a circle, given its center and radius.
-static Drawing::bbox bbox_of_circle(Drawing::posn center, double radius)
+static Picture::bbox bbox_of_circle(Picture::posn center, double radius)
 {
-    return Drawing::bbox(center.y - radius, center.x + radius,
+    return Picture::bbox(center.y - radius, center.x + radius,
                          center.y + radius, center.x - radius);
 }
 
 Circle::Circle(posn center, double radius)
-        : Drawing{bbox_of_circle(center, radius)}
+        : Picture{bbox_of_circle(center, radius)}
         , center_{center}
         , radius_{radius}
 { }
@@ -67,12 +67,12 @@ bool Circle::contains(posn point) const
     return distance(center_, point) <= radius_;
 }
 
-drawing_ptr circle(Drawing::posn center, double radius)
+drawing_ptr circle(Picture::posn center, double radius)
 {
     return std::make_shared<Circle>(center, radius);
 }
 
-class Difference : public Drawing
+class Difference : public Picture
 {
 public:
     Difference(drawing_ptr base, drawing_ptr mask);
@@ -85,7 +85,7 @@ private:
 };
 
 Difference::Difference(drawing_ptr base, drawing_ptr mask)
-        : Drawing{base->get_bbox() * mask->get_bbox()}
+        : Picture{base->get_bbox() * mask->get_bbox()}
         , base_{base}
         , mask_{mask}
 { }
@@ -95,7 +95,7 @@ bool Difference::contains(posn point) const
     return (!mask_->contains(point)) && base_->contains(point);
 }
 
-Drawing::color Difference::color_at(posn point) const
+Picture::color Difference::color_at(posn point) const
 {
     if (! mask_->contains(point))
         return base_->color_at(point);
@@ -109,7 +109,7 @@ drawing_ptr difference(drawing_ptr base, drawing_ptr mask)
 }
 
 // Adapts another shape to change its color.
-class Fill : public Drawing
+class Fill : public Picture
 {
 public:
     Fill(drawing_ptr, const color&);
@@ -122,7 +122,7 @@ private:
 };
 
 Fill::Fill(drawing_ptr base, const color& color)
-        : Drawing(base->get_bbox())
+        : Picture(base->get_bbox())
         , base_{base}
         , color_{color}
 { }
@@ -132,7 +132,7 @@ bool Fill::contains(posn point) const
     return base_->contains(point);
 }
 
-Drawing::color Fill::color_at(posn point) const
+Picture::color Fill::color_at(posn point) const
 {
     if (base_->contains(point))
         return color_;
@@ -140,12 +140,12 @@ Drawing::color Fill::color_at(posn point) const
         return color::transparent;
 }
 
-drawing_ptr fill(drawing_ptr base, const Drawing::color& color)
+drawing_ptr fill(drawing_ptr base, const Picture::color& color)
 {
     return std::make_shared<Fill>(base, color);
 }
 
-class Intersection : public Drawing
+class Intersection : public Picture
 {
 public:
     Intersection(drawing_ptr base, drawing_ptr mask);
@@ -158,7 +158,7 @@ private:
 };
 
 Intersection::Intersection(drawing_ptr base, drawing_ptr mask)
-        : Drawing{base->get_bbox() * mask->get_bbox()}
+        : Picture{base->get_bbox() * mask->get_bbox()}
         , base_{base}
         , mask_{mask}
 { }
@@ -168,7 +168,7 @@ bool Intersection::contains(posn point) const
     return mask_->contains(point) && base_->contains(point);
 }
 
-Drawing::color Intersection::color_at(posn point) const
+Picture::color Intersection::color_at(posn point) const
 {
     if (mask_->contains(point))
         return base_->color_at(point);
@@ -182,7 +182,7 @@ drawing_ptr intersection(drawing_ptr base, drawing_ptr mask)
 }
 
 // The empty drawing
-class Nothing : public Drawing
+class Nothing : public Picture
 {
 public:
     Nothing();
@@ -190,7 +190,7 @@ public:
 };
 
 Nothing::Nothing()
-        : Drawing(bbox::nothing())
+        : Picture(bbox::nothing())
 { }
 
 bool Nothing::contains(posn) const
@@ -204,7 +204,7 @@ drawing_ptr nothing()
 }
 
 // Adapts a shape to alter its opacity/transparency.
-class Opacity : public Drawing_decorator
+class Opacity : public Picture_decorator
 {
 public:
     Opacity(drawing_ptr, graphics::sample);
@@ -215,13 +215,13 @@ private:
 };
 
 Opacity::Opacity(drawing_ptr base, graphics::sample opacity)
-        : Drawing_decorator{base}
+        : Picture_decorator{base}
         , opacity_{opacity}
 { }
 
-Drawing::color Opacity::color_at(posn point) const
+Picture::color Opacity::color_at(posn point) const
 {
-    auto base_color = Drawing_decorator::color_at(point);
+    auto base_color = Picture_decorator::color_at(point);
     return color{base_color.red(),
                  base_color.green(),
                  base_color.blue(),
@@ -234,7 +234,7 @@ drawing_ptr opacity(drawing_ptr base, graphics::sample opacity)
 }
 
 // Composes two shapes by overlaying one over the other.
-class Overlay : public Drawing
+class Overlay : public Picture
 {
 public:
     // Places `over` over `under`.
@@ -249,7 +249,7 @@ private:
 };
 
 Overlay::Overlay(drawing_ptr over, drawing_ptr under)
-        : Drawing{{&*over, &*under}}
+        : Picture{{&*over, &*under}}
         , over_{over}
         , under_{under}
 { }
@@ -294,7 +294,7 @@ drawing_ptr overlay(std::initializer_list<drawing_ptr> layers)
 }
 
 // A polygon, defined as a sequence of vertex positions.
-class Polygon : public Drawing
+class Polygon : public Picture
 {
 public:
     // Constructs a polygon from a sequence of vertices (e.g., a vector).
@@ -311,18 +311,18 @@ private:
 };
 
 Polygon::Polygon(const std::vector<posn>& sequence)
-        : Drawing{bbox(sequence)}
+        : Picture{bbox(sequence)}
         , vertices_{sequence}
 { }
 
-const std::vector<Drawing::posn>& Polygon::get_vertices() const
+const std::vector<Picture::posn>& Polygon::get_vertices() const
 {
     return vertices_;
 }
 
-bool has_crossing(Drawing::posn previous,
-                  Drawing::posn p,
-                  Drawing::posn current)
+bool has_crossing(Picture::posn previous,
+                  Picture::posn p,
+                  Picture::posn current)
 {
     if (current.y < previous.y)
         std::swap(current, previous);
@@ -358,19 +358,19 @@ bool Polygon::contains(posn p) const
     return crossings % 2 == 1;
 }
 
-drawing_ptr polygon(const std::vector<Drawing::posn>& sequence)
+drawing_ptr polygon(const std::vector<Picture::posn>& sequence)
 {
     return std::make_shared<Polygon>(sequence);
 }
 
-drawing_ptr polygon(std::initializer_list<Drawing::posn> vertices)
+drawing_ptr polygon(std::initializer_list<Picture::posn> vertices)
 {
     return std::make_shared<Polygon>(vertices);
 }
 
 drawing_ptr regular_polygon(Polygon::posn center, double radius, size_t sides)
 {
-    std::vector<Drawing::posn> vertices;
+    std::vector<Picture::posn> vertices;
 
     for (size_t i = 0; i < sides; ++i) {
         double angle = M_PI / 2 + (2 * M_PI * i) / sides;
@@ -412,14 +412,14 @@ drawing_ptr rectangle(double top, double right, double bottom, double left)
     return std::make_shared<Rectangle>(top, right, bottom, left);
 }
 
-drawing_ptr rectangle(Drawing::posn v1, Drawing::posn v2)
+drawing_ptr rectangle(Picture::posn v1, Picture::posn v2)
 {
     return std::make_shared<Rectangle>(v1, v2);
 }
 
 // Applies an affine transformation (e.g., rotation, scaling, translation,
 // shear) to a shape.
-class Transform : public Drawing_decorator
+class Transform : public Picture_decorator
 {
 public:
     // Applies the given transformation to the base shape.
@@ -440,16 +440,16 @@ private:
 //     the shape.
 
 Transform::Transform(drawing_ptr base, const graphics::affinity& transform)
-        : Drawing_decorator{base, transform(bbox{&*base})}
+        : Picture_decorator{base, transform(bbox{&*base})}
         , inv_{transform.inverse()}
 { }
 
 bool Transform::contains(posn point) const {
-    return Drawing_decorator::contains(inv_(point));
+    return Picture_decorator::contains(inv_(point));
 }
 
-Drawing::color Transform::color_at(posn point) const {
-    return Drawing_decorator::color_at(inv_(point));
+Picture::color Transform::color_at(posn point) const {
+    return Picture_decorator::color_at(inv_(point));
 }
 
 drawing_ptr transform(drawing_ptr base, const graphics::affinity& transform)

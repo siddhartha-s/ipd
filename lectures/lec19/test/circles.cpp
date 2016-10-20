@@ -1,6 +1,6 @@
 // Example that renders several circles under various transformations.
 
-#include "drawings.h"
+#include "pictures.h"
 #include "gradients.h"
 
 #include "render.h"

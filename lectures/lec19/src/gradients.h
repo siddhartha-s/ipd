@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Drawing_decorator.h"
+#include "Picture_decorator.h"
 
 #include <cmath>
 #include <memory>
@@ -33,6 +33,6 @@ projector_ptr vertical_projector();
 projector_ptr circular_projector();
 
 drawing_ptr gradient(drawing_ptr,
-                     Drawing::color start, Drawing::color end,
+                     Picture::color start, Picture::color end,
                      projector_ptr = horizontal_projector(),
                      modulator_ptr = linear_modulator());
