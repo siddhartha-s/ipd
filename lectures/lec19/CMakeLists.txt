@@ -10,6 +10,8 @@ target_link_libraries(red graphics)
 set(SHAPES
         src/Drawing.h
         src/Drawing.cpp
+        src/drawings.h
+        src/drawings.cpp
         src/Circle.h
         src/Circle.cpp
         src/Polygon.h
