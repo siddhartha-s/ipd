@@ -7,7 +7,8 @@ class Background : public Picture
 {
 public:
     // Constructs a background of the given color, white by default.
-    Background(const color& fill);
+    Background(const color& fill)
+            : Picture{bbox::everything()}, color_{fill} {}
 
     bool contains(posn) const override;
     color color_at(posn) const override;
@@ -15,10 +16,6 @@ public:
 private:
     color color_;
 };
-
-Background::Background(const color& fill)
-        : Picture{bbox::everything()}, color_{fill}
-{ }
 
 bool Background::contains(posn) const
 {
@@ -40,27 +37,25 @@ class Circle : public Picture
 {
 public:
     // Constructs a circle with the given center position and radius.
-    Circle(posn center, double radius);
+    Circle(posn center, double radius)
+            : Picture{bbox_of_circle(center, radius)}
+            , center_{center}
+            , radius_{radius}
+    { }
 
     bool contains(posn) const override;
 
 private:
     posn center_;
     double radius_;
+
+    // Computes the bounding box of a circle, given its center and radius.
+    static bbox bbox_of_circle(posn center, double radius)
+    {
+        return bbox(center.y - radius, center.x + radius,
+                    center.y + radius, center.x - radius);
+    }
 };
-
-// Computes the bounding box of a circle, given its center and radius.
-static Picture::bbox bbox_of_circle(Picture::posn center, double radius)
-{
-    return Picture::bbox(center.y - radius, center.x + radius,
-                         center.y + radius, center.x - radius);
-}
-
-Circle::Circle(posn center, double radius)
-        : Picture{bbox_of_circle(center, radius)}
-        , center_{center}
-        , radius_{radius}
-{ }
 
 bool Circle::contains(posn point) const
 {
@@ -72,10 +67,16 @@ picture_ptr circle(Picture::posn center, double radius)
     return std::make_shared<Circle>(center, radius);
 }
 
+
 class Difference : public Picture
 {
 public:
-    Difference(picture_ptr base, picture_ptr mask);
+    Difference(picture_ptr base, picture_ptr mask)
+            : Picture{base->get_bbox()}
+            , base_{base}
+            , mask_{mask}
+    { }
+
     bool contains(posn) const override;
     color color_at(posn) const override;
 
@@ -83,12 +84,6 @@ private:
     picture_ptr base_;
     picture_ptr mask_;
 };
-
-Difference::Difference(picture_ptr base, picture_ptr mask)
-        : Picture{base->get_bbox()}
-        , base_{base}
-        , mask_{mask}
-{ }
 
 bool Difference::contains(posn point) const
 {
@@ -112,7 +107,12 @@ picture_ptr difference(picture_ptr base, picture_ptr mask)
 class Fill : public Picture
 {
 public:
-    Fill(picture_ptr, const color&);
+    Fill(picture_ptr base, const color& color)
+            : Picture(base->get_bbox())
+            , base_{base}
+            , color_{color}
+    { }
+
     bool contains(posn) const override;
     color color_at(posn) const override;
 
@@ -120,12 +120,6 @@ private:
     const picture_ptr base_;
     const color color_;
 };
-
-Fill::Fill(picture_ptr base, const color& color)
-        : Picture(base->get_bbox())
-        , base_{base}
-        , color_{color}
-{ }
 
 bool Fill::contains(posn point) const
 {
@@ -148,7 +142,12 @@ picture_ptr fill(picture_ptr base, const Picture::color& color)
 class Intersection : public Picture
 {
 public:
-    Intersection(picture_ptr base, picture_ptr mask);
+    Intersection(picture_ptr base, picture_ptr mask)
+            : Picture{base->get_bbox() * mask->get_bbox()}
+            , base_{base}
+            , mask_{mask}
+    { }
+
     bool contains(posn) const override;
     color color_at(posn) const override;
 
@@ -156,12 +155,6 @@ private:
     picture_ptr base_;
     picture_ptr mask_;
 };
-
-Intersection::Intersection(picture_ptr base, picture_ptr mask)
-        : Picture{base->get_bbox() * mask->get_bbox()}
-        , base_{base}
-        , mask_{mask}
-{ }
 
 bool Intersection::contains(posn point) const
 {
@@ -185,13 +178,12 @@ picture_ptr intersection(picture_ptr base, picture_ptr mask)
 class Nothing : public Picture
 {
 public:
-    Nothing();
+    Nothing()
+            : Picture(bbox::nothing())
+    { }
+
     bool contains(posn) const override;
 };
-
-Nothing::Nothing()
-        : Picture(bbox::nothing())
-{ }
 
 bool Nothing::contains(posn) const
 {
@@ -207,17 +199,17 @@ picture_ptr nothing()
 class Opacity : public Picture_decorator
 {
 public:
-    Opacity(picture_ptr, graphics::sample);
+    Opacity(picture_ptr base, graphics::sample opacity)
+            : Picture_decorator{base}
+            , opacity_{opacity}
+    { }
+
     color color_at(posn) const override;
 
 private:
     graphics::sample opacity_;
 };
 
-Opacity::Opacity(picture_ptr base, graphics::sample opacity)
-        : Picture_decorator{base}
-        , opacity_{opacity}
-{ }
 
 Picture::color Opacity::color_at(posn point) const
 {
@@ -238,7 +230,11 @@ class Overlay : public Picture
 {
 public:
     // Places `over` over `under`.
-    Overlay(picture_ptr over, picture_ptr under);
+    Overlay(picture_ptr over, picture_ptr under)
+            : Picture{{&*over, &*under}}
+            , over_{over}
+            , under_{under}
+    { }
 
     bool contains(posn) const override;
     color color_at(posn) const override;
@@ -247,12 +243,6 @@ private:
     const picture_ptr over_;
     const picture_ptr under_;
 };
-
-Overlay::Overlay(picture_ptr over, picture_ptr under)
-        : Picture{{&*over, &*under}}
-        , over_{over}
-        , under_{under}
-{ }
 
 bool Overlay::contains(posn point) const
 {
@@ -298,7 +288,10 @@ class Polygon : public Picture
 {
 public:
     // Constructs a polygon from a sequence of vertices (e.g., a vector).
-    Polygon(const std::vector<posn>&);
+    Polygon(const std::vector<posn>& sequence)
+            : Picture{bbox(sequence)}
+            , vertices_{sequence}
+    { }
 
     bool contains(posn p) const override;
 
@@ -308,36 +301,31 @@ protected:
 
 private:
     std::vector<posn> vertices_;
-};
 
-Polygon::Polygon(const std::vector<posn>& sequence)
-        : Picture{bbox(sequence)}
-        , vertices_{sequence}
-{ }
+    static bool has_crossing(Picture::posn previous,
+                      Picture::posn p,
+                      Picture::posn current)
+    {
+        if (current.y < previous.y)
+            std::swap(current, previous);
+
+        if (previous.y <= p.y && p.y < current.y) {
+            double y = p.y - previous.y;
+            double x = p.x - previous.x;
+
+            double dy = current.y - previous.y;
+            double dx = current.x - previous.x;
+
+            return y * dx > dy * x;
+        } else {
+            return false;
+        }
+    }
+};
 
 const std::vector<Picture::posn>& Polygon::get_vertices() const
 {
     return vertices_;
-}
-
-bool has_crossing(Picture::posn previous,
-                  Picture::posn p,
-                  Picture::posn current)
-{
-    if (current.y < previous.y)
-        std::swap(current, previous);
-
-    if (previous.y <= p.y && p.y < current.y) {
-        double y = p.y - previous.y;
-        double x = p.x - previous.x;
-
-        double dy = current.y - previous.y;
-        double dx = current.x - previous.x;
-
-        return y * dx > dy * x;
-    } else {
-        return false;
-    }
 }
 
 bool Polygon::contains(posn p) const
@@ -423,26 +411,21 @@ class Transform : public Picture_decorator
 {
 public:
     // Applies the given transformation to the base shape.
-    Transform(picture_ptr, const graphics::affinity& transform);
+    Transform(picture_ptr base, const graphics::affinity& transform)
+            : Picture_decorator{base, transform(bbox{&*base})}
+            , inv_{transform.inverse()}
+    { }
 
     bool contains(posn) const;
     color color_at(posn) const;
 
 private:
-    // Stores the inverse of the desired transformation. See implementation
-    // for explanation.
+    // Stores the inverse of the desired transformation. To transform a shape, we
+    //  1) transform the bounding box, and
+    //  2) apply the *inverse transformation* to positions before passing them to
+    //     the shape.
     graphics::affinity inv_;
 };
-
-// To transform a shape, we
-//  1) transform the bounding box, and
-//  2) apply the *inverse transformation* to positions before passing them to
-//     the shape.
-
-Transform::Transform(picture_ptr base, const graphics::affinity& transform)
-        : Picture_decorator{base, transform(bbox{&*base})}
-        , inv_{transform.inverse()}
-{ }
 
 bool Transform::contains(posn point) const {
     return Picture_decorator::contains(inv_(point));
