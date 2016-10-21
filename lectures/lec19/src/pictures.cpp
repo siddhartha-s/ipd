@@ -306,8 +306,8 @@ protected:
 private:
     std::vector<posn> vertices_;
 
-    // Does the horizontal line passing through p intersect the line segment
-    // from previous to current?
+    // Does the horizontal ray emanating left from p intersect the line
+    // segment from previous to current?
     static bool has_crossing(Picture::posn previous,
                              Picture::posn p,
                              Picture::posn current);
