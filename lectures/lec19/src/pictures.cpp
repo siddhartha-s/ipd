@@ -8,13 +8,13 @@ class Background : public Picture
 public:
     // Constructs a background of the given color, white by default.
     Background(const color& fill)
-            : Picture{bbox::everything()}, color_{fill} {}
+            : Picture{bbox::everything()}, fill_{fill} {}
 
     bool contains(posn) const override;
     color color_at(posn) const override;
 
 private:
-    color color_;
+    color fill_;
 };
 
 bool Background::contains(posn) const
@@ -24,7 +24,7 @@ bool Background::contains(posn) const
 
 Picture::color Background::color_at(posn) const
 {
-    return color_;
+    return fill_;
 }
 
 picture_ptr background(const Picture::color& fill)
@@ -288,9 +288,9 @@ class Polygon : public Picture
 {
 public:
     // Constructs a polygon from a sequence of vertices (e.g., a vector).
-    Polygon(const std::vector<posn>& sequence)
-            : Picture{bbox(sequence)}
-            , vertices_{sequence}
+    Polygon(const std::vector<posn>& vertices)
+            : Picture{bbox(vertices)}
+            , vertices_{vertices}
     { }
 
     bool contains(posn p) const override;
