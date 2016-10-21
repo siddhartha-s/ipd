@@ -36,9 +36,9 @@ color interpolate(const color& a, sample weight, const color& b) noexcept;
 
 class Partial_blend
 {
-    Partial_blend(color left, sample weight);
+    Partial_blend(const color& left, sample weight);
 
-    color  left_;
+    const color& left_;
     sample weight_;
 
     friend Partial_blend operator<(const color&, sample);

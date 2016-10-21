@@ -76,7 +76,7 @@ noexcept
             new_alpha};
 }
 
-Partial_blend::Partial_blend(color left, sample weight)
+Partial_blend::Partial_blend(const color& left, sample weight)
         : left_{left}, weight_{weight}
 { }
 
