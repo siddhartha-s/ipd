@@ -361,11 +361,6 @@ picture_ptr polygon(const std::vector<Picture::posn>& sequence)
     return std::make_shared<Polygon>(sequence);
 }
 
-picture_ptr polygon(std::initializer_list<Picture::posn> vertices)
-{
-    return std::make_shared<Polygon>(vertices);
-}
-
 picture_ptr regular_polygon(Polygon::posn center, double radius, size_t sides)
 {
     std::vector<Picture::posn> vertices;

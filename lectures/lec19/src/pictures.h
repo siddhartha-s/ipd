@@ -14,7 +14,6 @@ picture_ptr background(const Picture::color& fill = Picture::color::white);
 picture_ptr circle(Picture::posn center, double radius);
 
 // A polygon with the given vertices.
-picture_ptr polygon(std::initializer_list<Picture::posn> vertices);
 picture_ptr polygon(const std::vector<Picture::posn>& vertices);
 
 // A regular polygon with the given center and number of sides, where
