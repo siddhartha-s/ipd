@@ -1,6 +1,8 @@
 #include "pictures.h"
 #include "Picture_decorator.h"
 
+#include <utility>
+
 // A limitless expanse of color with infinite bounding box, suitable for use
 // as a background for other shapes.
 class Background : public Picture
@@ -50,12 +52,14 @@ private:
     double radius_;
 
     // Computes the bounding box of a circle, given its center and radius.
-    static bbox bbox_of_circle(posn center, double radius)
-    {
-        return bbox(center.y - radius, center.x + radius,
-                    center.y + radius, center.x - radius);
-    }
+    static bbox bbox_of_circle(posn center, double radius);
 };
+
+Circle::bbox Circle::bbox_of_circle(posn center, double radius)
+{
+    return bbox(center.y - radius, center.x + radius,
+                center.y + radius, center.x - radius);
+}
 
 bool Circle::contains(posn point) const
 {
@@ -302,26 +306,32 @@ protected:
 private:
     std::vector<posn> vertices_;
 
+    // Does the horizontal line passing through p intersect the line segment
+    // from previous to current?
     static bool has_crossing(Picture::posn previous,
-                      Picture::posn p,
-                      Picture::posn current)
-    {
-        if (current.y < previous.y)
-            std::swap(current, previous);
-
-        if (previous.y <= p.y && p.y < current.y) {
-            double y = p.y - previous.y;
-            double x = p.x - previous.x;
-
-            double dy = current.y - previous.y;
-            double dx = current.x - previous.x;
-
-            return y * dx > dy * x;
-        } else {
-            return false;
-        }
-    }
+                             Picture::posn p,
+                             Picture::posn current);
 };
+
+bool Polygon::has_crossing(Picture::posn previous,
+                           Picture::posn p,
+                           Picture::posn current)
+{
+    if (current.y < previous.y)
+        std::swap(current, previous);
+
+    if (previous.y <= p.y && p.y < current.y) {
+        double y = p.y - previous.y;
+        double x = p.x - previous.x;
+
+        double dy = current.y - previous.y;
+        double dx = current.x - previous.x;
+
+        return y * dx > dy * x;
+    } else {
+        return false;
+    }
+}
 
 const std::vector<Picture::posn>& Polygon::get_vertices() const
 {
