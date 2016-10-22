@@ -1,5 +1,15 @@
 #lang dssl
 
+#|
+
+To use the `dssl` language, use the "Language | Choose Language"
+dialog to select "The Racket Language".
+
+You also need to install the language. Go to the "File | Install Package..."
+menu item in DrRacket. Type "dssl" in the box and click "Install".
+
+|#
+
 ;; a Stream is:
 ;;   (make-stream number (-> Stream))
 (define-struct stream (num rest))
