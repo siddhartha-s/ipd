@@ -269,7 +269,7 @@ private:
 ```
 
 I moved the public section before the private section because it’s more 
-important. The first entry in the private section is the constructor, whose 
+important. The first entry in the public section is the constructor, whose 
 name is always the same as the name of the class. Note that it doesn’t have a
 return type—this is because constructors don’t return anything. The 
 constructor takes two parameters: an account ID and the account owner’s name,

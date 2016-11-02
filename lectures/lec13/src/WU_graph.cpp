@@ -4,7 +4,8 @@
 
 namespace ipd {
 
-const double WU_graph::NO_EDGE = std::numeric_limits<double>::infinity();
+const WU_graph::weight WU_graph::NO_EDGE =
+                               std::numeric_limits<double>::infinity();
 
 WU_graph::WU_graph(size_t size)
 {
@@ -40,14 +41,14 @@ std::vector<WU_graph::vertex> WU_graph::get_neighbors(vertex v) const
 
 WU_graph::weight WU_graph::get_edge(vertex u, vertex v) const
 {
-     bounds_check_(u);
-     bounds_check_(v);
-     return weights_[u][v];
+    bounds_check_(u);
+    bounds_check_(v);
+    return weights_[u][v];
 }
 
 void WU_graph::bounds_check_(vertex v) const
 {
-     assert(v < size());
+    assert(v < size());
 }
 
 bool operator==(const WU_graph& g1, const WU_graph& g2)
@@ -72,9 +73,7 @@ std::vector<WU_edge> get_all_edges(const WU_graph& graph)
 }
 
 SSSP_result::SSSP_result(size_t size)
-    : pred(size, size)
-    , dist(size, WU_graph::NO_EDGE)
-{ }
+        : pred(size, size), dist(size, WU_graph::NO_EDGE) {}
 
 // Given the known distance to vertex v, and edge from v to u, relaxes
 // the distance to u by updating our knowledge to include the potential
@@ -93,7 +92,7 @@ void relax(const WU_graph& graph, SSSP_result& sssp,
 
 SSSP_result bellman_ford(const WU_graph& graph, WU_graph::vertex start)
 {
-    size_t size = graph.size();
+    size_t      size = graph.size();
     SSSP_result result(size);
 
     result.pred[start] = start;
@@ -123,7 +122,7 @@ SSSP_result bellman_ford(const WU_graph& graph, WU_graph::vertex start)
 WU_graph::vertex find_nearest_unvisited(const SSSP_result& sssp,
                                         const std::vector<bool>& visited)
 {
-    size_t size = visited.size();
+    size_t           size   = visited.size();
     WU_graph::vertex result = size;
 
     for (WU_graph::vertex u = 0; u < size; ++u) {
@@ -136,8 +135,8 @@ WU_graph::vertex find_nearest_unvisited(const SSSP_result& sssp,
 
 SSSP_result dijkstra(const WU_graph& graph, WU_graph::vertex start)
 {
-    size_t size = graph.size();
-    SSSP_result result(size);
+    size_t            size = graph.size();
+    SSSP_result       result(size);
     std::vector<bool> visited(size, false);
 
     result.pred[start] = start;

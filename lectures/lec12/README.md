@@ -123,6 +123,7 @@ it:
 ```
 
 Finally, we compute the answer and print it out:
+
 ```
     std::cout << "The circumference is " << 2 * M_PI * r << '\n';
 ```
@@ -153,8 +154,9 @@ Let’s look at that piece by piece:
   - As with `main`, we put the body of the function between {  }
 
   - We compute the result, and use the `return` keyword to exit the
-    function with the computed result. (If we leave out `return` it’s an
-    error [except for `main`, which is a special case].)
+    function with the computed result. (If we leave out `return` in a
+    non-void function it’s an error [except for `main`, which is a
+    special case].)
 
 How can we use this function?
 

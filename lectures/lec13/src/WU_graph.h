@@ -15,7 +15,7 @@ public:
     using weight    = double;
 
     // NO_EDGE == +inf.0, representing the absence of an edge:
-    static const double NO_EDGE;
+    static const weight NO_EDGE;
 
     // Constructs a new graph with the given number of vertices.
     WU_graph(size_t);
