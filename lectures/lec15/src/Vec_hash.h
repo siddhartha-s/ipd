@@ -1,0 +1,143 @@
+#pragma once
+
+#include <string>
+#include <vector>
+#include <stdexcept>
+#include <iostream>
+
+const size_t hash_default_size=10000;
+
+class NotFound : public std::logic_error
+{
+public:
+    NotFound(const std::string& s) : logic_error("Not Found: " + s) {}
+};
+
+template<typename T>
+class Vec_hash
+{
+
+public:
+
+    void add(const std::string& key, const T& value);
+
+    T& lookup(const std::string& key);
+
+    const T& lookup(const std::string& key) const;
+
+    bool member(const std::string& key) const;
+
+    virtual size_t hash(const std::string& s) const;
+
+    Vec_hash(size_t size=hash_default_size);
+
+    size_t collisions();
+
+    size_t table_size();
+
+private:
+
+    struct Pair
+    {
+        std::string key;
+        T           value;
+    };
+    std::vector<std::vector<Pair>> table_;
+
+    void init(size_t size);
+};
+
+template<typename T>
+size_t Vec_hash<T>::hash(const std::string& s) const
+{
+    if (s.size()) {
+        return s[0];
+    }
+    return 0;
+}
+
+template<typename T>
+void Vec_hash<T>::init(size_t size)
+{
+    for (size_t i = 0; i < size; i++) {
+        std::vector<Pair> v;
+        table_.push_back(v);
+    }
+
+}
+
+
+template<typename T>
+Vec_hash<T>::Vec_hash(size_t size)
+{
+    init(size);
+}
+
+template<typename T>
+void Vec_hash<T>::add(const std::string& key, const T& value)
+{
+    size_t hash_code = hash(key) % table_.size();
+    for (Pair& p : table_[hash_code]) {
+        if (p.key == key) {
+            p.value = value;
+            return;
+        }
+    }
+    table_[hash_code].push_back({key, value});
+}
+
+
+template<typename T>
+const T& Vec_hash<T>::lookup(const std::string& key) const
+{
+    size_t hash_code = hash(key) % table_.size();
+    std::vector<Pair> const& line = table_[hash_code];
+    for (const Pair        & p : table_[hash_code])
+        if (p.key == key)
+            return p.value;
+    throw NotFound(key);
+}
+
+
+template<typename T>
+T& Vec_hash<T>::lookup(const std::string& key)
+{
+    size_t hash_code = hash(key) % table_.size();
+    std::vector<Pair>& line = table_[hash_code];
+    for (Pair        & p : table_[hash_code])
+        if (p.key == key)
+            return p.value;
+    throw NotFound(key);
+}
+
+
+template<typename T>
+size_t Vec_hash<T>::collisions()
+{
+    size_t elements = 0;
+    for (std::vector<Pair>& v : table_) {
+        elements += v.size();
+    }
+    size_t best_bucket_size = elements / table_.size();
+    if (best_bucket_size * table_.size() != elements)
+        best_bucket_size++;
+
+    size_t collisions = 0;
+    for (std::vector<Pair>& v : table_) {
+        if (v.size() > best_bucket_size)
+            collisions += (v.size() - best_bucket_size);
+    }
+    return collisions;
+}
+
+
+template<typename T>
+size_t Vec_hash<T>::table_size()
+{
+    return table_.size();
+}
+
+
+void hash_trial(std::string name, Vec_hash<size_t>& h);
+
+const std::vector<std::string>& get_hamlet();
