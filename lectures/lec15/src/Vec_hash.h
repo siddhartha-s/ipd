@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <iostream>
 
-const size_t hash_default_size=10000;
+const size_t hash_default_size = 10000;
 
 class NotFound : public std::logic_error
 {
@@ -16,9 +16,7 @@ public:
 template<typename T>
 class Vec_hash
 {
-
 public:
-
     void add(const std::string& key, const T& value);
 
     T& lookup(const std::string& key);
@@ -29,18 +27,17 @@ public:
 
     virtual size_t hash(const std::string& s) const;
 
-    Vec_hash(size_t size=hash_default_size);
+    Vec_hash(size_t size = hash_default_size);
 
     size_t collisions();
 
     size_t table_size();
 
 private:
-
     struct Pair
     {
         std::string key;
-        T           value;
+        T value;
     };
     std::vector<std::vector<Pair>> table_;
 
@@ -63,7 +60,6 @@ void Vec_hash<T>::init(size_t size)
         std::vector<Pair> v;
         table_.push_back(v);
     }
-
 }
 
 
@@ -92,7 +88,7 @@ const T& Vec_hash<T>::lookup(const std::string& key) const
 {
     size_t hash_code = hash(key) % table_.size();
     std::vector<Pair> const& line = table_[hash_code];
-    for (const Pair        & p : table_[hash_code])
+    for (const Pair& p : table_[hash_code])
         if (p.key == key)
             return p.value;
     throw NotFound(key);
@@ -104,7 +100,7 @@ T& Vec_hash<T>::lookup(const std::string& key)
 {
     size_t hash_code = hash(key) % table_.size();
     std::vector<Pair>& line = table_[hash_code];
-    for (Pair        & p : table_[hash_code])
+    for (Pair& p : table_[hash_code])
         if (p.key == key)
             return p.value;
     throw NotFound(key);
