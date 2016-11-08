@@ -27,9 +27,9 @@ public:
 
     bool member(const std::string& key) const;
 
-    size_t collisions();
+    size_t collisions() const;
 
-    size_t table_size();
+    size_t table_size() const;
 
     // This function really should be protected, but we made it public for
     // testing.
@@ -119,10 +119,10 @@ bool Vec_hash<T>::member(const std::string& key) const
 
 
 template<typename T>
-size_t Vec_hash<T>::collisions()
+size_t Vec_hash<T>::collisions() const
 {
     size_t elements = 0;
-    for (std::vector<Pair>& v : table_) {
+    for (const std::vector<Pair>& v : table_) {
         elements += v.size();
     }
     size_t best_bucket_size = elements / table_.size();
@@ -130,7 +130,7 @@ size_t Vec_hash<T>::collisions()
         best_bucket_size++;
 
     size_t collisions = 0;
-    for (std::vector<Pair>& v : table_) {
+    for (const std::vector<Pair>& v : table_) {
         if (v.size() > best_bucket_size)
             collisions += (v.size() - best_bucket_size);
     }
@@ -139,7 +139,7 @@ size_t Vec_hash<T>::collisions()
 
 
 template<typename T>
-size_t Vec_hash<T>::table_size()
+size_t Vec_hash<T>::table_size() const
 {
     return table_.size();
 }
