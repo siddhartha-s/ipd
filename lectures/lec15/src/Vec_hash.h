@@ -44,6 +44,7 @@ private:
     std::vector<std::vector<Pair>> table_;
 
     void init(size_t size);
+    size_t hash_size(const std::string& key) const;
 };
 
 template<typename T>
@@ -53,6 +54,12 @@ size_t Vec_hash<T>::hash(const std::string& s) const
         return s[0];
     }
     return 0;
+}
+
+template<typename T>
+size_t Vec_hash<T>::hash_size(const std::string& key) const
+{
+    return hash(key) % table_.size();
 }
 
 template<typename T>
@@ -74,7 +81,7 @@ Vec_hash<T>::Vec_hash(size_t size)
 template<typename T>
 void Vec_hash<T>::add(const std::string& key, const T& value)
 {
-    size_t hash_code = hash(key) % table_.size();
+    size_t hash_code = hash_size(key);
     for (Pair& p : table_[hash_code]) {
         if (p.key == key) {
             p.value = value;
@@ -88,7 +95,7 @@ void Vec_hash<T>::add(const std::string& key, const T& value)
 template<typename T>
 const T& Vec_hash<T>::lookup(const std::string& key) const
 {
-    size_t hash_code = hash(key) % table_.size();
+    size_t hash_code = hash_size(key);
     for (const Pair& p : table_[hash_code])
         if (p.key == key)
             return p.value;
@@ -99,18 +106,17 @@ const T& Vec_hash<T>::lookup(const std::string& key) const
 template<typename T>
 T& Vec_hash<T>::lookup(const std::string& key)
 {
-    size_t hash_code = hash(key) % table_.size();
+    size_t hash_code = hash_size(key);
     for (Pair& p : table_[hash_code])
         if (p.key == key)
             return p.value;
     throw Not_found(key);
 }
 
-
 template<typename T>
 bool Vec_hash<T>::member(const std::string& key) const
 {
-    size_t hash_code = hash(key) % table_.size();
+    size_t hash_code = hash_size(key);
     for (const Pair& p : table_[hash_code])
         if (p.key == key)
             return true;
