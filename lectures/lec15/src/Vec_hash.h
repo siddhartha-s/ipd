@@ -5,32 +5,48 @@
 #include <stdexcept>
 #include <iostream>
 
+// Thrown by Vec_hash<T>::lookup when the key isn't found.
 class Not_found : public std::logic_error
 {
 public:
+    // Constructs a `Not_found` exception with the given key name.
     Not_found(const std::string& s) : logic_error("Not found: " + s) {}
 };
 
+// A separate-chained hash table with std::strings for keys and type
+// parameter `T` for values.
 template<typename T>
 class Vec_hash
 {
 public:
+    // The default number of buckets.
     static const size_t default_size = 10000;
 
+    // Constructs a new hash table, optionally specifying the number of buckets.
     Vec_hash(size_t size = default_size);
 
+    // Inserts a key-value association into the hash table.
     void add(const std::string& key, const T& value);
 
+    // Returns a reference to the value associated with a given key. Throws
+    // `Not_found` if the key doesn't exist.
     T& lookup(const std::string& key);
 
+    // Returns a reference to the value associated with a given key. Throws
+    // `Not_found` if the key doesn't exist.
     const T& lookup(const std::string& key) const;
 
+    // Returns whether the given key is found in the hash table.
     bool member(const std::string& key) const;
 
+    // Diagnostic function for measuring the number of collisions.
     size_t collisions() const;
 
+    // Returns the number of buckets.
     size_t table_size() const;
 
+    // Hashes a string to a 64-bit hash code.
+    //
     // This function really should be protected, but we made it public for
     // testing.
     virtual size_t hash(const std::string& s) const;
@@ -43,6 +59,8 @@ private:
     };
     std::vector<std::vector<Pair>> table_;
 
+    // Hashes the given string and mods by the table size. This gives the
+    // index into the table.
     size_t hash_size(const std::string& key) const;
 };
 
