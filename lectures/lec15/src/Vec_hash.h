@@ -27,11 +27,13 @@ public:
 
     bool member(const std::string& key) const;
 
-    virtual size_t hash(const std::string& s) const;
-
     size_t collisions();
 
     size_t table_size();
+
+    // This function really should be protected, but we made it public for
+    // testing.
+    virtual size_t hash(const std::string& s) const;
 
 private:
     struct Pair
