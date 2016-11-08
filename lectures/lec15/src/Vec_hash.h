@@ -50,10 +50,8 @@ private:
 template<typename T>
 size_t Vec_hash<T>::hash(const std::string& s) const
 {
-    if (s.size()) {
-        return (unsigned char) s[0];
-    }
-    return 0;
+    if (s.empty()) return 0;
+    else return (unsigned char) s[0];
 }
 
 template<typename T>
