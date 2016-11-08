@@ -65,7 +65,7 @@ Vec_hash<T>::Vec_hash(size_t size)
 {
     for (size_t i = 0; i < size; i++) {
         std::vector<Pair> v;
-        table_.(v);
+        table_.push_back(v);
     }
 }
 
