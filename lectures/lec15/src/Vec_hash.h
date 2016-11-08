@@ -5,19 +5,19 @@
 #include <stdexcept>
 #include <iostream>
 
-class NotFound : public std::logic_error
+class Not_found : public std::logic_error
 {
 public:
-    NotFound(const std::string& s) : logic_error("Not Found: " + s) {}
+    Not_found(const std::string& s) : logic_error("Not found: " + s) {}
 };
 
 template<typename T>
 class Vec_hash
 {
 public:
-    Vec_hash(size_t size = default_size);
-
     static const size_t default_size = 10000;
+
+    Vec_hash(size_t size = default_size);
 
     void add(const std::string& key, const T& value);
 
@@ -92,7 +92,7 @@ const T& Vec_hash<T>::lookup(const std::string& key) const
     for (const Pair& p : table_[hash_code])
         if (p.key == key)
             return p.value;
-    throw NotFound(key);
+    throw Not_found(key);
 }
 
 
@@ -103,7 +103,7 @@ T& Vec_hash<T>::lookup(const std::string& key)
     for (Pair& p : table_[hash_code])
         if (p.key == key)
             return p.value;
-    throw NotFound(key);
+    throw Not_found(key);
 }
 
 
