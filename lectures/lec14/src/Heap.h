@@ -58,7 +58,9 @@ void Heap<Element>::insert(const Element& elt)
     }
 }
 
-template <typename Element>
+namespace heap_helpers {
+
+template<typename Element>
 static size_t min_child(const std::vector<Element>& heap, size_t ix)
 {
     using namespace heap_helpers;
@@ -72,6 +74,8 @@ static size_t min_child(const std::vector<Element>& heap, size_t ix)
         result = right_child(ix);
 
     return result;
+}
+
 }
 
 template <typename Element>
