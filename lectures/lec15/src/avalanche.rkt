@@ -89,9 +89,7 @@
                        (unless (and cached-pict
                                     (equal? cw last-cw)
                                     (equal? ch last-ch))
-                         (set! cached-pict (profile (freeze (scale-to-fit (build-pict) cw ch))))
-                         #;(when (trials . > . 1)
-                           (exit)))
+                         (set! cached-pict (time (freeze (scale-to-fit (build-pict) cw ch)))))
                        (draw-pict cached-pict dc
                                   (- (/ cw 2) (/ (pict-width cached-pict) 2))
                                   (- (/ ch 2) (/ (pict-height cached-pict) 2))))]))
@@ -107,5 +105,5 @@
         (λ ()
           (avalance-trial)
           (send canvas refresh))]
-       [interval 1000]))
+       [interval 500]))
 (send frame show #t)
