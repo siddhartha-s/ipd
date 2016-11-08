@@ -15,6 +15,8 @@ template<typename T>
 class Vec_hash
 {
 public:
+    Vec_hash(size_t size = default_size);
+
     static const size_t default_size = 10000;
 
     void add(const std::string& key, const T& value);
@@ -26,8 +28,6 @@ public:
     bool member(const std::string& key) const;
 
     virtual size_t hash(const std::string& s) const;
-
-    Vec_hash(size_t size = default_size);
 
     size_t collisions();
 
