@@ -102,8 +102,17 @@ crypto
 
 avalance()
 
-spooky hash's short() function
+ ==> 
 
 --- security implications via denial of service attacks.
 
----  
+---  other hash functions in the literature:
+
+CityHash: https://github.com/google/cityhash
+SipHash: https://131002.net/siphash/siphash.pdf
+SpookyHash: http://www.burtleburtle.net/bob/hash/spooky.html
+
+Inspiration for this lecture:
+  http://papa.bretmulvey.com/post/124027987928/hash-functions
+  http://papa.bretmulvey.com/post/124028832958/hash-functions-continued
+

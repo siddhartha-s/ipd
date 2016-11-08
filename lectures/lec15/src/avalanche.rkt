@@ -4,7 +4,7 @@
 
 (define hash-binaries
   (for/list ([file (in-directory "/Users/robby/Library/Caches/CLion2016.2/cmake/generated/")]
-             #:when (equal? (path->string (last (explode-path file))) "hash"))
+             #:when (equal? (path->string (last (explode-path file))) "avalanche"))
     file))
 (define hash-binary
   (cond
@@ -103,7 +103,10 @@
   (new timer%
        [notify-callback
         (λ ()
-          (avalance-trial)
-          (send canvas refresh))]
+          (cond
+            [(send frame is-shown?)
+             (avalance-trial)
+             (send canvas refresh)]
+            [else (send timer stop)]))]
        [interval 500]))
 (send frame show #t)

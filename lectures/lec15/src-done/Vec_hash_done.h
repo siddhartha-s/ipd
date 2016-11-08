@@ -129,10 +129,31 @@ bool Vec_hash<T>::member(const std::string& key) const
 
 
 template<typename T>
+size_t Vec_hash<T>::collisions() const
+{
+    size_t elements = 0;
+    for (const std::vector<Pair>& v : table_) {
+        elements += v.size();
+    }
+    size_t best_bucket_size = elements / table_.size();
+    if (best_bucket_size * table_.size() != elements)
+        best_bucket_size++;
+
+    size_t collisions = 0;
+    for (const std::vector<Pair>& v : table_) {
+        if (v.size() > best_bucket_size)
+            collisions += (v.size() - best_bucket_size);
+    }
+    return collisions;
+}
+
+
+template<typename T>
 size_t Vec_hash<T>::table_size() const
 {
     return table_.size();
 }
 
 void hash_trial(std::string name, Vec_hash<size_t>& h);
+
 const std::vector<std::string>& get_hamlet();
