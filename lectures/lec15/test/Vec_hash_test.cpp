@@ -47,3 +47,16 @@ TEST(ID_HASH)
     for(int i=0; i<8; i++) s[i]=i;
     CHECK_EQUAL(506097522914230528,ih.hash(s));
 }
+
+TEST(Member)
+{
+    Vec_hash<int> vh(100);
+    CHECK(!vh.member("a1"));
+    CHECK(!vh.member("a2"));
+    vh.add("a1", 1);
+    CHECK(vh.member("a1"));
+    CHECK(!vh.member("a2"));
+    vh.add("a2", 2);
+    CHECK(vh.member("a1"));
+    CHECK(vh.member("a2"));
+}

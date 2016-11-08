@@ -108,6 +108,17 @@ T& Vec_hash<T>::lookup(const std::string& key)
 
 
 template<typename T>
+bool Vec_hash<T>::member(const std::string& key) const
+{
+    size_t hash_code = hash(key) % table_.size();
+    for (const Pair& p : table_[hash_code])
+        if (p.key == key)
+            return true;
+    return false;
+}
+
+
+template<typename T>
 size_t Vec_hash<T>::collisions()
 {
     size_t elements = 0;
@@ -132,7 +143,6 @@ size_t Vec_hash<T>::table_size()
 {
     return table_.size();
 }
-
 
 void hash_trial(std::string name, Vec_hash<size_t>& h);
 
