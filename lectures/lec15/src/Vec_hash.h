@@ -51,7 +51,7 @@ template<typename T>
 size_t Vec_hash<T>::hash(const std::string& s) const
 {
     if (s.size()) {
-        return s[0];
+        return (unsigned char) s[0];
     }
     return 0;
 }
