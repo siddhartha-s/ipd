@@ -3,25 +3,24 @@
 A hash table provides a (non-persistent) version of the
 dictionary API:
 
-```C
+```cpp
   // hash<K,V> new()
   // creates a new hash table that maps K to V
 
   // void add(hash<K,V> hash, K key, V value)
   // mutates `hash` so that it maps `key` to `value`
 
-  // bool (member hash<K,V> hash, K key)
+  // bool member(hash<K,V> hash, K key)
   // determines if `key` is in `hash`
 
-  // T lookup(hash<K,V> hash, K key)
+  // K lookup(hash<K,V> hash, K key)
   // returns the value mapped by the key, raising
   // an error if `key` is not mapped by the table
-
 ```
 
 The basic idea of the hash table implementation hinges on the ability
 to map the keys (K)s to natural numbers. We then use those natural
-numbers as indicies into a vector and store key/value pairs in the
+numbers as indices into a vector and store key/value pairs in the
 vector.
 
 The mapping to natural numbers is called "hashing" and it will not
@@ -47,8 +46,8 @@ For the rest of this lecture, we'll assume that the keys are strings,
 just to ease the discussion, but everything we can do will work for
 other kinds of values, too, with some care.
 
-So, lets say that our hashing function maps every key to the value of
-its first letter in ASCII, and lets say that these calls happen:
+So, let's say that our hashing function maps every key to the value of
+its first letter in ASCII, and let's say that these calls happen:
 
 ```
    Hash<std::string,int> ht(4);
@@ -80,17 +79,18 @@ key, in ASCII, we would get this:
 
 Which one of these is better for `lookup`? (first!)
 
-Lets talk about the running time of the operations. Going in order:
+Let's talk about the running time of the operations. Going in order:
 
--  new-- constant (size of table)
+-  new-- linear (size of table)
 
--  add-- constant (assuming hash function is constant time)
+-  add-- anywhere from constant to linear, depending how good the
+         hashing function is and how big the table is
 
--  member -- also constant (also assuming...)
+-  member-- ditto
 
--  lookup -- anywhere from constant to linear, depending how good the hashing function is.
+-  lookup-- ditto
 
-Lets explore some hashing functions. 
+Let's explore some hashing functions. 
 
 
 
