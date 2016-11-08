@@ -5,8 +5,6 @@
 #include <stdexcept>
 #include <iostream>
 
-const size_t hash_default_size = 10000;
-
 class NotFound : public std::logic_error
 {
 public:
@@ -17,6 +15,8 @@ template<typename T>
 class Vec_hash
 {
 public:
+    static const size_t default_size = 10000;
+
     void add(const std::string& key, const T& value);
 
     T& lookup(const std::string& key);
@@ -27,7 +27,7 @@ public:
 
     virtual size_t hash(const std::string& s) const;
 
-    Vec_hash(size_t size = hash_default_size);
+    Vec_hash(size_t size = default_size);
 
     size_t collisions();
 
@@ -87,7 +87,6 @@ template<typename T>
 const T& Vec_hash<T>::lookup(const std::string& key) const
 {
     size_t hash_code = hash(key) % table_.size();
-    std::vector<Pair> const& line = table_[hash_code];
     for (const Pair& p : table_[hash_code])
         if (p.key == key)
             return p.value;
@@ -99,7 +98,6 @@ template<typename T>
 T& Vec_hash<T>::lookup(const std::string& key)
 {
     size_t hash_code = hash(key) % table_.size();
-    std::vector<Pair>& line = table_[hash_code];
     for (Pair& p : table_[hash_code])
         if (p.key == key)
             return p.value;

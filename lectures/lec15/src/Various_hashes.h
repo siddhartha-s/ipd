@@ -93,7 +93,7 @@ class Sbox_hash : public Vec_hash<T>
 public:
     virtual size_t hash(const std::string& s) const override;
 
-    Sbox_hash(size_t=hash_default_size);
+    Sbox_hash(size_t = Vec_hash<T>::default_size);
 
 private:
     std::array<size_t, 256> sbox_;
