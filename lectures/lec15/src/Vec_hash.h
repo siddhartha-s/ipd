@@ -61,13 +61,8 @@ size_t Vec_hash<T>::hash_size(const std::string& key) const
 
 
 template<typename T>
-Vec_hash<T>::Vec_hash(size_t size)
-{
-    for (size_t i = 0; i < size; i++) {
-        std::vector<Pair> v;
-        table_.push_back(v);
-    }
-}
+Vec_hash<T>::Vec_hash(size_t size) : table_(size) {}
+
 
 template<typename T>
 void Vec_hash<T>::add(const std::string& key, const T& value)
