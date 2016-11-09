@@ -120,6 +120,7 @@ size_t Vec_open_hash<T>::get_index(const std::string& key) const
         if (!p.valid || p.key == key) return index;
     }
 
+    // Should never happen:
     throw Full();
 }
 
@@ -150,37 +151,25 @@ void Vec_open_hash<T>::add(const std::string& key, const T& value)
 template<typename T>
 const T& Vec_open_hash<T>::lookup(const std::string& key) const
 {
-    try {
-        const Entry& p = table_[get_index(key)];
-        if (p.valid) return p.value;
-        throw Not_found(key);
-    } catch (Full e) {
-        throw Not_found(key);
-    }
+    const Entry& p = table_[get_index(key)];
+    if (p.valid) return p.value;
+    throw Not_found(key);
 }
 
 
 template<typename T>
 T& Vec_open_hash<T>::lookup(const std::string& key)
 {
-    try {
-        Entry& p = table_[get_index(key)];
-        if (p.valid) return p.value;
-        throw Not_found(key);
-    } catch (Full e) {
-        throw Not_found(key);
-    }
+    Entry& p = table_[get_index(key)];
+    if (p.valid) return p.value;
+    throw Not_found(key);
 }
 
 template<typename T>
 bool Vec_open_hash<T>::member(const std::string& key) const
 {
-    try {
-        const Entry& p = table_[get_index(key)];
-        return p.valid;
-    } catch (Full e) {
-        return false;
-    }
+    const Entry& p = table_[get_index(key)];
+    return p.valid;
 }
 
 size_t Vec_open_hash::size() const
