@@ -71,6 +71,11 @@ private:
     // Hashes the given string and mods by the table size. This gives the
     // index into the table.
     size_t get_index(const std::string& key) const;
+
+    void double_size();
+
+    void add_no_double(const std::string& key, const T& value);
+
 };
 
 template<typename T>
@@ -85,6 +90,21 @@ Vec_open_hash<T>::Vec_open_hash(size_t size) : table_(size)
 {
     for (Pair& p : table_) {
         p.valid = false;
+    }
+}
+
+template<typename T>
+void Vec_open_hash<T>::double_size()
+{
+    std::vector<Pair> old_table = move(table_);
+    std::vector<Pair> new_table(old_table.size()*2);
+    for (Pair& p : new_table) {
+        p.valid = false;
+    }
+    table_ = move(new_table);
+    for (Pair& p : old_table) {
+        if (p.valid)
+            add_no_double(p.key,p.value);
     }
 }
 
@@ -107,7 +127,7 @@ size_t Vec_open_hash<T>::get_index(const std::string& key) const
 }
 
 template<typename T>
-void Vec_open_hash<T>::add(const std::string& key, const T& value)
+void Vec_open_hash<T>::add_no_double(const std::string& key, const T& value)
 {
     size_t index = get_index(key);
     Pair& p = table_[index];
@@ -119,27 +139,50 @@ void Vec_open_hash<T>::add(const std::string& key, const T& value)
 
 
 template<typename T>
+void Vec_open_hash<T>::add(const std::string& key, const T& value)
+{
+    try {
+        add_no_double(key, value);
+    } catch (Full e) {
+        double_size();
+        add_no_double(key, value);
+    }
+}
+
+template<typename T>
 const T& Vec_open_hash<T>::lookup(const std::string& key) const
 {
-    const Pair &p = table_[get_index(key)];
-    if (p.valid) return p.value;
-    throw Not_found(key);
+    try {
+        const Pair& p = table_[get_index(key)];
+        if (p.valid) return p.value;
+        throw Not_found(key);
+    } catch (Full e) {
+        throw Not_found(key);
+    }
 }
 
 
 template<typename T>
 T& Vec_open_hash<T>::lookup(const std::string& key)
 {
-    Pair &p = table_[get_index(key)];
-    if (p.valid) return p.value;
-    throw Not_found(key);
+    try {
+        Pair& p = table_[get_index(key)];
+        if (p.valid) return p.value;
+        throw Not_found(key);
+    } catch (Full e) {
+        throw Not_found(key);
+    }
 }
 
 template<typename T>
 bool Vec_open_hash<T>::member(const std::string& key) const
 {
-    const Pair &p = table_[get_index(key)];
-    return p.valid;
+    try {
+        const Pair& p = table_[get_index(key)];
+        return p.valid;
+    } catch (Full e) {
+        return false;
+    }
 }
 
 template<typename T>
