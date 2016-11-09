@@ -115,13 +115,13 @@ size_t Vec_open_hash<T>::get_index(const std::string& key) const
     size_t index = start;
     while (true) {
         const Pair& p = table_[index];
-        if (p.key == key) return index;
+
         if (!p.valid) return index;
-        if (p.valid) {
-            index = (index + 1) % table_.size();
-            if (index == start) {
-                throw Full(key);
-            }
+        if (p.key == key) return index;
+
+        index = (index + 1) % table_.size();
+        if (index == start) {
+            throw Full(key);
         }
     }
 }
