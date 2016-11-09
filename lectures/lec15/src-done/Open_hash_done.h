@@ -92,7 +92,8 @@ Open_hash<T>::Open_hash(size_t size) : table_(size), size_(0)
 template<typename T>
 void Open_hash<T>::double_size()
 {
-    std::vector<Entry> table(table_.size() == 0 ? 2 : 2 * table_.size());
+    size_t new_size = table_.empty() ? 2 : 2 * table_.size();
+    std::vector<Entry> table(new_size);
 
     std::swap(table_, table);
     size_ = 0;
