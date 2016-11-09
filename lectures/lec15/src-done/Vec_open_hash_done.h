@@ -96,15 +96,14 @@ Vec_open_hash<T>::Vec_open_hash(size_t size) : table_(size), size_(0)
 template<typename T>
 void Vec_open_hash<T>::double_size()
 {
-    std::vector<Entry> old_table = move(table_);
-    std::vector<Entry> new_table(old_table.size()*2);
-    for (Entry& p : new_table) {
-        p.valid = false;
-    }
-    table_ = move(new_table);
-    for (Entry& p : old_table) {
+    std::vector<Entry> table(table_.size() == 0 ? 2 : 2 * table_.size());
+
+    std::swap(table_, table);
+    size_ = 0;
+
+    for (const Entry& p : table) {
         if (p.valid)
-            add_no_double(p.key,p.value);
+            add_no_double(p.key, p.value);
     }
 }
 
