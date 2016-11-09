@@ -47,6 +47,9 @@ public:
     // Returns whether the given key is found in the hash table.
     bool member(const std::string& key) const;
 
+    // Returns the number of key-value mappings.
+    size_t size() const;
+
     // Diagnostic function for measuring the number of collisions.
     size_t collisions() const;
 
@@ -67,6 +70,7 @@ private:
         bool        valid;
     };
     std::vector<Entry>   table_;
+    size_t size_;
 
     // Hashes the given string and mods by the table size. This gives the
     // index into the table.
@@ -86,12 +90,8 @@ size_t Vec_open_hash<T>::hash(const std::string& s) const
 }
 
 template<typename T>
-Vec_open_hash<T>::Vec_open_hash(size_t size) : table_(size)
-{
-    for (Entry& p : table_) {
-        p.valid = false;
-    }
-}
+Vec_open_hash<T>::Vec_open_hash(size_t size) : table_(size), size_(0)
+{ }
 
 template<typename T>
 void Vec_open_hash<T>::double_size()
@@ -131,10 +131,12 @@ void Vec_open_hash<T>::add_no_double(const std::string& key, const T& value)
 {
     size_t index = get_index(key);
     Entry& p = table_[index];
+
+    if (!p.valid) ++size_;
+
     p.key   = key;
     p.value = value;
     p.valid = true;
-    return;
 }
 
 
@@ -185,8 +187,14 @@ bool Vec_open_hash<T>::member(const std::string& key) const
     }
 }
 
+size_t Vec_open_hash::size() const
+{
+    return size_;
+}
+
 template<typename T>
 size_t Vec_open_hash<T>::table_size() const
 {
     return table_.size();
 }
+
