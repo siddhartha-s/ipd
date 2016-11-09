@@ -50,9 +50,6 @@ public:
     // Returns the number of key-value mappings.
     size_t size() const;
 
-    // Diagnostic function for measuring the number of collisions.
-    size_t collisions() const;
-
     // Returns the number of buckets.
     size_t table_size() const;
 
