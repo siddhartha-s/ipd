@@ -1,4 +1,5 @@
 #include "Vec_hash_done.h"
+#include "hamlet.h"
 #include "Various_hashes_done.h"
 
 void hash_trial(std::string name, Vec_hash<size_t>& h)
@@ -31,6 +32,11 @@ int main()
     {
         One_byte<size_t> ht(10000);
         hash_trial("One_byte", ht);
+    }
+
+    {
+        Identity_hash<size_t> ht(10000);
+        hash_trial("Identity_hash", ht);
     }
 
     {
