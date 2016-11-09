@@ -17,7 +17,7 @@ public:
 class Full : public std::logic_error
 {
 public:
-    Full(const std::string& s) : logic_error("Table overflowed: " + s) {}
+    Full() : logic_error("Table overflowed") {}
 };
 
 
@@ -112,18 +112,15 @@ template<typename T>
 size_t Vec_open_hash<T>::get_index(const std::string& key) const
 {
     size_t start = hash(key) % table_.size();
-    size_t index = start;
-    while (true) {
+
+    for (size_t offset = 0; offset < table_.size(); ++offset) {
+        size_t index = (start + offset) % table_.size();
         const Entry& p = table_[index];
 
-        if (!p.valid) return index;
-        if (p.key == key) return index;
-
-        index = (index + 1) % table_.size();
-        if (index == start) {
-            throw Full(key);
-        }
+        if (!p.valid || p.key == key) return index;
     }
+
+    throw Full();
 }
 
 template<typename T>
@@ -143,12 +140,11 @@ void Vec_open_hash<T>::add_no_double(const std::string& key, const T& value)
 template<typename T>
 void Vec_open_hash<T>::add(const std::string& key, const T& value)
 {
-    try {
-        add_no_double(key, value);
-    } catch (Full e) {
-        double_size();
-        add_no_double(key, value);
-    }
+    double load = table_.size() == 0 ? 1 :
+                  static_cast<double>(size_) / table_.size();
+    if (load > 0.5) double_size();
+
+    add_no_double(key, value);
 }
 
 template<typename T>
