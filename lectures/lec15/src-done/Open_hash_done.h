@@ -167,7 +167,8 @@ bool Open_hash<T>::member(const std::string& key) const
     return p.valid;
 }
 
-size_t Open_hash::size() const
+template<typename T>
+size_t Open_hash<T>::size() const
 {
     return size_;
 }
