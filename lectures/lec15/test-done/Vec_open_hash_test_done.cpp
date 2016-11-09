@@ -49,3 +49,14 @@ TEST(Member)
     CHECK(vh.member("a1"));
     CHECK(vh.member("a2"));
 }
+
+TEST(HASH5)
+{
+    Vec_open_hash<int> vh(2);
+    vh.add("abc", 1);
+    vh.add("def", 2);
+    vh.add("ghi", 3);
+    CHECK_EQUAL(1, vh.lookup("abc"));
+    CHECK_EQUAL(2, vh.lookup("def"));
+    CHECK_EQUAL(3, vh.lookup("ghi"));
+}
