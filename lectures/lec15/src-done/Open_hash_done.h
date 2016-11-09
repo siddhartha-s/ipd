@@ -24,14 +24,14 @@ public:
 // A separate-chained hash table with std::strings for keys and type
 // parameter `T` for values.
 template<typename T>
-class Vec_open_hash
+class Open_hash
 {
 public:
     // The default number of buckets.
     static const size_t default_size = 10000;
 
     // Constructs a new hash table, optionally specifying the number of buckets.
-    Vec_open_hash(size_t size = default_size);
+    Open_hash(size_t size = default_size);
 
     // Inserts a key-value association into the hash table.
     void add(const std::string& key, const T& value);
@@ -76,22 +76,21 @@ private:
     void double_size();
 
     void add_no_double(const std::string& key, const T& value);
-
 };
 
 template<typename T>
-size_t Vec_open_hash<T>::hash(const std::string& s) const
+size_t Open_hash<T>::hash(const std::string& s) const
 {
     if (s.empty()) return 0;
     else return (unsigned char) s[0];
 }
 
 template<typename T>
-Vec_open_hash<T>::Vec_open_hash(size_t size) : table_(size), size_(0)
+Open_hash<T>::Open_hash(size_t size) : table_(size), size_(0)
 { }
 
 template<typename T>
-void Vec_open_hash<T>::double_size()
+void Open_hash<T>::double_size()
 {
     std::vector<Entry> table(table_.size() == 0 ? 2 : 2 * table_.size());
 
@@ -105,7 +104,7 @@ void Vec_open_hash<T>::double_size()
 }
 
 template<typename T>
-size_t Vec_open_hash<T>::get_index(const std::string& key) const
+size_t Open_hash<T>::get_index(const std::string& key) const
 {
     size_t start = hash(key) % table_.size();
 
@@ -121,7 +120,7 @@ size_t Vec_open_hash<T>::get_index(const std::string& key) const
 }
 
 template<typename T>
-void Vec_open_hash<T>::add_no_double(const std::string& key, const T& value)
+void Open_hash<T>::add_no_double(const std::string& key, const T& value)
 {
     size_t index = get_index(key);
     Entry& p = table_[index];
@@ -135,9 +134,9 @@ void Vec_open_hash<T>::add_no_double(const std::string& key, const T& value)
 
 
 template<typename T>
-void Vec_open_hash<T>::add(const std::string& key, const T& value)
+void Open_hash<T>::add(const std::string& key, const T& value)
 {
-    double load = table_.size() == 0 ? 1 :
+    double load = table_.empty() ? 1 :
                   static_cast<double>(size_) / table_.size();
     if (load > 0.5) double_size();
 
@@ -145,7 +144,7 @@ void Vec_open_hash<T>::add(const std::string& key, const T& value)
 }
 
 template<typename T>
-const T& Vec_open_hash<T>::lookup(const std::string& key) const
+const T& Open_hash<T>::lookup(const std::string& key) const
 {
     const Entry& p = table_[get_index(key)];
     if (p.valid) return p.value;
@@ -154,7 +153,7 @@ const T& Vec_open_hash<T>::lookup(const std::string& key) const
 
 
 template<typename T>
-T& Vec_open_hash<T>::lookup(const std::string& key)
+T& Open_hash<T>::lookup(const std::string& key)
 {
     Entry& p = table_[get_index(key)];
     if (p.valid) return p.value;
@@ -162,19 +161,19 @@ T& Vec_open_hash<T>::lookup(const std::string& key)
 }
 
 template<typename T>
-bool Vec_open_hash<T>::member(const std::string& key) const
+bool Open_hash<T>::member(const std::string& key) const
 {
     const Entry& p = table_[get_index(key)];
     return p.valid;
 }
 
-size_t Vec_open_hash::size() const
+size_t Open_hash::size() const
 {
     return size_;
 }
 
 template<typename T>
-size_t Vec_open_hash<T>::table_size() const
+size_t Open_hash<T>::table_size() const
 {
     return table_.size();
 }
