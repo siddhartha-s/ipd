@@ -13,17 +13,25 @@ public:
     Not_found(const std::string& s) : logic_error("Not found: " + s) {}
 };
 
+// Thrown by Vec_hash<T>::add when the table is full
+class Full : public std::logic_error
+{
+public:
+    Full(const std::string& s) : logic_error("Table overflowed: " + s) {}
+};
+
+
 // A separate-chained hash table with std::strings for keys and type
 // parameter `T` for values.
 template<typename T>
-class Vec_hash
+class Vec_open_hash
 {
 public:
     // The default number of buckets.
     static const size_t default_size = 10000;
 
     // Constructs a new hash table, optionally specifying the number of buckets.
-    Vec_hash(size_t size = default_size);
+    Vec_open_hash(size_t size = default_size);
 
     // Inserts a key-value association into the hash table.
     void add(const std::string& key, const T& value);
@@ -55,82 +63,87 @@ private:
     struct Pair
     {
         std::string key;
-        T value;
+        T           value;
+        bool        valid;
     };
-    std::vector<std::vector<Pair>> table_;
+    std::vector<Pair>   table_;
 
     // Hashes the given string and mods by the table size. This gives the
     // index into the table.
-    size_t hash_size(const std::string& key) const;
+    size_t get_index(const std::string& key) const;
 };
 
 template<typename T>
-size_t Vec_hash<T>::hash(const std::string& s) const
+size_t Vec_open_hash<T>::hash(const std::string& s) const
 {
     if (s.empty()) return 0;
     else return (unsigned char) s[0];
 }
 
 template<typename T>
-size_t Vec_hash<T>::hash_size(const std::string& key) const
+Vec_open_hash<T>::Vec_open_hash(size_t size) : table_(size)
 {
-    return hash(key) % table_.size();
+    for (Pair& p : table_) {
+        p.valid = false;
+    }
 }
 
-
 template<typename T>
-Vec_hash<T>::Vec_hash(size_t size) : table_(size) {}
-
-
-template<typename T>
-void Vec_hash<T>::add(const std::string& key, const T& value)
+size_t Vec_open_hash<T>::get_index(const std::string& key) const
 {
-    size_t hash_code = hash_size(key);
-    for (Pair& p : table_[hash_code]) {
-        if (p.key == key) {
-            p.value = value;
-            return;
+    size_t start = hash(key) % table_.size();
+    size_t index = start;
+    while (true) {
+        const Pair& p = table_[index];
+        if (p.key == key) return index;
+        if (!p.valid) return index;
+        if (p.valid) {
+            index = (index + 1) % table_.size();
+            if (index == start) {
+                throw Full(key);
+            }
         }
     }
-    table_[hash_code].push_back({key, value});
+}
+
+template<typename T>
+void Vec_open_hash<T>::add(const std::string& key, const T& value)
+{
+    size_t index = get_index(key);
+    Pair& p = table_[index];
+    p.key   = key;
+    p.value = value;
+    p.valid = true;
+    return;
 }
 
 
 template<typename T>
-const T& Vec_hash<T>::lookup(const std::string& key) const
+const T& Vec_open_hash<T>::lookup(const std::string& key) const
 {
-    size_t hash_code = hash_size(key);
-    for (const Pair& p : table_[hash_code])
-        if (p.key == key)
-            return p.value;
+    const Pair &p = table_[get_index(key)];
+    if (p.valid) return p.value;
     throw Not_found(key);
 }
 
 
 template<typename T>
-T& Vec_hash<T>::lookup(const std::string& key)
+T& Vec_open_hash<T>::lookup(const std::string& key)
 {
-    size_t hash_code = hash_size(key);
-    for (Pair& p : table_[hash_code])
-        if (p.key == key)
-            return p.value;
+    Pair &p = table_[get_index(key)];
+    if (p.valid) return p.value;
     throw Not_found(key);
 }
 
 template<typename T>
-bool Vec_hash<T>::member(const std::string& key) const
+bool Vec_open_hash<T>::member(const std::string& key) const
 {
-    size_t hash_code = hash_size(key);
-    for (const Pair& p : table_[hash_code])
-        if (p.key == key)
-            return true;
-    return false;
+    const Pair &p = table_[get_index(key)];
+    return p.valid;
 }
 
-
 template<typename T>
-size_t Vec_hash<T>::table_size() const
+size_t Vec_open_hash<T>::table_size() const
 {
     return table_.size();
 }
-

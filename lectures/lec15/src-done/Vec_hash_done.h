@@ -153,7 +153,3 @@ size_t Vec_hash<T>::table_size() const
 {
     return table_.size();
 }
-
-void hash_trial(std::string name, Vec_hash<size_t>& h);
-
-const std::vector<std::string>& get_hamlet();

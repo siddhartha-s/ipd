@@ -2,6 +2,8 @@
 (require pict math/base)
 (require profile)
 
+(define call-out? #t)
+
 (define hash-binaries
   (for/list ([file (in-directory "/Users/robby/Library/Caches/CLion2016.2/cmake/generated/")]
              #:when (equal? (path->string (last (explode-path file))) "avalanche"))
@@ -13,12 +15,29 @@
 
 ;; hash : bytes[8] -> (listof[64] (listof[64] (or/c 0 1)))
 ;; a thin wrapper over the binary `hash` from the in_out.cpp
-(define (hash the-bytes)
-  (define sp (open-output-string))
-  (parameterize ([current-input-port (open-input-bytes the-bytes)]
-                 [current-output-port sp])
-    (system* hash-binary))
-  (read (open-input-string (get-output-string sp))))
+(define (run-one-avalanche-round the-bytes)
+  (cond
+    [call-out? 
+     (define sp (open-output-string))
+     (parameterize ([current-input-port (open-input-bytes the-bytes)]
+                    [current-output-port sp])
+       (system* hash-binary))
+     (read (open-input-string (get-output-string sp)))]
+    [else
+     (define hashed (equal-hash-code the-bytes))
+     (define copied-bytes (bytes-copy the-bytes))
+     (for/list ([byte (in-bytes the-bytes)]
+                [i (in-naturals)]
+                #:when #t
+                [bit (in-range 8)])
+       (define val (bytes-ref copied-bytes i))
+       (bytes-set! copied-bytes i (bitwise-xor val (expt 2 bit)))
+       (define difference (bitwise-xor hashed (equal-hash-code copied-bytes)))
+       (bytes-set! copied-bytes i val)
+       (for/list ([bit (in-range 64)])
+         (if (zero? (bitwise-and (expt 2 bit) difference))
+             0
+             1)))]))
 
 (define size 64)
 
@@ -34,7 +53,7 @@
                         bytes
                         (for/list ([i (in-range 8)])
                           (random 256))))
-  (define results (hash random-bytes))
+  (define results (run-one-avalanche-round random-bytes))
   (for ([result-line (in-list results)]
         [i (in-naturals)])
     (for ([result (in-list result-line)]
@@ -99,6 +118,9 @@
        [callback (λ (_1 _2)
                    (send timer stop)
                    (send stop-button enable #f))]))
+
+(send frame show #t)
+
 (define timer
   (new timer%
        [notify-callback
@@ -109,4 +131,3 @@
              (send canvas refresh)]
             [else (send timer stop)]))]
        [interval 500]))
-(send frame show #t)
