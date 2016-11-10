@@ -60,3 +60,28 @@ TEST(HASH5)
     CHECK_EQUAL(2, vh.lookup("def"));
     CHECK_EQUAL(3, vh.lookup("ghi"));
 }
+
+TEST(GrowFromEmpty)
+{
+    Open_hash<int> vh(0);
+    CHECK_EQUAL(0, vh.size());
+    CHECK_EQUAL(0, vh.table_size());
+    vh.add("abc", 1);
+    CHECK_EQUAL(1, vh.size());
+    CHECK_EQUAL(1, vh.lookup("abc"));
+    CHECK(!vh.member("def"));
+    vh.add("def", 2);
+    CHECK_EQUAL(2, vh.size());
+    CHECK_EQUAL(1, vh.lookup("abc"));
+    CHECK_EQUAL(2, vh.lookup("def"));
+}
+
+TEST(LookupThrows)
+{
+    Open_hash<int> vh;
+
+    CHECK_THROW(vh.lookup("abc"), Not_found);
+    vh.add("abc", 1);
+    CHECK_EQUAL(1, vh.lookup("abc"));
+    CHECK_THROW(vh.lookup("def"), Not_found);
+}

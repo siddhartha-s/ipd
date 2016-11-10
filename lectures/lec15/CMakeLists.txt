@@ -11,7 +11,7 @@ add_program(avalanche src/avalanche.cpp src/Various_hashes.h)
 
 add_test_program(done_vec_hash_test test-done/Vec_hash_test_done.cpp
         src-done/Vec_hash_done.h)
-add_test_program(done_vec_open_hash_test test-done/Vec_open_hash_test_done.cpp
+add_test_program(done_open_hash_test test-done/Open_hash_test_done.cpp
         src-done/Open_hash_done.h)
 add_program(done_collision src-done/Vec_hash_done.h
         src-done/collisions_done.cpp
