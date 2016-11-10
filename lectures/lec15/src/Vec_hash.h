@@ -39,9 +39,6 @@ public:
     // Returns whether the given key is found in the hash table.
     bool member(const std::string& key) const;
 
-    // Diagnostic function for measuring the number of collisions.
-    size_t collisions() const;
-
     // Returns the number of buckets.
     size_t table_size() const;
 
@@ -52,12 +49,12 @@ public:
     virtual size_t hash(const std::string& s) const;
 
 private:
-    struct Pair
+    struct Entry
     {
         std::string key;
         T value;
     };
-    std::vector<std::vector<Pair>> table_;
+    std::vector<std::vector<Entry>> table_;
 
     // Hashes the given string and mods by the table size. This gives the
     // index into the table.
@@ -86,7 +83,7 @@ template<typename T>
 void Vec_hash<T>::add(const std::string& key, const T& value)
 {
     size_t hash_code = hash_size(key);
-    for (Pair& p : table_[hash_code]) {
+    for (Entry& p : table_[hash_code]) {
         if (p.key == key) {
             p.value = value;
             return;
@@ -100,7 +97,7 @@ template<typename T>
 const T& Vec_hash<T>::lookup(const std::string& key) const
 {
     size_t hash_code = hash_size(key);
-    for (const Pair& p : table_[hash_code])
+    for (const Entry& p : table_[hash_code])
         if (p.key == key)
             return p.value;
     throw Not_found(key);
@@ -111,7 +108,7 @@ template<typename T>
 T& Vec_hash<T>::lookup(const std::string& key)
 {
     size_t hash_code = hash_size(key);
-    for (Pair& p : table_[hash_code])
+    for (Entry& p : table_[hash_code])
         if (p.key == key)
             return p.value;
     throw Not_found(key);
@@ -121,7 +118,7 @@ template<typename T>
 bool Vec_hash<T>::member(const std::string& key) const
 {
     size_t hash_code = hash_size(key);
-    for (const Pair& p : table_[hash_code])
+    for (const Entry& p : table_[hash_code])
         if (p.key == key)
             return true;
     return false;
