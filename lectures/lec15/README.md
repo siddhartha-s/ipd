@@ -19,32 +19,34 @@ dictionary API:
 ```
 
 The basic idea of the hash table implementation hinges on the ability
-to map the keys (K)s to natural numbers. We then use those natural
+to map the keys (`K`s) to natural numbers. We then use those natural
 numbers as indices into a vector and store key/value pairs in the
 vector.
 
 The mapping to natural numbers is called "hashing" and it will not
-always map every different object to a different natural
-number. Sometimes, it will map two keys to the same number (this is
-called a "collision") and so each entry in the vector is going to
-itself contain a vector, which we will just scan.
+always map every different object to a different natural number. That
+is, sometimes it will map two keys to the same number (this is called
+a "collision") and so each entry in the vector is going to itself
+contain a vector, which we will just scan to find the entry we want.
 
 Hash tables generally behave differently at different sizes of the
 vector, so we'll make two constructors; one that uses a default size
 and one where we can specify the size of the vector
 
 ```cpp
-  // hash<K,V> new(int size)
+  // hash<K,V> new(size_t size)
   // creates a new hash table that maps K to V
   // with an internal vector of size `size`
 
   // hash<K,V> new()
-  // equivalent to new(500)
+  // equivalent to new(10000)
 ```
 
 For the rest of this lecture, we'll assume that the keys are strings,
 just to ease the discussion, but everything we can do will work for
-other kinds of values, too, with some care.
+other kinds of values, too, with some care. Generally, the way this
+works is to map the structure to a sequence of bytes and then to use
+the techniques discussed today.
 
 So, let's say that our hashing function maps every key to the value of
 its first letter in ASCII, and let's say that these calls happen:
@@ -57,8 +59,8 @@ its first letter in ASCII, and let's say that these calls happen:
    ht.add("dog",3);
  ```
 
-Then we would get a vector like this (using [,] to notate the vectors
-and <,> to notate the key/value pairs):
+Then we would get a vector like this (using `[,]` to notate the vectors
+and `<,>` to notate the key/value pairs):
 
 ```
   [[<"dog",3>],
@@ -83,13 +85,15 @@ Let's talk about the running time of the operations. Going in order:
 
 - `new()` -- linear (in the size of table)
 
-- `add()` -- anywhere from constant to linear (in the number of
-         elements in the table), depending how good the hashing
-         function is and how big the table is
+- `lookup()` -- anywhere from constant to linear (in the number of
+   elements in the table), depending how good the hashing function is
+   and how big the table is
 
-- `member()` -- same as `add()`
+- `member()` -- the same as `lookup()`
 
-- `lookup()` -- also the same as `add()`
+- `add()` -- also the same as `lookup()`, since we need to scan the
+  entire sequence that is in the bucket to see if we are replacing an
+  existing mapping or not
 
 Basically, the linear case is when all of the elements have
 the same hash code ("hashed to the same bucket") and the constant
@@ -101,8 +105,9 @@ client of the hash table, [`hamlet.cpp`](src/hamlet.cpp).
 
 ## How can we make a good hashing function?
 
-First, we should try to figure out how well the hashing function is
-working.
+Okay, the `hash` function in that code is poor. Lets make a better
+one. But first, we should try to figure out how well the hashing
+function is working so we know if we're improving things or not.
 
 Lets see if we can write some code to check to see which of the two
 situations we are in, above. How can we do that?
@@ -128,14 +133,14 @@ the internal state.
 Stepping back, there are three properties of hash functions that we
 care about for hash functions:
 
-- uniform distribution: two different inputs should map to two
+- **uniform distribution**: two different inputs should map to two
   different outputs. Of course, this isn't possible if the number of
   inputs is larger than the number of outputs, but we want to minimize
   collisions, so we want to avoid "bunching up". In other words, we
   want to make sure that all of the outputs are equally likely to be
   used.
 
-- one way: hashing functions are used for hash tables, but also for
+- **one way**: hashing functions are used for hash tables, but also for
   other purposes that are security sensitive. In those cases, it is
   important that we cannot easily go from a hashed value to an input
   to the hash function. For example, passwords are not stored; instead
@@ -143,29 +148,32 @@ care about for hash functions:
   don't want them to find out what the password was.
 
   This property is also important for security in hash tables; we'll
-  return to this point later.
+  return to it later in the lecture.
 
-- avalance: we want inputs that are only a little bit different to
-  hash to completely different outputs. The issue here is that
-  applications usually hash fairly similar looking data (say, urls, or
-  English text or something) and so we want little changes in the
-  input to correspond to large changes in the output.
+- **avalance**: we want inputs that are only a little bit different to
+  hash to completely different outputs. The issue here is that the
+  keys in any given hash table are usually not very random (think of a
+  hash table that stores URLs or stores English text, etc) and so we
+  want little changes in the input to correspond to large changes in
+  the output.
 
 ## Avalanche
 
 Avalanche is an interesting one to measure. Right now, we have hashing
-functions that produce 64 bits, but lets simplify that a little bit
+functions that produces 64 bits, but lets simplify that a little bit
 and look at some hashing functions that operate only on 4 bits and
 lets look at the "add1" function. This function is NOT one-way. But
 okay, on a 4 bit hashing function, a table lookup will go the other
-way, so we can ignore that one for now. It is bijective, so the first
-point is satisfied. But what about avalance?
+way so there aren't really any one way functions, so lets ignore that
+one for now. It is bijective, so the first point is satisfied. How
+about avalanche?
 
 The way we measure avalance is to say: if I perturb one bit of the
 input, how many bits flip in the output? As we want that to, for the
 most part, be half of the available bits. 
 
-Here is a 4 bit hash function we can try (the add1 function):
+Here is the add1-mod-16 function, written out on the binary
+representation of four-bit numbers:
 
 ```
 0000  -->  0001
@@ -198,9 +206,12 @@ input flip:
  3                 0   0   0   8
 ```
 
-What we want here is to get 4s everywhere.
+What we want here is to get 4s everywhere. This is far from that, so
+we would say that this function is not very good on the avalanche
+criterion.
 
-Here's another function:
+Here's another function (that I cannot describe easily, except by
+writing it down):
 
 ```
 0000 -> 1111
@@ -230,6 +241,77 @@ input flip:
  1                 4   4   4   4
  2                 4   4   4   4
  3                 4   4   4   4
+```
+
+When we want to measure avalanche for functions on larger numbers of
+bits, it is not really feasible to build these tables. For N bits, we
+have an N^2 matrix and each entry in the matrix requires O(2^(N))
+calls to the hash function, plus the work to check and see which bits
+flipped. There may be a more efficient way to compute the matrix, but
+fundamentally it requires us to compare each result of the hash
+function with 2^(N-1) other results, so that's going to take a long
+time.
+
+Instead, what we can do is randomly pick a bit string and then compute
+which bits flip in the output of the hash when we flip each bit of the
+input. This will give us an approximation to the content of the
+avalanche matrix and we can keep picking random bit strings and trying
+until things seem to settle down.
+
+The code in [`avalanche.rkt`](src/avalanche.rkt) repeatedly calls the
+code in [`avalanche.cpp`](src/avalanche.cpp) to compute this for the
+hash function listed in [`avalanche.cpp`](src/avalanche.cpp). Lets
+try a few of these out to see how well we are doing wrt to avalanche
+behavior.
+
+One way to get good avalanche behavior is to make a random permutation
+of bytes and then use that in the hash function. That is, we can "mix
+up" the bits that come into our function by passing it through a
+random byte-to-byte bijection. Because it is a bijection, we will not
+compromise the other properties of the hash function and because it is
+random, we will get good "mixing" of the bits. Here's some code that
+does that.
+
+```cpp
+
+#include <random>
+
+template<typename T>
+class Sbox_hash : public Vec_hash<T>
+{
+public:
+    virtual size_t hash(const std::string& s) const override;
+
+    Sbox_hash(size_t = Vec_hash<T>::default_size);
+
+private:
+    // add a private field that stores
+    // the bijection as a lookup table
+    std::array<size_t, 256> sbox_;
+};
+
+template<typename T>
+Sbox_hash<T>::Sbox_hash(size_t size) : Vec_hash<T>(size)
+{
+    std::mt19937_64 rng;
+    rng.seed(std::random_device{}());
+    std::uniform_int_distribution<size_t> dist;
+    for (auto& n : sbox_) n = dist(rng);
+}
+
+
+template<typename T>
+size_t Sbox_hash<T>::hash(const std::string& s) const
+{
+    size_t hash = 0;
+
+    for (size_t i = 0; i < s.length(); ++i) {
+        hash ^= sbox_[(unsigned char)s[i]];
+        hash *= 3;
+    }
+
+    return hash;
+}
 ```
 
 ## Denial of service implications
