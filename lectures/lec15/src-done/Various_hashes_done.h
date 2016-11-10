@@ -38,8 +38,8 @@ template<typename T>
 size_t One_byte<T>::hash(const std::string& s) const
 {
     size_t      ret = 0;
-    for (size_t i   = 0; i < s.length(); i++) {
-        ret ^= (unsigned char) s[i];
+    for (char c : s) {
+        ret ^= (unsigned char) c;
     }
     return ret;
 };
@@ -79,8 +79,8 @@ template<typename T>
 size_t Simple_mix<T>::hash(const std::string& s) const
 {
     size_t      ret = 0;
-    for (size_t i   = 0; i < s.length(); i++) {
-        ret ^= (unsigned char) s[i];
+    for (char c : s) {
+        ret ^= (unsigned char) c;
         ret *= 3;
     }
     return ret;
