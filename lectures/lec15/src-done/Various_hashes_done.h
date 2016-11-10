@@ -72,16 +72,22 @@ class Simple_mix : public Vec_hash<T>
 public:
     virtual size_t hash(const std::string& s) const override;
 
-    using Vec_hash<T>::Vec_hash;
+    Simple_mix(size_t size = Vec_hash<T>::default_size,
+               size_t mixer = 3, size_t start = 0)
+            : Vec_hash<T>(size), mixer_(mixer), start_(start) {}
+
+private:
+    size_t mixer_;
+    size_t start_;
 };
 
 template<typename T>
 size_t Simple_mix<T>::hash(const std::string& s) const
 {
-    size_t      ret = 0;
+    size_t      ret = start_;
     for (char c : s) {
         ret ^= (unsigned char) c;
-        ret *= 3;
+        ret *= mixer_;
     }
     return ret;
 };
