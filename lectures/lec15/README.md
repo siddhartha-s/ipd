@@ -81,28 +81,33 @@ Which one of these is better for `lookup`? (first!)
 
 Let's talk about the running time of the operations. Going in order:
 
-- new -- linear (in the size of table)
+- `new()` -- linear (in the size of table)
 
-- add -- anywhere from constant to linear (in the number of elements
-         in the table), depending how good the hashing function is and
-         how big the table is
+- `add()` -- anywhere from constant to linear (in the number of
+         elements in the table), depending how good the hashing
+         function is and how big the table is
 
-- member -- ditto
+- `member()` -- same as `add()`
 
-- lookup -- ditto
+- `lookup()` -- also the same as `add()`
 
 Basically, the linear case is when all of the elements have
 the same hash code ("hashed to the same bucket") and the constant
 case is when they are all going into different buckets.
 
 Lets look at some code that implements the hashing functions,
-`Vec_hash.h` and some code that we'll use as a client of the hash
-table, `hamlet.cpp`.
+[`Vec_hash.h`](src/Vec_hash.h) and some code that we'll use as a
+client of the hash table, [`hamlet.cpp`](src/hamlet.cpp).
 
-How can we tell if we are doing well with our hash?
+## How can we make a good hashing function?
+
+First, we should try to figure out how well the hashing function is
+working.
 
 Lets see if we can write some code to check to see which of the two
 situations we are in, above. How can we do that?
+
+ ... <write some code>
 
 And lets write some new hashing functions that maybe do a bit
 better. I've put a very bad hashing function in Various_hashes.h to
@@ -110,7 +115,15 @@ show how we can swap out the hashing function for another one. Lets
 take a look. Lets make up a few more hashing functions to see if we
 can do better.
 
- ...
+ ... <write some code>
+
+Hashing functions generally consist of three conceptual pieces: some
+internal state (that is generally the size of the result of the hash
+function), a function that mixes up the internal state, and a function
+that pulls in a chunk of the data being processed and combines it with
+the internal state.
+
+ ... <write some code>
 
 Stepping back, there are three properties of hash functions that we
 care about for hash functions:
@@ -138,7 +151,9 @@ care about for hash functions:
   English text or something) and so we want little changes in the
   input to correspond to large changes in the output.
 
-Avalance is an interesting one to measure. Right now, we have hashing
+## Avalanche
+
+Avalanche is an interesting one to measure. Right now, we have hashing
 functions that produce 64 bits, but lets simplify that a little bit
 and look at some hashing functions that operate only on 4 bits and
 lets look at the "add1" function. This function is NOT one-way. But
@@ -209,15 +224,39 @@ input flip:
  2                 4   4   4   4
  3                 4   4   4   4
 
---- security implications via denial of service attacks.
+## Denial of service implications
 
----  other hash functions in the literature:
+Webservices will store parts of the input they get from the web in
+they are given in hash tables. Even if you, as the web services
+provider, doesn't ask for it to be saved. So, an attacker can supply
+an input to the web server that causes it to fill up just a single
+bucket in the hash and now every operation with the hash requires the
+linear scan and this can, with one request to the webserver, keep the
+cpu pegged for 40 minutes(!).
 
-CityHash: https://github.com/google/cityhash
-SipHash: https://131002.net/siphash/siphash.pdf
-SpookyHash: http://www.burtleburtle.net/bob/hash/spooky.html
+https://events.ccc.de/congress/2011/Fahrplan/attachments/2007_28C3_Effective_DoS_on_web_application_platforms.pdf
+https://www.youtube.com/watch?v=R2Cq3CLI6H8
 
-Inspiration for this lecture:
-  http://papa.bretmulvey.com/post/124027987928/hash-functions
-  http://papa.bretmulvey.com/post/124028832958/hash-functions-continued
+##  Other hash functions in the literature:
+
+- [CityHash](https://github.com/google/cityhash)
+- [SipHash](https://131002.net/siphash/siphash.pdf)
+- [SpookyHash](http://www.burtleburtle.net/bob/hash/spooky.html)
+
+## Open addressing
+
+Instead of using chaining, we can keep only a std::vector<Entry>. The
+basic idea is to find the position in the arry where the value would
+hash to. If it is empty, we fill it. If it is full, we just start
+moving through the array until we find an empty spot and then use that
+spot.
+
+Lets code that up.
+
+
+## Inspiration for this lecture:
+
+[http://papa.bretmulvey.com/post/124027987928/hash-functions](http://papa.bretmulvey.com/post/124027987928/hash-functions)
+
+[http://papa.bretmulvey.com/post/124028832958/hash-functions-continued](http://papa.bretmulvey.com/post/124028832958/hash-functions-continued)
 
