@@ -57,7 +57,7 @@ template<typename T>
 size_t Eight_bytes<T>::hash(const std::string& s) const
 {
     size_t      ret = 0;
-    for (size_t i   = 0; i < s.length(); i += 8) {
+    for (size_t i   = 0; i + 7 < s.length(); i += 8) {
         for (size_t j = 0; j < 8; j++) {
             ret ^= (unsigned char) s[i + j] << j * 8;
         }

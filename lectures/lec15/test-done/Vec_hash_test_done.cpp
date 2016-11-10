@@ -48,6 +48,14 @@ TEST(ID_HASH)
     CHECK_EQUAL(506097522914230528,ih.hash(s));
 }
 
+TEST(EIGHT_BYTES_HASH)
+{
+    Eight_bytes<int> eh;
+    CHECK_EQUAL(0, eh.hash(""));
+    CHECK_EQUAL(eh.hash(""), eh.hash("1"));
+    CHECK_EQUAL(eh.hash("abcdefgh"),eh.hash("abcdefghi"));
+}
+
 TEST(Member)
 {
     Vec_hash<int> vh(100);
