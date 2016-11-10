@@ -167,6 +167,7 @@ most part, be half of the available bits.
 
 Here is a 4 bit hash function we can try (the add1 function):
 
+```
 0000  -->  0001
 0001  -->  0010
 0010  -->  0011
@@ -183,21 +184,25 @@ Here is a 4 bit hash function we can try (the add1 function):
 1101  -->  1110
 1110  -->  1111
 1111  -->  0000
+```
 
 and we can build a table that tells us, for each bit we might flip in
 the input, how many times does an output bit flip?
 
+```
      output flip:  0   1   2   3
 input flip:
  0                 8   8   4   2
  1                 0   8   4   2
  2                 0   0   8   2
  3                 0   0   0   8
+```
 
 What we want here is to get 4s everywhere.
 
 Here's another function:
 
+```
 0000 -> 1111
 0001 -> 1010
 0010 -> 0000
@@ -214,15 +219,18 @@ Here's another function:
 1101 -> 0101
 1110 -> 0110
 1111 -> 0001
+```
 
 This one achieves perfect avalanche:
 
+```
      output flip:  0   1   2   3
 input flip:
  0                 4   4   4   4
  1                 4   4   4   4
  2                 4   4   4   4
  3                 4   4   4   4
+```
 
 ## Denial of service implications
 
@@ -235,6 +243,7 @@ linear scan and this can, with one request to the webserver, keep the
 cpu pegged for 40 minutes(!).
 
 https://events.ccc.de/congress/2011/Fahrplan/attachments/2007_28C3_Effective_DoS_on_web_application_platforms.pdf
+
 https://www.youtube.com/watch?v=R2Cq3CLI6H8
 
 ##  Other hash functions in the literature:
