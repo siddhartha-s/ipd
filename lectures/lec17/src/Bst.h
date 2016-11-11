@@ -42,7 +42,7 @@ private:
 
     ptr_* find_to_remove(const T& key);
 
-    ptr_* find_next_largest(ptr_* to_remove);
+    static ptr_* find_next_largest(ptr_* to_remove);
 
     bool bounded(node_* node, T lo, bool lo_inf, T hi, bool hi_inf);
 };
