@@ -91,9 +91,11 @@ void random_test_remove_something(std::uniform_int_distribution<size_t>& dist,
                                   std::vector<size_t>& to_remove,
                                   Bst<size_t>& b)
 {
+    size_t number_before = b.size();
     size_t index = dist(rng) % to_remove.size();
     b.remove(to_remove[index]);
     CHECK(b.bst_invariant_holds());
+    CHECK_EQUAL(number_before-1,b.size());
     to_remove.erase(to_remove.begin() + index);
 }
 
@@ -109,6 +111,7 @@ TEST(Random)
         size_t              elements = (dist(rng) % 20) + 1;
         for (int            i        = 0; i < elements; i++) {
             size_t to_insert = dist(rng) % 10;
+            size_t size_before = b.size();
             b.insert(to_insert);
             CHECK(b.bst_invariant_holds());
 
@@ -116,6 +119,7 @@ TEST(Random)
             for (size_t ele : to_remove) {
                 if (ele == to_insert) already_inserted = true;
             }
+            CHECK_EQUAL(size_before+(already_inserted?0:1),b.size());
 
             if (!already_inserted) {
                 to_remove.push_back(to_insert);

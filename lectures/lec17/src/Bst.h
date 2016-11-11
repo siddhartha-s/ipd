@@ -118,7 +118,7 @@ typename Bst<T>::ptr_* Bst<T>::find_to_remove(const T& key)
     while ((*ret) != nullptr) {
         if ((*ret)->data < key)
             ret = &(*ret)->right;
-        else if ((*ret)->data > key)
+        else if (key < (*ret)->data)
             ret = &(*ret)->left;
         else break;
     }
