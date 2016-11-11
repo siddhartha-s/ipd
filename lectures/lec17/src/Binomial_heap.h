@@ -114,6 +114,7 @@ void Binomial_heap<T>::merge(Binomial_heap& other)
     std::swap(result, roots_);
     size_ += other.size_;
     other.size_ = 0;
+    other.roots_.clear();
 }
 
 template<typename T>
