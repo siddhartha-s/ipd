@@ -48,13 +48,17 @@ public:
     // testing.
     virtual size_t hash(const std::string& s) const;
 
+    // tell us about the collisions in the hash table
+    void how_are_we_doing();
+
 private:
     struct Entry
     {
         std::string key;
-        T value;
+        T           value;
+        bool        valid;
     };
-    std::vector<std::vector<Entry>> table_;
+    std::vector<Entry>  table_;
 
     // Hashes the given string and mods by the table size. This gives the
     // index into the table.
@@ -130,4 +134,36 @@ size_t Vec_hash<T>::table_size() const
 {
     return table_.size();
 }
+
+template<typename T>
+void Vec_hash<T>::how_are_we_doing()
+{
+    size_t ret           = 0;
+    size_t too_many      = 0;
+    size_t empty_buckets = 0;
+    for (const auto& bucket : table_) {
+        ret = std::max<size_t>(ret, bucket.size());
+        if (bucket.size() > 1)
+            too_many += bucket.size() - 1;
+        if (bucket.empty()) empty_buckets++;
+    }
+    std::cout << "max size: " << ret
+              << " too_many: " << too_many
+              << " empty_buckets " << empty_buckets
+              << "\n";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

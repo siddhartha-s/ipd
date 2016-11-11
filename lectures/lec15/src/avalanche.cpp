@@ -5,7 +5,7 @@ const size_t bytes_to_hash = 8;
 
 int main()
 {
-    Vec_hash<size_t> ht;
+    Sbox_hash<size_t> ht;
 
     std::string input(bytes_to_hash, 0);
     for (int    b             = 0; b < bytes_to_hash; b++) {
