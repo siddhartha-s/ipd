@@ -4,6 +4,7 @@
 #include <initializer_list>
 #include <memory>
 #include <utility>
+#include <iostream>
 
 namespace ipd {
 
@@ -29,12 +30,16 @@ public:
     // Removes an element from the tree, if present.
     void remove(const T&);
 
+    bool bst_invariant_holds();
+
 private:
     struct node_;
     using ptr_ = std::unique_ptr<node_>;
 
     ptr_   root_;
     size_t size_;
+
+    bool bounded(node_* node, T lo, bool lo_inf, T hi, bool hi_inf);
 };
 
 template<typename T>
@@ -131,4 +136,21 @@ void Bst<T>::remove(const T& key)
     }
 }
 
+template<typename T>
+bool Bst<T>::bst_invariant_holds()
+{
+    if (root_ == nullptr) return true;
+    return bounded(&*root_, root_->data, true, root_->data, true);
+
+}
+
+template<typename T>
+bool Bst<T>::bounded(node_ *node, T lo, bool lo_inf, T hi, bool hi_inf)
+{
+    if (node == nullptr) return true;
+    if (!lo_inf && lo > node->data) return false;
+    if (!hi_inf && hi < node->data) return false;
+    return bounded(&*node->left, lo, lo_inf, node->data, false) &&
+           bounded(&*node->right, node->data, false, hi, hi_inf);
+}
 }

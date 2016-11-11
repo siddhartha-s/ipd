@@ -1,5 +1,6 @@
 #include "Bst.h"
 #include <UnitTest++/UnitTest++.h>
+#include <random>
 
 using namespace ipd;
 
@@ -72,3 +73,59 @@ TEST(Insert_then_delete_all)
         t.remove(i);
     CHECK(t.empty());
 }
+
+TEST(Invariant)
+{
+    Bst<size_t> b;
+    CHECK_EQUAL(true,b.bst_invariant_holds());
+    b.insert(0);
+    CHECK_EQUAL(true,b.bst_invariant_holds());
+    b.insert(2);
+    CHECK_EQUAL(true,b.bst_invariant_holds());
+    b.insert(1);
+    CHECK_EQUAL(true,b.bst_invariant_holds());
+}
+
+void random_test_remove_something(std::uniform_int_distribution<size_t>& dist,
+                                  std::mt19937_64& rng,
+                                  std::vector<size_t>& to_remove,
+                                  Bst<size_t>& b)
+{
+    size_t index = dist(rng) % to_remove.size();
+    b.remove(to_remove[index]);
+    CHECK_EQUAL(true, b.bst_invariant_holds());
+    to_remove.erase(to_remove.begin() + index);
+}
+
+TEST(Random)
+{
+    std::mt19937_64 rng;
+    rng.seed(std::random_device{}());
+    std::uniform_int_distribution<size_t> dist;
+
+    for (int trials = 0; trials < 100; trials++) {
+        Bst<size_t>         b;
+        std::vector<size_t> to_remove;
+        size_t              elements = (dist(rng) % 20) + 1;
+        for (int            i        = 0; i < elements; i++) {
+            size_t to_insert = dist(rng) % 10;
+            b.insert(to_insert);
+
+            bool        already_inserted = false;
+            for (size_t ele : to_remove) {
+                if (ele == to_insert) already_inserted = true;
+            }
+
+            if (!already_inserted) {
+                CHECK_EQUAL(true, b.bst_invariant_holds());
+                to_remove.push_back(to_insert);
+                if (dist(rng) % 3)
+                    random_test_remove_something(dist, rng, to_remove, b);
+            }
+        }
+        while (!to_remove.empty()) {
+            random_test_remove_something(dist, rng, to_remove, b);
+        }
+    }
+}
+
