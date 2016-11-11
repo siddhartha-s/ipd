@@ -115,11 +115,12 @@ template<typename T>
 typename Bst<T>::ptr_* Bst<T>::find_to_remove(const T& key)
 {
     ptr_* ret = &root_;
-    while ((*ret) != nullptr && (*ret)->data != key) {
+    while ((*ret) != nullptr) {
         if ((*ret)->data < key)
             ret = &(*ret)->right;
-        else
+        else if ((*ret)->data > key)
             ret = &(*ret)->left;
+        else break;
     }
     return ret;
 }
