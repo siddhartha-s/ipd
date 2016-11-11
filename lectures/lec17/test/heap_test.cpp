@@ -142,7 +142,7 @@ TEST(Random)
         size_t                prev     = h.get_min();
         h.remove_min();
         while (!h.empty()) {
-            CHECK_EQUAL(true, prev <= h.get_min());
+            CHECK(prev <= h.get_min());
             h.remove_min();
         }
     }

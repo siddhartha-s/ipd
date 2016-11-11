@@ -93,7 +93,7 @@ void random_test_remove_something(std::uniform_int_distribution<size_t>& dist,
 {
     size_t index = dist(rng) % to_remove.size();
     b.remove(to_remove[index]);
-    CHECK_EQUAL(true, b.bst_invariant_holds());
+    CHECK(b.bst_invariant_holds());
     to_remove.erase(to_remove.begin() + index);
 }
 
@@ -110,6 +110,7 @@ TEST(Random)
         for (int            i        = 0; i < elements; i++) {
             size_t to_insert = dist(rng) % 10;
             b.insert(to_insert);
+            CHECK(b.bst_invariant_holds());
 
             bool        already_inserted = false;
             for (size_t ele : to_remove) {
@@ -117,7 +118,6 @@ TEST(Random)
             }
 
             if (!already_inserted) {
-                CHECK_EQUAL(true, b.bst_invariant_holds());
                 to_remove.push_back(to_insert);
                 if (dist(rng) % 3)
                     random_test_remove_something(dist, rng, to_remove, b);
