@@ -1,6 +1,8 @@
 #include "../../lec17/src/Binomial_heap.h"
 #include <UnitTest++/UnitTest++.h>
 
+#include <random>
+#include <iostream>
 using namespace ipd;
 
 TEST(New_is_empty)
@@ -123,4 +125,25 @@ TEST(Repeated)
     h.remove_min();
 
     CHECK(h.empty());
+}
+
+TEST(Random)
+{
+    std::mt19937_64 rng;
+    rng.seed(std::random_device{}());
+    std::uniform_int_distribution<size_t> dist;
+
+    for (int trials=0; trials < 100; trials++) {
+        Binomial_heap<size_t> h;
+        size_t                elements = (dist(rng) % 20) + 1;
+        for (int              i        = 0; i < elements; i++) {
+            h.add(i);
+        }
+        size_t                prev     = h.get_min();
+        h.remove_min();
+        while (!h.empty()) {
+            CHECK_EQUAL(true, prev <= h.get_min());
+            h.remove_min();
+        }
+    }
 }
