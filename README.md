@@ -1,4 +1,4 @@
-# EECS 495 Intensive Program Design
+# EECS 295 Intensive Program Design
 
 We will use this repository to develop and publish lecture notes and
 other course materials, as appropriate. This means that you, the
