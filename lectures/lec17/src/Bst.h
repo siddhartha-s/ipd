@@ -125,6 +125,9 @@ typename Bst<T>::ptr_* Bst<T>::find_to_remove(const T& key)
     return ret;
 }
 
+// the next largest node (if there is one), will be the leftmost child of the
+// right child of the given node. If there is no right child, then the input
+// node is the largest (so there is no next largest).
 template<typename T>
 typename Bst<T>::ptr_* Bst<T>::find_next_largest(ptr_* to_remove) {
     assert((*to_remove) != nullptr);
@@ -144,10 +147,18 @@ void Bst<T>::remove(const T& key)
 // successor by replacing it with its right child.
 {
     ptr_* to_remove = find_to_remove(key);
+
+    // if the node wasn't in the tree, just return. nothing to remove
     if (*to_remove == nullptr) return;
+
+    // if the right node is null, then we can replace it
+    // by its left child.
     if ((*to_remove)->right == nullptr) {
         *to_remove = std::move((*to_remove)->left);
     } else {
+        // Otherwise, we find the successor node and then swap the contents with
+        // the successor node and delete the successor by replacing it with
+        // its right child.
         ptr_* to_swap = find_next_largest(to_remove);
         std::swap((*to_remove)->data, (*to_swap)->data);
         *to_swap = std::move((*to_swap)->right);
