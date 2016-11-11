@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 #include <iostream>
+#include <cassert>
 
 namespace ipd {
 
@@ -38,6 +39,10 @@ private:
 
     ptr_   root_;
     size_t size_;
+
+    ptr_* find_to_remove(const T& key);
+
+    ptr_* find_next_largest(ptr_* to_remove);
 
     bool bounded(node_* node, T lo, bool lo_inf, T hi, bool hi_inf);
 };
@@ -107,33 +112,46 @@ void Bst<T>::insert(const T& key)
 }
 
 template<typename T>
-void Bst<T>::remove(const T& key)
+typename Bst<T>::ptr_* Bst<T>::find_to_remove(const T& key)
 {
-    ptr_* curr = &root_;
-
-    while (*curr != nullptr) {
-        if (key < (*curr)->data) curr = &(*curr)->left;
-        else if (key > (*curr)->data) curr = &(*curr)->right;
-        else {
-            // To remove a node that has no right child, we replace it with
-            // its left child. Otherwise, we find the successor node by going
-            // to the right once and to the left as far as possible. Then we
-            // swap the contents with the successor node and delete the
-            // successor by replacing it with its right child.
-            if ((*curr)->right == nullptr) {
-                *curr = std::move((*curr)->left);
-            } else {
-                ptr_* succ = &(*curr)->right;
-                while ((*succ)->left != nullptr)
-                    succ = &(*succ)->left;
-                std::swap((*succ)->data, (*curr)->data);
-                *succ = std::move((*succ)->right);
-            }
-
-            size_--;
-            return;
-        }
+    ptr_* ret = &root_;
+    while ((*ret) != nullptr && (*ret)->data != key) {
+        if ((*ret)->data < key)
+            ret = &(*ret)->right;
+        else
+            ret = &(*ret)->left;
     }
+    return ret;
+}
+
+template<typename T>
+typename Bst<T>::ptr_* Bst<T>::find_next_largest(ptr_* to_remove) {
+    assert((*to_remove) != nullptr);
+    assert((*to_remove)->right != nullptr);
+    ptr_* ret = &((*to_remove)->right);
+    while ((*ret) -> left != nullptr)
+        ret = &(*ret)->left;
+    return ret;
+}
+
+template<typename T>
+void Bst<T>::remove(const T& key)
+// To remove a node that has no right child, we replace it with
+// its left child. Otherwise, we find the successor node by going
+// to the right once and to the left as far as possible. Then we
+// swap the contents with the successor node and delete the
+// successor by replacing it with its right child.
+{
+    ptr_* to_remove = find_to_remove(key);
+    if (*to_remove == nullptr) return;
+    if ((*to_remove)->right == nullptr) {
+        *to_remove = std::move((*to_remove)->left);
+    } else {
+        ptr_* to_swap = find_next_largest(to_remove);
+        std::swap((*to_remove)->data, (*to_swap)->data);
+        *to_swap = std::move((*to_swap)->right);
+    }
+    size_--;
 }
 
 template<typename T>
