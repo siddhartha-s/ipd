@@ -137,7 +137,7 @@ TEST(Random)
         Binomial_heap<size_t> h;
         size_t                elements = (dist(rng) % 20) + 1;
         for (int              i        = 0; i < elements; i++) {
-            h.add(i);
+            h.add(dist(rng) % 20);
         }
         size_t                prev     = h.get_min();
         h.remove_min();
