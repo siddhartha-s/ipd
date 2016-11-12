@@ -140,11 +140,6 @@ typename Bst<T>::ptr_* Bst<T>::find_next_largest(ptr_* to_remove) {
 
 template<typename T>
 void Bst<T>::remove(const T& key)
-// To remove a node that has no right child, we replace it with
-// its left child. Otherwise, we find the successor node by going
-// to the right once and to the left as far as possible. Then we
-// swap the contents with the successor node and delete the
-// successor by replacing it with its right child.
 {
     ptr_* to_remove = find_to_remove(key);
 
