@@ -45,6 +45,9 @@ private:
     static ptr_* find_next_largest(ptr_* to_remove);
 
     bool bounded(node_* node, T lo, bool lo_inf, T hi, bool hi_inf);
+
+    bool contains_nontail(const T&) const;
+    bool contains_ptr(const T& key, const ptr_& n) const;
 };
 
 template<typename T>
@@ -83,6 +86,13 @@ size_t Bst<T>::size() const
 }
 
 template<typename T>
+bool Bst<T>::contains_nontail(const T& key) const
+{
+
+    return contains_ptr(key, root_);
+}
+
+template<typename T>
 bool Bst<T>::contains(const T& key) const
 {
     node_* curr = &*root_;
@@ -95,6 +105,17 @@ bool Bst<T>::contains(const T& key) const
 
     return false;
 }
+
+
+template<typename T>
+bool Bst<T>::contains_ptr(const T& key, const ptr_& n) const
+{
+    if (n==nullptr) return false;
+    if (key < n->data) return contains_ptr(key, n->left);
+    if (n->data < key) return contains_ptr(key, n->right);
+    return true;
+}
+
 
 template<typename T>
 void Bst<T>::insert(const T& key)
