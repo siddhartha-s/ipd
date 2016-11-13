@@ -114,6 +114,7 @@ TEST(Random)
             size_t size_before = b.size();
             b.insert(to_insert);
             CHECK(b.bst_invariant_holds());
+            CHECK(b.contains(to_insert));
 
             bool        already_inserted = false;
             for (size_t ele : to_remove) {

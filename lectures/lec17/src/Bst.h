@@ -89,7 +89,7 @@ bool Bst<T>::contains(const T& key) const
 
     while (curr != nullptr) {
         if (key < curr->data) curr = &*curr->left;
-        else if (key > curr->data) curr = &*curr->right;
+        else if (curr->data < key) curr = &*curr->right;
         else return true;
     }
 
@@ -103,7 +103,7 @@ void Bst<T>::insert(const T& key)
 
     while (*curr != nullptr) {
         if (key < (*curr)->data) curr = &(*curr)->left;
-        else if (key > (*curr)->data) curr = &(*curr)->right;
+        else if ((*curr)->data < key) curr = &(*curr)->right;
         else return;
     }
 
@@ -173,7 +173,7 @@ template<typename T>
 bool Bst<T>::bounded(node_ *node, T lo, bool lo_inf, T hi, bool hi_inf)
 {
     if (node == nullptr) return true;
-    if (!lo_inf && lo > node->data) return false;
+    if (!lo_inf && node->data < lo) return false;
     if (!hi_inf && hi < node->data) return false;
     return bounded(&*node->left, lo, lo_inf, node->data, false) &&
            bounded(&*node->right, node->data, false, hi, hi_inf);
