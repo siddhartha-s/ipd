@@ -92,6 +92,21 @@ bool Bst<T>::contains_nontail(const T& key) const
 }
 
 template<typename T>
+bool Bst<T>::contains_ptr(const T& key, const ptr_& n) const
+{
+    if (n == nullptr)
+        return false;
+    else {
+        if (key < n->data)
+            return contains_ptr(key, n->left);
+        else if (n->data < key)
+            return contains_ptr(key, n->right);
+        else
+            return true;
+    }
+}
+
+template<typename T>
 bool Bst<T>::contains(const T& key) const
 {
     node_* curr = &*root_;
@@ -104,17 +119,6 @@ bool Bst<T>::contains(const T& key) const
 
     return false;
 }
-
-
-template<typename T>
-bool Bst<T>::contains_ptr(const T& key, const ptr_& n) const
-{
-    if (n==nullptr) return false;
-    if (key < n->data) return contains_ptr(key, n->left);
-    if (n->data < key) return contains_ptr(key, n->right);
-    return true;
-}
-
 
 template<typename T>
 void Bst<T>::insert(const T& key)
