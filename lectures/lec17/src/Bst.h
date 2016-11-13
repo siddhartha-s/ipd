@@ -88,7 +88,6 @@ size_t Bst<T>::size() const
 template<typename T>
 bool Bst<T>::contains_nontail(const T& key) const
 {
-
     return contains_ptr(key, root_);
 }
 
