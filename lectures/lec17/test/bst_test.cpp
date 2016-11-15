@@ -4,6 +4,27 @@
 
 using namespace ipd;
 
+TEST(InsertFinds) {
+    Bst<size_t> t1, t2;
+
+    CHECK_EQUAL((ipd::Bst<size_t>::node_*)NULL,&(*t1.root_));
+    
+    t1.insert(1);
+    t1.insert(2);
+    t1.insert(3);
+    CHECK_EQUAL(1,t1.root_->data);
+    CHECK_EQUAL(2,t1.root_->right->data);
+    CHECK_EQUAL(3,t1.root_->right->right->data);
+
+    t2.insert(3);
+    t2.insert(2);
+    t2.insert(1);
+    CHECK_EQUAL(3,t2.root_->data);
+    CHECK_EQUAL(2,t2.root_->left->data);
+    CHECK_EQUAL(1,t2.root_->left->left->data);
+
+}
+
 TEST(New_is_empty_and_size_0)
 {
     Bst<std::string> t;
@@ -107,6 +128,7 @@ TEST(Random)
 
     for (int trials = 0; trials < 100; trials++) {
         Bst<size_t>         b;
+
         std::vector<size_t> to_remove;
         size_t              elements = (dist(rng) % 20) + 1;
         for (int            i        = 0; i < elements; i++) {

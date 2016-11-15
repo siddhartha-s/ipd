@@ -7,6 +7,9 @@
 #include <iostream>
 #include <cassert>
 
+// declare one of the test classes so it can be our friend
+class TestInsertFinds;
+
 namespace ipd {
 
 // A simple binary search tree using leaf-insertion (no balance).
@@ -48,6 +51,8 @@ private:
 
     bool contains_nontail(const T&) const;
     bool contains_ptr(const T& key, const ptr_& n) const;
+
+    friend TestInsertFinds;
 };
 
 template<typename T>
