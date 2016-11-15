@@ -83,11 +83,46 @@ minimizes the (imperative) changes to the tree. One way to do that is
 
 # Huffman Codes
 
-A huffman code is a way to encode some data to make it take less
-space. The basic idea is to compute the frequencies of each byte that
-appears in the message and then use that to create codewords for each
-character, such that the codewords for more frequent characters are
-shorter than the ones for the less frequent characters.
+When we want to store data, we need a way to encode it and decode
+it. There are different ways to talk about what form encoded data
+takes, for today we will consider a sequence of bits (booleans, 1/0)
+as the only form of encoded data.
+
+A standard way to encode an English text is to use ASCII. It takes 8
+bits for each letter (using only 7 of them, the last bit is always 0)
+and then concatenates them together. For example, to encode the text:
+
+```
+axyzzyzzzz
+```
+
+we'd use the mapping:
+
+```
+a -> 97  = 01100001 (in binary)
+x -> 120 = 01111000
+y -> 121 = 01111001
+z -> 122 = 01111010
+```
+
+and this is the encoded text:
+
+```
+01100001011110000111100101111010011110100111100101111010011110100111101001111010
+```
+
+and it took us 80 bits to encode it.
+
+This kind of code is a called a "block code" because each letter of
+the input (called "symbols" in coding terminology) takes the same
+number of bits in the output (8 in this case).
+
+Another approach is to pick different length sequences of bits for
+each different symbol in the input. A good way to do this is called a
+"huffman code".  The basic idea is to compute the frequencies of each
+byte that appears in the message and then use that to create codewords
+for each character, such that the codewords for more frequent
+characters are shorter than the ones for the less frequent characters.
 
 To create the codewords, we first calculate the frequencies of the
 bytes that appear in the input. Lets consider the example input:
@@ -189,6 +224,28 @@ or, in (unsigned) bytes:
 00000101 11011111
 5        223
 ```
+
+That is only 16 bytes, which is a big savings. Of course we still have
+to encode the tree itself which, in this example, will not end up
+saving much overall. When the text gets longer, however, the savings
+will start to pile up. For example, repeating the text 10 times will
+be only 160 bits for the message, with the same size for the table, but
+ASCII will require more than 800 bits.
+
+One point to observe here: with block codes like ASCII, we didn't need
+to worry about separators between the encoded symbols. Each symbol
+uses 8 bits and so we know when we're trying to decode a specific
+symbol how many bits to consume. With the Huffman codes, however,
+different symbols use different numbers of bits. To avoid problems, we
+have a different property, something called prefix codes.
+
+If you look at the codes we had for each of the four letters, you see
+that no code is a prefix of any other code. And when we read coded
+symbols from the tree, we will always have that property, just by the
+nature of the tree's constructino. That means that when we decode, we
+can start reading bits from the input and not worry about when one
+code ends and another begins.
+
 
 Note we kept adding leaves directly to the top of the tree in this
 process, but that doesn't always have to happen. For example, if the
