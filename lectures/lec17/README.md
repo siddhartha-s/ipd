@@ -297,3 +297,9 @@ When you are doing the assignment, some other things to think about:
 
 # Imperative Binomial Heaps (this time in C++)
 
+To test our understanding of pointers, I've taken a very nice
+implementation of binomial heaps that Jesse wrote and turned every
+nice kind of pointer into a raw pointer. You can see the results here:
+[`Binomial_heap_leaky.h`](src/Binomial_heap_leaky.h). Our job is to
+look over this code, remind ourselves how binomial heaps work and then
+to figure out and then implement a strategy that avoids the leaks.
