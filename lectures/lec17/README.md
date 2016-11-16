@@ -112,21 +112,97 @@ and this is the encoded text:
 01100001011110000111100101111010011110100111100101111010011110100111101001111010
 ```
 
-and it took us 80 bits to encode it.
+It takes 80 bits to encode it using ASCII.
 
 This kind of code is a called a "block code" because each letter of
 the input (called "symbols" in coding terminology) takes the same
 number of bits in the output (8 in this case).
 
 Another approach is to pick different length sequences of bits for
-each different symbol in the input. A good way to do this is called a
-"huffman code".  The basic idea is to compute the frequencies of each
-byte that appears in the message and then use that to create codewords
-for each character, such that the codewords for more frequent
-characters are shorter than the ones for the less frequent characters.
+each different symbol in the input. Once you do that, however, you
+have to be careful about concatenating the codes to make a
+message. For example, lets say we used these codes:
 
-To create the codewords, we first calculate the frequencies of the
-bytes that appear in the input. Lets consider the example input:
+```
+a -> 0
+x -> 1
+y -> 01
+z -> 10
+```
+
+And then we encoded our message:
+
+```
+axy z z y z z z z
+010110100110101010
+```
+
+That same sequence of bits could also have been this message:
+
+```
+y axz z y z z z z
+010110100110101010
+```
+
+or a whole bunch of other messages.
+
+One way to avoid this problem is to use something called "prefix
+codes". In a prefix code, no encoded symbol has a code that is a
+prefix of any other symbol. In the codes just above, we can see that
+`a`'s code is a prefix of `y`'s code and `x`'s is a prefix of `z`s.
+
+If we change the code to this:
+
+```
+a -> 00
+x -> 11
+y -> 01
+z -> 10
+```
+
+then we have that no code is a prefix of the other and, as long as we
+start at the beginning of the stream, there is only one way to decode
+the encoded text:
+
+```
+a x y z z y z z z z
+00110110100110101010
+```
+
+One way people have thought to organize and think about prefix codes
+it to put them into a tree. That is, if you have a binary tree whose
+leaf nodes are are the symbols, then you can use the path from the
+root to the leaf to determine the code. And there won't be any encoded
+symbol that is a prefix of another one.
+
+For example, with this tree, if we treat the left edge as a "0" and
+the right edge as a "1", we get the code above.
+
+```
+            +--------+
+            |        |
+            +--------+
+           _/        \_
+         _/            \_
+        /                \
+     +----+            +----+
+     |    |            |    |
+     +----+            +----+
+     /    \            /    \
+    /      \          /      \
+   /        \        /        \
++-----+  +-----+  +-----+  +-----+
+|  a  |  |  y  |  |  z  |  |  x  |
++-----+  +-----+  +-----+  +-----+
+```
+
+
+Huffman coding is a way to build these trees and then use them to
+encode messages. The basic idea is to compute the frequencies of each
+byte that appears in the message and then use those frequencies to
+build up the tree.
+
+Lets consider the example input:
 
 ```
 axyzzyzzzz
@@ -139,10 +215,9 @@ We first calculate the freqeuencies of each different byte:
 -  121 (y): 2
 -  122 (z): 6
 
-and then we think of these as the leaf nodes in a tree that we're
-going to build up from the leaves.
+and then we create the leaf nodes of the tree, with no interior nodes
+(yet).  So here are the start with four leaf nodes:
 
-So we start with three disconnected leaf nodes:
 
 ```
 +-----+  +-----+  +-----+  +-----+
@@ -151,7 +226,7 @@ So we start with three disconnected leaf nodes:
 ```
 
 Next we find the two nodes that have the lowest frequencies, in this
-case `a` and `x` and we join them together to make an interior node,
+case `a` and `x`, and we join them together to make an interior node,
 with a frequency that is the sum of the two frequencies:
 
 ```
@@ -165,8 +240,10 @@ with a frequency that is the sum of the two frequencies:
 ```
 
 Since we have not connected everything in the tree yet, we repeat this
-process, finding the two with the lowest frequencies and joining them
-together:
+process, finding the two nodes with the lowest frequencies and joining
+them together. In the next step we'll connect our newly created 2 node
+with the `y` leaf node:
+
 
 ```
            +-----+
@@ -205,8 +282,8 @@ and then one more and we have the complete tree:
 
 Using that tree we can read off the code words for each byte by
 walking down the tree from the root to each leaf, using a `0` when we
-go left and a `1` when we go right. Doing that, we get these encoded
-versions of the input bytes:
+go left and a `1` when we go right. So these are the encoded versions
+of the symbols:
 
 - `a` -> `000`
 - `x` -> `001`
@@ -226,12 +303,13 @@ or, in (unsigned) bytes:
 5        223
 ```
 
-That is only 16 bits, which is a big savings. Of course we still have
-to encode the tree itself which, in this example, will not end up
-saving much overall. When the text gets longer, however, the savings
-will start to pile up. For example, repeating the text 10 times will
-be only 160 bits for the message, with the same size for the table, but
-ASCII will require more than 800 bits.
+That is only 16 bits, which is a big savings over the 80 bits for
+ASCII. Of course we still have to encode the tree itself which, in
+this example, will not end up saving much overall. When the text gets
+longer, however, the savings will start to pile up. For example,
+repeating the text 10 times will be only 160 bits for the message,
+with the same size for the table, but ASCII will require more than 800
+bits.
 
 One point to observe here: with block codes like ASCII, we didn't need
 to worry about separators between the encoded symbols. Each symbol
@@ -239,13 +317,6 @@ uses 8 bits and so we know when we're trying to decode a specific
 symbol how many bits to consume. With the Huffman codes, however,
 different symbols use different numbers of bits. To avoid problems, we
 have a different property, something called prefix codes.
-
-If you look at the codes we had for each of the four letters, you see
-that no code is a prefix of any other code. And when we read coded
-symbols from the tree, we will always have that property, just by the
-nature of the tree's construction. That means that when we decode, we
-can start reading bits from the input and not worry about when one
-code ends and another begins.
 
 Note we kept adding leaves directly to the top of the tree in this
 process, but that doesn't always have to happen. For example, if the
