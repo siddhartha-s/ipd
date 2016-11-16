@@ -1,4 +1,4 @@
-#include "../../lec17/src/Binomial_heap.h"
+#include "Binomial_heap.h"
 #include <UnitTest++/UnitTest++.h>
 
 #include <random>
