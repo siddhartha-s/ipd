@@ -15,10 +15,11 @@ To make this concrete, look at the interface definition here:
 [`Bst.h`](src/Bst.h). It shows a container class for binary search
 trees. The actual trees are the same as we had in ISL+λ, but we also
 have an extra object that encapsulates them and has all of the
-operations on them. Lets have a look at the `contains_nottail()`
-function. Do you recognize the strategy used there? It looks a little
-bit different in C++, but hopefully you recognize it as structural
-decomposition. Unfortunately, that is not idiomatic C++, because
+operations on them. Lets have a look at the `contains_nottail()` and
+`contains_ptr()` member functions. Do you recognize the strategies? It
+looks a little bit different in C++, but hopefully you recognize
+`contains_ptr()`'s structural decomposition and the template for
+`node_` / `ptr_`. Unfortunately, that is not idiomatic C++, because
 evaluation in C++ doesn't follow the rule of substitution for function
 calls. Instead, it uses a little bit of stack space for each function
 call. In contrast, a `while` loop does not use that space, so the
