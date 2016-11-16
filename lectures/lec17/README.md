@@ -356,6 +356,11 @@ the frequencies.
 
 When you are doing the assignment, some other things to think about:
 
+- The file [`bit_io.h`](../../hw/08/src/bit_io.h) contains a number of
+  classes to help you read and write bits instead of bytes. It also
+  contains some classes to help you test your encoding and decoding
+  code.
+
 - Each file will have different frequences and thus a different
   tree. Accordingly, the file has to save the tree (or some
   information that is equivalent to the tree). How should that be
@@ -364,8 +369,8 @@ When you are doing the assignment, some other things to think about:
 - When you are writing out the file, the encoding may not be some
   number of bits that is not an even multiple of 8, which means you
   cannot rely on the information stored in the filesystem to know how
-  long the encoded file is.
-
+  long the encoded file is. There is more than one good way to handle
+  this issue.
 
 # Imperative Binomial Heaps (this time in C++)
 
