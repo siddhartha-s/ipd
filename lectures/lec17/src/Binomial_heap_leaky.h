@@ -15,13 +15,16 @@ class Binomial_heap
 public:
     // Is this heap empty?
     bool empty() const;
+
     // Returns the number of elements in the heap.
     size_t size() const;
 
     // Adds an element to the heap.
     void add(const T&);
+
     // Returns the minimum element; undefined if the heap is empty.
     const T& get_min() const;
+
     // Removes the minimum element; undefined if the heap is empty;
     void remove_min();
 
@@ -31,7 +34,7 @@ public:
 
 private:
     struct node_;
-    using tree_ = std::unique_ptr<node_>;
+    using tree_ = node_*;
     using row_  = std::vector<tree_>;
 
     row_   roots_;
@@ -40,6 +43,7 @@ private:
     size_t find_min_index_() const;
 
     static tree_ merge_trees_(tree_, tree_);
+
     static row_ merge_rows_(row_&, row_&);
 };
 
@@ -69,7 +73,7 @@ void Binomial_heap<T>::add(const T& value)
 {
     Binomial_heap singleton;
     singleton.size_ = 1;
-    singleton.roots_.push_back(std::make_unique<node_>(value));
+    singleton.roots_.push_back(new node_(value));
     merge(singleton);
 }
 
@@ -82,10 +86,10 @@ const T& Binomial_heap<T>::get_min() const
 template<typename T>
 void Binomial_heap<T>::remove_min()
 {
-    tree_ victim = std::move(roots_[find_min_index_()]);
-    row_  result = merge_rows_(roots_, victim->children);
-    std::swap(result, roots_);
-
+    size_t min_index = find_min_index_();
+    tree_  victim    = roots_[min_index];
+    roots_[min_index] = NULL;
+    roots_ = merge_rows_(roots_, victim->children);
     --size_;
 }
 
@@ -111,7 +115,7 @@ template<typename T>
 void Binomial_heap<T>::merge(Binomial_heap& other)
 {
     row_ result = merge_rows_(roots_, other.roots_);
-    std::swap(result, roots_);
+    roots_ = result;
     size_ += other.size_;
     other.size_ = 0;
     other.roots_.clear();
@@ -121,10 +125,10 @@ template<typename T>
 auto Binomial_heap<T>::merge_trees_(tree_ a, tree_ b) -> tree_
 {
     if (a->data < b->data) {
-        a->children.push_back(std::move(b));
+        a->children.push_back(b);
         return a;
     } else {
-        b->children.push_back(std::move(a));
+        b->children.push_back(a);
         return b;
     }
 }
@@ -143,28 +147,28 @@ auto Binomial_heap<T>::merge_rows_(row_& a, row_& b) -> row_
         bool has_b     = i < b.size() && b[i] != nullptr;
 
         if (has_a && has_b) {
-            result.push_back(std::move(carry));
-            carry = merge_trees_(std::move(a[i]), std::move(b[i]));
+            result.push_back(carry);
+            carry = merge_trees_(a[i], b[i]);
         } else if (has_a && has_carry) {
             result.push_back(nullptr);
-            carry = merge_trees_(std::move(carry), std::move(a[i]));
+            carry = merge_trees_(carry, a[i]);
         } else if (has_b && has_carry) {
             result.push_back(nullptr);
-            carry = merge_trees_(std::move(carry), std::move(b[i]));
+            carry = merge_trees_(carry, b[i]);
         } else if (has_a) {
-            result.push_back(std::move(a[i]));
+            result.push_back(a[i]);
             carry = nullptr;
         } else if (has_b) {
-            result.push_back(std::move(b[i]));
+            result.push_back(b[i]);
             carry = nullptr;
         } else {
-            result.push_back(std::move(carry));
+            result.push_back(carry);
             carry = nullptr;
         }
     }
 
     if (carry != nullptr)
-        result.push_back(std::move(carry));
+        result.push_back(carry);
 
     return result;
 }

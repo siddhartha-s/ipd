@@ -225,7 +225,7 @@ or, in (unsigned) bytes:
 5        223
 ```
 
-That is only 16 bytes, which is a big savings. Of course we still have
+That is only 16 bits, which is a big savings. Of course we still have
 to encode the tree itself which, in this example, will not end up
 saving much overall. When the text gets longer, however, the savings
 will start to pile up. For example, repeating the text 10 times will
@@ -242,14 +242,13 @@ have a different property, something called prefix codes.
 If you look at the codes we had for each of the four letters, you see
 that no code is a prefix of any other code. And when we read coded
 symbols from the tree, we will always have that property, just by the
-nature of the tree's constructino. That means that when we decode, we
+nature of the tree's construction. That means that when we decode, we
 can start reading bits from the input and not worry about when one
 code ends and another begins.
 
-
 Note we kept adding leaves directly to the top of the tree in this
 process, but that doesn't always have to happen. For example, if the
-frequences in the original input:
+frequences in the original input led to these leaves:
 
 ```
 +-----+  +-----+  +-----+  +-----+
@@ -257,7 +256,7 @@ frequences in the original input:
 +-----+  +-----+  +-----+  +-----+
 ```
 
-we get a tree that's balanced like this:
+then we would get a tree that's balanced like this:
 
 ```
 
@@ -297,3 +296,4 @@ When you are doing the assignment, some other things to think about:
 
 
 # Imperative Binomial Heaps (this time in C++)
+

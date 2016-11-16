@@ -9,3 +9,7 @@ add_test_program(bst_test
 add_test_program(heap_test
         test/heap_test.cpp
         src/Binomial_heap.h)
+
+add_test_program(leaky_heap_test
+        test/heap_test_leaky.cpp
+        src/Binomial_heap_leaky.h)
