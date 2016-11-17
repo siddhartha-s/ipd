@@ -8,3 +8,5 @@ add_program(encode src/encode.cpp ${COMMON})
 add_program(decode src/decode.cpp ${COMMON})
 add_program(huff src/huff.cpp ${COMMON})
 add_program(puff src/puff.cpp ${COMMON})
+
+add_test_program(bitio_test src/bit_io.cpp src/bit_io.h test/bitio_test.cpp)

@@ -13,27 +13,16 @@
 #include <istream>
 #include <ostream>
 #include <fstream>
+#include <vector>
 
 namespace ipd {
     /*
      * INPUT
      */
 
-    // A bit input stream, for reading individual bits from a file.
-    class bifstream {
-      public:
-        // Constructs a bit input stream to read from the given file.
-        //
-        // Parameters:
-        //
-        //      filespec - name of the file to open
-        //
-        // Example:
-        //
-        //      bifstream bif(input_file_name);
-        //
-        explicit bifstream(const char* filespec);
-
+    // A bit input stream, for reading individual bits from a file or a std::vector<unsigned char>
+    class bistream {
+    public:
         // Reads a bit from this bit input stream into the given bool
         // reference.
         //
@@ -48,7 +37,7 @@ namespace ipd {
         //      bool b;
         //      bif.read(b);
         //
-        bifstream& read(bool& result);
+        bistream &read(bool &result);
 
         // Reads `n` bits, interpreted as a big-endian `n`-bit integer,
         // and stores them in the reference `result`, which must have a
@@ -65,10 +54,10 @@ namespace ipd {
         // Example:
         //
         //      int result;
-        //      bif.read(result, 5); // reads 5 bits into result
+        //      bif.read_bits(result, 5); // reads 5 bits into result
         //
-        template <typename T>
-        bifstream& read_bits(T& result, size_t n);
+        template<typename T>
+        bistream &read_bits(T &result, size_t n);
 
         // Determines whether we've reached the end of the input file.
         //
@@ -81,7 +70,7 @@ namespace ipd {
         //          ...
         //      }
         //
-        bool eof() const;
+        virtual bool eof() const = 0;
 
         // Determines the status of the bit input stream.
         //
@@ -95,7 +84,7 @@ namespace ipd {
         //          // we know the read succeeded
         //      }
         //
-        bool good() const;
+        virtual bool good() const = 0;
 
         // The bit input stream boolean coercion operator, inserted, for
         // example, when a `bifstream` is used as a condition for an
@@ -113,12 +102,72 @@ namespace ipd {
         //
         operator bool() const;
 
-        bifstream(const bifstream&) = delete;
+    protected:
 
-      private:
-        char bitbuf;
-        short nbits;
+        virtual bool next_byte(char &) = 0;
+
+        short nbits = 0;
+
+    private:
+
+        char bitbuf = 0;
+
+    };
+
+    class bifstream : public bistream {
+    public:
+        // Constructs a bit input stream to read from the given file.
+        //
+        // Parameters:
+        //
+        //      filespec - name of the file to open
+        //
+        // Example:
+        //
+        //      bifstream bif(input_file_name);
+        //
+        explicit bifstream(const char *filespec);
+
+        bool eof() const override;
+
+        bool good() const override;
+
+        bifstream(const bifstream &) = delete;
+
+    private:
         std::ifstream stream;
+
+        virtual bool next_byte(char &) override;
+
+    };
+
+    class bistringstream : public bistream {
+    public:
+        // Constructs a bit input stream to read from the given file.
+        //
+        // Parameters:
+        //
+        //      filespec - name of the file to open
+        //
+        // Example:
+        //
+        //      bifstream bif(input_file_name);
+        //
+        explicit bistringstream(std::vector<unsigned char>);
+
+        bool eof() const override;
+
+        bool good() const override;
+
+        bistringstream(const bistringstream &) = delete;
+
+    private:
+        size_t bytes_index;
+        std::vector<unsigned char> bytes;
+        size_t total_bits;
+
+        virtual bool next_byte(char &) override;
+
     };
 
     // The bit input stream extraction operator; alias for `read(bool&)`.
@@ -135,27 +184,15 @@ namespace ipd {
     //     bool b1, b2, b3;
     //     bif >> b1 >> b2 >> b3;
     //
-    bifstream& operator>>(bifstream& bif, bool& b);
+    bistream &operator>>(bistream &bif, bool &b);
 
     /*
      * OUTPUT
      */
 
     // A bit output stream, for writing individual bits to a file.
-    class bofstream {
-      public:
-        // Constructs a bit output stream to write to the given file.
-        //
-        // Parameters:
-        //
-        //      filespec - name of the file to open or create
-        //
-        // Example:
-        //
-        //      bofstream bof(output_file_name);
-        //
-        explicit bofstream(const char* filespec);
-
+    class bostream {
+    public:
         // Writes a bit to this bit output stream.
         //
         // Parameters:
@@ -168,7 +205,7 @@ namespace ipd {
         //
         //      bof.write(true);
         //
-        bofstream& write(bool b);
+        virtual bostream &write(bool b) = 0;
 
         // Writes an `n`-bit big-endian representation of `value`, which
         // must have a numeric type, to this bit output sream.
@@ -186,8 +223,8 @@ namespace ipd {
         //      bof.write(22, 5); // writes 10110
         //      bof.write(22, 6); // writes 010110
         //
-        template <typename T>
-        bofstream& write_bits(T value, size_t n);
+        template<typename T>
+        bostream &write_bits(T value, size_t n);
 
         // Determines the status of the bit output stream.
         //
@@ -200,7 +237,7 @@ namespace ipd {
         //          // we know the write succeeded
         //      }
         //
-        bool good() const;
+        virtual bool good() const = 0;
 
         // The bit output stream boolean coercion operator, inserted, for
         // example, when a `bofstream` is used as a condition for an
@@ -217,15 +254,51 @@ namespace ipd {
         //
         operator bool() const;
 
+    };
+
+    class bofstream : public bostream {
+    public:
+        // Constructs a bit output stream to write to the given file.
+        //
+        // Parameters:
+        //
+        //      filespec - name of the file to open or create
+        //
+        // Example:
+        //
+        //      bofstream bof(output_file_name);
+        //
+        explicit bofstream(const char *filespec);
+
+        virtual bofstream &write(bool b) override;
+
+        virtual bool good() const override;
+
         ~bofstream();
 
-        bofstream(const bofstream&) = delete;
+        bofstream(const bofstream &) = delete;
 
-      private:
+    private:
         char bitbuf;
         short nbits;
         std::ofstream stream;
+
         void write_out();
+    };
+
+    class bostringstream : public bostream {
+    public:
+        std::vector<unsigned char> get_data();
+
+        virtual bostringstream &write(bool b) override;
+
+        virtual bool good() const override;
+
+        int bits_written = 0;
+
+    private:
+        std::vector<unsigned char> data;
+
     };
 
     // The bit output stream insertion operator; alias for
@@ -242,15 +315,14 @@ namespace ipd {
     //
     //     bof << true << false << false;
     //
-    bofstream& operator<<(bofstream& bof, bool b);
+    bofstream &operator<<(bofstream &bof, bool b);
 
     /*
      * TEMPLATE IMPLEMENTATIONS
      */
 
-    template <typename T>
-    bifstream& bifstream::read_bits(T& result, size_t n)
-    {
+    template<typename T>
+    bistream &bistream::read_bits(T &result, size_t n) {
         bool bit;
 
         result = 0;
@@ -263,14 +335,12 @@ namespace ipd {
         return *this;
     }
 
-    inline bifstream& operator>>(bifstream& bif, bool& bit)
-    {
+    inline bistream &operator>>(bistream &bif, bool &bit) {
         return bif.read(bit);
     }
 
-    template <typename T>
-    bofstream& bofstream::write_bits(T value, size_t n)
-    {
+    template<typename T>
+    bostream &bostream::write_bits(T value, size_t n) {
         while (n--) {
             write(value >> n & 1);
         }
@@ -278,8 +348,7 @@ namespace ipd {
         return *this;
     }
 
-    inline bofstream& operator<<(bofstream& bof, bool bit)
-    {
+    inline bostream &operator<<(bostream &bof, bool bit) {
         return bof.write(bit);
     }
 }

@@ -47,19 +47,23 @@ to a file.
 ## Getting started
 
 This homework assignment does not include reference material for Huffman
-trees and codes. Instead, you should start with the lecture notes or the
+trees and codes. Instead, you should start with the
+[lecture notes](../../lectures/lec17/README.md) or the
 [Huffman coding](https://en.wikipedia.org/wiki/Huffman_coding#Basic_technique)
 page on Wikipedia.
 
 This repository contains starter code, including bitwise IO libraries
-and sample encoding and decoding programs. In particular, the starter
-code includes a pair of programs `encode` and `decode` that---rather
-than Huffman coding---compress an ASCII text file to 7/8 of its original
-size using a simple [block
-code](https://en.wikipedia.org/wiki/Block_code). (Note that your `huff`
-and `puff` programs are not limited to ASCII files, but must work on
-binary files containing any sequence of bytes.) The next section
-discusses details of how that works.
+and sample encoding and decoding programs. Note that the bitwise IO
+libraries come with support to help you write tests for end-to-end
+encoding and decoding. Take advantage of it.
+
+The starter code includes a pair of programs `encode` and `decode`
+that---rather than Huffman coding---compress an ASCII text file to 7/8
+of its original size using a simple [block
+code](https://en.wikipedia.org/wiki/Block_code). (Note that your
+`huff` and `puff` programs are not limited to ASCII files, but must
+work on binary files containing any sequence of bytes.) The next
+section discusses details of how that works.
 
 ## Warmup: ASCII block code
 
