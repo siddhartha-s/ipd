@@ -38,5 +38,9 @@ Or, you may choose to implement the [Burrows-Wheeler
 transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform)
 as an extenion to your compression project. (No second data structure is required in this case.)
 
+For your proposal, you must provide C++ class definitions and, a
+description of the ADT, and a few test cases (that will fail) that
+describe how the data structure works.
+
 For the C++ choice, no two students may choose the same data
 structures. Post your choices in Piazza; first come, first served.
