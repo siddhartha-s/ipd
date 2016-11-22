@@ -34,6 +34,8 @@ structures to implement in C++:
 
 * [rope](http://citeseer.ist.psu.edu/viewdoc/download?doi=10.1.1.14.9450&rep=rep1&type=pdf)
 
+* [suffix trie](http://airelles.i3s.unice.fr/files/Weiner.pdf)
+
 Or, you may choose to implement the [Burrows-Wheeler
 transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform)
 as an extenion to your compression project. (No second data structure is required in this case.)
