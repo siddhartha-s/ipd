@@ -36,6 +36,10 @@ structures to implement in C++:
 
 * [suffix trie](http://airelles.i3s.unice.fr/files/Weiner.pdf)
 
+* interval tree
+
+* [suffix array](http://webglimpse.net/pubs/suffix.pdf)
+
 Or, you may choose to implement the [Burrows-Wheeler
 transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform)
 as an extenion to your compression project. (No second data structure is required in this case.)
