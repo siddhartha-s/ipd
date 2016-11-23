@@ -21,20 +21,24 @@ If you choose option 2, you must choose two of the following data
 structures to implement in C++:
 
 * [splay tree](http://www.cs.cmu.edu/~sleator/papers/self-adjusting.pdf)
+  <!--- relic -->
 
 * [treap](http://faculty.washington.edu/aragon/pubs/rst89.pdf)
+  <!--- siddharth -->
 
 * [beap](http://www.sciencedirect.com/science/article/pii/0022000080900379)
 
-* [min-max heap](http://www.akira.ruc.dk/~keld/teaching/algoritmedesign_f03/Artikler/02/Atkinson86.pdf)
+* [min-max heap](http://www.akira.ruc.dk/~keld/teaching/algoritmedesign_f03/Artikler/02/Atkinson86.pdf) <!--- sangrin -->
 
 * [B-tree](http://people.cs.aau.dk/~simas/aalg06/UbiquitBtree.pdf)
+  <!--- siddharth -->
 
-* [Fibonacci heap](https://www.cs.princeton.edu/courses/archive/fall03/cs528/handouts/fibonacci%20heaps.pdf)
+* [Fibonacci heap](https://www.cs.princeton.edu/courses/archive/fall03/cs528/handouts/fibonacci%20heaps.pdf) <!--- relic --> 
 
 * [rope](http://citeseer.ist.psu.edu/viewdoc/download?doi=10.1.1.14.9450&rep=rep1&type=pdf)
 
 * [suffix trie](http://airelles.i3s.unice.fr/files/Weiner.pdf)
+  <!--- sangrin -->
 
 * [robin-hood hashing](https://cs.uwaterloo.ca/research/tr/1986/CS-86-14.pdf)
 
