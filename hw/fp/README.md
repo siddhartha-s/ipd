@@ -36,7 +36,7 @@ structures to implement in C++:
 
 * [suffix trie](http://airelles.i3s.unice.fr/files/Weiner.pdf)
 
-* interval tree
+* [robin-hood hashing](https://cs.uwaterloo.ca/research/tr/1986/CS-86-14.pdf)
 
 * [suffix array](http://webglimpse.net/pubs/suffix.pdf)
 
