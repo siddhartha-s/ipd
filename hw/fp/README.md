@@ -27,6 +27,7 @@ structures to implement in C++:
   <!--- siddharth -->
 
 * [beap](http://www.sciencedirect.com/science/article/pii/0022000080900379)
+  <!--- ismael -->
 
 * [min-max heap](http://www.akira.ruc.dk/~keld/teaching/algoritmedesign_f03/Artikler/02/Atkinson86.pdf) <!--- sangrin -->
 
@@ -43,12 +44,13 @@ structures to implement in C++:
 * [robin-hood hashing](https://cs.uwaterloo.ca/research/tr/1986/CS-86-14.pdf)
 
 * [suffix array](http://webglimpse.net/pubs/suffix.pdf)
+  <!--- ismael -->
 
 Or, you may choose to implement the [Burrows-Wheeler
 transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform)
 as an extenion to your compression project. (No second data structure is required in this case.)
 
-<!--- undecided: michael, ismael -->
+<!--- undecided: michael -->
 
 For your proposal, you must provide C++ class definitions and, a
 description of the ADT, and a few test cases (that will fail) that
