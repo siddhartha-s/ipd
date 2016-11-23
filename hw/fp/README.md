@@ -52,9 +52,9 @@ as an extenion to your compression project. (No second data structure is require
 
 <!--- undecided: michael -->
 
-For your proposal, you must provide C++ class definitions and, a
-description of the ADT, and a few test cases (that will fail) that
-describe how the data structure works.
+For your proposal, you must provide C++ class definitions, a
+description of the ADT (like we showed in class), and a few test cases
+(that will fail) that describe how the data structure works.
 
 For the C++ choice, no two students may choose the same data
 structures. Post your choices in Piazza; first come, first served.
