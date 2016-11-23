@@ -4,7 +4,7 @@ For the final project, you must work alone. Choose one of the two
 following options:
 
 1. an ISL implementation of big-bang style game in the spirit of the
-   falling game from assignments 2 and 4 or,
+   falling game from assignments 2 and 4 or, <!--- haridu -->
 
 2. a C++ implementation of two data structures from the list below
   (unless you choose BWT, in which case that one is sufficient)
@@ -47,6 +47,8 @@ structures to implement in C++:
 Or, you may choose to implement the [Burrows-Wheeler
 transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform)
 as an extenion to your compression project. (No second data structure is required in this case.)
+
+<!--- undecided: michael, ismael -->
 
 For your proposal, you must provide C++ class definitions and, a
 description of the ADT, and a few test cases (that will fail) that
