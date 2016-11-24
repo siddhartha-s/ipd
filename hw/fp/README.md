@@ -46,6 +46,10 @@ structures to implement in C++:
 * [suffix array](http://webglimpse.net/pubs/suffix.pdf)
   <!--- ismael -->
 
+* [karatsuba multiplication on arbitrarily sized integers](https://en.wikipedia.org/wiki/Karatsuba_algorithm)
+
+* [topological sort](https://en.wikipedia.org/wiki/Topological_sorting)
+
 Or, you may choose to implement the [Burrows-Wheeler
 transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform)
 as an extenion to your compression project. (No second data structure is required in this case.)
