@@ -47,8 +47,10 @@ structures to implement in C++:
   <!--- ismael -->
 
 * [karatsuba multiplication on arbitrarily sized integers](https://en.wikipedia.org/wiki/Karatsuba_algorithm)
+  <!--- yibing -->
 
 * [topological sort](https://en.wikipedia.org/wiki/Topological_sorting)
+  <!--- yibing -->
 
 Or, you may choose to implement the [Burrows-Wheeler
 transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform)
