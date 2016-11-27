@@ -29,19 +29,23 @@ structures to implement in C++:
 * [beap](http://www.sciencedirect.com/science/article/pii/0022000080900379)
   <!--- ismael -->
 
-* [min-max heap](http://www.akira.ruc.dk/~keld/teaching/algoritmedesign_f03/Artikler/02/Atkinson86.pdf) <!--- sangrin -->
+* [min-max heap](http://www.akira.ruc.dk/~keld/teaching/algoritmedesign_f03/Artikler/02/Atkinson86.pdf)
+  <!--- sangrin -->
 
 * [B-tree](http://people.cs.aau.dk/~simas/aalg06/UbiquitBtree.pdf)
   <!--- siddharth -->
 
-* [Fibonacci heap](https://www.cs.princeton.edu/courses/archive/fall03/cs528/handouts/fibonacci%20heaps.pdf) <!--- relic --> 
+* [Fibonacci heap](https://www.cs.princeton.edu/courses/archive/fall03/cs528/handouts/fibonacci%20heaps.pdf)
+  <!--- relic -->
 
 * [rope](http://citeseer.ist.psu.edu/viewdoc/download?doi=10.1.1.14.9450&rep=rep1&type=pdf)
+  <!--- michael -->
 
 * [suffix trie](http://airelles.i3s.unice.fr/files/Weiner.pdf)
   <!--- sangrin -->
 
 * [robin-hood hashing](https://cs.uwaterloo.ca/research/tr/1986/CS-86-14.pdf)
+  <!--- michael -->
 
 * [suffix array](http://webglimpse.net/pubs/suffix.pdf)
   <!--- ismael -->
@@ -55,8 +59,6 @@ structures to implement in C++:
 Or, you may choose to implement the [Burrows-Wheeler
 transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform)
 as an extenion to your compression project. (No second data structure is required in this case.)
-
-<!--- undecided: michael -->
 
 For your proposal, you must provide C++ class definitions, a
 description of the ADT (like we showed in class), and a few test cases
