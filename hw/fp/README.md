@@ -66,3 +66,64 @@ description of the ADT (like we showed in class), and a few test cases
 
 For the C++ choice, no two students may choose the same data
 structures. Post your choices in Piazza; first come, first served.
+
+## Final Project Presentations
+
+### C++ Option
+
+Prepare PDF slideshows (like with Keynote or PowerPoint) to present your
+data structures. The outline for each is as follows:
+
+1. Purpose—What is the data structure for, and how does it compare to
+   similar data structures? Why would we choose this data structure over
+   one of the alternatives? This should be explained at a high level.
+   (For example, if your data structure were a binary heap, you would
+   explain that it implements the priority queue ADT compactly and
+   efficiently. with log-time insertion and removal.)
+
+2. Concept—Explain conceptually how the data structure works, probably
+   with pictures; what are the invariants? (For example, if your data
+   structure were a binary heap, you would show how the heap is
+   represented as a complete tree flattened into an array, and you would
+   explain the heap property that parents are no greater than children.
+   Then describe how bubbling up and percolating down restore the
+   invariant.)
+
+3. API—How is the data structure used? Show the list of interface
+   functions and their purposes, and give an example of client code that
+   uses it.
+
+4. Implementation—Show us 2–3 interesting parts of the implementation.
+   One part should be the private member variables, where you explain
+   how your concrete representation in C++ corresponds to the abstract
+   description from part 2. We probably don’t want to see more than
+   three slides of code. (For example, for a binary heap you would show
+   the private members, and then maybe the percolate-down procedure.)
+
+5. Questions from the audience. Be prepared to show and explain any of
+   your code.
+
+We may not get through both of your data structures. When it’s your
+turn, we will decide which data structure you should present first. If
+you don’t finish presenting the second data structure, that’s
+okay—we’ll still grade your slides and code.  
+
+### ISL Game Option
+
+Prepare a PDF slideshow (like with Keynote or PowerPoint) to present
+your game. The outline is as follows:
+
+1. Describe the concept behind your game and the rules. Show us some key
+   screenshots. List features/rules.
+
+2. Demo the game by running it in DrRacket. (I will have it ready to run
+   on my computer.) Try to demonstrate as many features as possible.
+   [This part obviously won’t be in your slides.]
+
+3. Explain the data definition for your world. How does it correspond to
+   the game as the player sees it?
+
+4. Show us 1–2 interesting parts of the code.
+
+5. Questions from the audience. Be prepared to show and explain any of
+   your code.
