@@ -164,7 +164,7 @@ And, in general:
 
 Here's the mathematically precise definition:
 
- O(f) = {g | exists n0, m: for all n > n0, g(n) <= m*f(n) }
+ O(f) = {g | exist naturals n0, m: for all n > n0, g(n) <= m*f(n) }
 
 What is this saying intuitively? Think of "n0" as indicating where the
 input got big enough and "m" as that newer computer that speeds things
@@ -183,39 +183,48 @@ smaller.
 Assume we had n0 and m such that
 
   for all n > n0,
-     n^2 <= c*n
+     n^2 <= m*n
 
-so that should be true of the number max(c,n)+1 because it is true of
-all numbers. Lets call max(c,n)=X.
+so that should be true of the number max(n,m)+1 because it is true of
+all numbers. Lets call max(n,m)=X.
 
-   (X+1)*(X+1) <= c*(X+1)
-   X^2 + 2*X + 1 <= c*X + c
-   X^2 + 2*X <= c*X + (c-1)
+   (X+1)*(X+1) <= m*(X+1)
+   X^2 + 2*X + 1 <= m*X + m
+   X^2 + 2*X <= m*X + (m-1)
 
+Okay, so we know that either m must be bigger than n or the other way
+around. Lets first assume that m >= n and thus since X=max(n,m), we
+know that X=m. Substitute that into the equation above and we get:
 
-expand out X:
+    m^2 + 2*m <= m*m + m-1
 
-   max(c,n)*max(c,n) + 2*max(c,n) <= c*max(c,n)+(c-1)
+subtract m*m from each side:
 
-Okay, so we know that c and n must be related to each other by
->=. Lets first assume that c >= n and thus we can simplify the uses of
-max
+   2*m <= m-1
 
-     c*c + 2*c <= c*c + (c-1)
-   => c <= -1
+subtract m from each side:
 
-which tells us that c <= -1, but we know that n is at least 1 and we
-know that c >= n, so c must greater than 0.
+   m <= -1
 
-Okay, so it must be the case that n > c. Simplify again:
+but we know that m is a natural number and thus cannot be less than
+-1.  Okay, so it must be the case that n > m, and so max(n,m) = n and
+so we can replace the Xs with ns.:
 
-    n*n + 2*n <= c*n + (c-1)
- => n*n + (2-c)*n - (c-1) <= 0
+   n^2 + 2*n <= m*n + (m-1)
 
-But this can't be either. Since this parabola is facing up, with the condition
-for all n > n0, this inequation can't possibly be true. That is, when n is greater than
-the quadratic formula root (if exists), the quadratic formula (n*n+(2-c)*n-(c-1)) must greater than 0.
-Otherwise, if the formula root does not exist, the quadratic formula is always greater than 0.
+But this can't be either. To see why, first consider the case where
+m=0. The equation cannot hold then because we have a natural number on
+the left (n^2 + 2*n) which must be less than -1.
+
+Okay, so if this is to work, then m must be at least 1. But this also
+won't work out.  To see why, first look at the first term of each
+side, n^2 and m*n. We know that n^2 > m*n because n>m. Now look at the
+second term of each side, 2*n and m-1. Also because n>m, 2*n >
+m-1. And since all of these numbers are positive, adding numbers
+together only makes them bigger. So when we add the two bigger numbers
+(n^2 and 2*n) and compare them to two smaller numbers (m*n and m-1),
+we cannot produce something smaller. So there is no way that this
+equation holds either.
 
   Contradiction.
 
