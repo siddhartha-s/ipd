@@ -185,50 +185,26 @@ Assume we had n0 and m such that
   for all n > n0,
      n^2 <= m*n
 
-so that should be true of the number max(n,m)+1 because it is true of
-all numbers. Lets call max(n,m)=X.
+This must hold for all n > n0, in particular it should hold for
+N = max(n0,m) + 1.
 
-   (X+1)*(X+1) <= m*(X+1)
-   X^2 + 2*X + 1 <= m*X + m
-   X^2 + 2*X <= m*X + (m-1)
+Thus we must have that N^2 <= m*N, which implies (since N > 0) that
 
-Okay, so we know that either m must be bigger than n or the other way
-around. Lets first assume that m >= n and thus since X=max(n,m), we
-know that X=m. Substitute that into the equation above and we get:
+N <= m
 
-    m^2 + 2*m <= m*m + m-1
+Since N = max(n0,m) + 1, we also have that
 
-subtract m*m from each side:
+m <= max(n0,m), which implies
 
-   2*m <= m-1
+m < max(n0,m) + 1
 
-subtract m from each side:
+Putting the two inequalities together we must have that
 
-   m <= -1
+m < max(n0,m) + 1 <= m
 
-but we know that m is a natural number and thus cannot be less than
--1.  Okay, so it must be the case that n > m, and so max(n,m) = n and
-so we can replace the Xs with ns.:
+So it must be the case that
 
-   n^2 + 2*n <= m*n + (m-1)
-
-But this can't be either. To see why, first consider the case where
-m=0. The equation simplifies to:
-
-  n^2 + 2*n <= -1
-
-But this cannot be true because we know that n is a natural number
-(so must be at least 0).
-
-Okay, so since m=0 does not work, we know that m must be at least
-1. But this also won't work out.  To see why, first look at the first
-term of each side, n^2 and m*n. We know that n^2 > m*n because
-n>m. Now look at the second term of each side, 2*n and m-1. Also
-because n>m, 2*n > m-1. And since all of these numbers are positive,
-adding numbers together only makes them bigger. So when we add the two
-bigger numbers (n^2 and 2*n) and compare them to two smaller numbers
-(m*n and m-1), we cannot produce something smaller. So there is no way
-that this equation holds either.
+m < m
 
   Contradiction.
 
