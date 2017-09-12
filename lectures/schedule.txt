@@ -1,5 +1,5 @@
     [BSL]
-01  09/19: welcome (J); the algebras of images and strings (J); big bang (J)
+01  09/19: welcome (R); the algebras of images and strings (R); big bang (R)
 02  09/21: structures (J); enumerations (J); itemizations of every kind (J)
 03  09/26: linked lists (R); asymptotic analysis (R)
     [ISL]
