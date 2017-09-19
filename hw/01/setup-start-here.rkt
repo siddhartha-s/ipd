@@ -1,11 +1,11 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-beginner-reader.ss" "lang")((modname getting-set-up) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname setup-start-here) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 #|
 
-1) Install DrRacket version 6.6:
+1) Install DrRacket version 6.10.1:
 
-   https://racket-lang.org
+   https://racket-lang.org/
 
 2) Open this file in DrRacket and hit the "Run" button.
    Make sure you see a 31 digit number appear in the
@@ -16,13 +16,15 @@
    Click "Web" in the top of the resulting dialog and
    paste this into the dialog:
 
-http://users.eecs.northwestern.edu/~jesse/course/ipd-fa16/nwu-ipd-2016.plt
+http://www.eecs.northwestern.edu/~jesse/course/ipd/nwu-ipd-2017.plt
 
-   Hit OK and wait until the "Close" button is enabled.
-   Click it and restart DrRacket.
+   Hit OK and wait until the "Close" button is enabled;
+   click it.
+
+   Restart DrRacket.
 
 4) You should see a new button in the DrRacket toolbar.
-   (Ignore it for now)
+   (Ignore it for now.)
 
 5) Choose the "File | Manage IPD Handin Account" to
    create a new account. Do NOT use your netid's real password!

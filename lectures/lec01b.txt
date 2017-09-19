@@ -6,6 +6,8 @@ programming (and computation):
 
   - from specification to implementation
   - software engineering principles
+  - data structures
+  - low-level programming
   - (a little bit of computation)
 
 This course is *not* about:
@@ -301,7 +303,7 @@ Tests:
 
   If you're clever, you just write your examples below the
   function definition in the format above and all you need
-  to do now is click execute in DrRacket and check that
+  to do now is click Run in DrRacket and check that
   your examples come out right. But sometimes there will be
   clearer ways to write your examples that won't work as
   tests.

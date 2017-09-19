@@ -11,11 +11,10 @@ Course staff:
 
   Instructors:
     - Jesse Tov, jesse@eecs
-    - Robby Findler (out this week), robby@eecs
+    - Robby Findler, robby@eecs
 
-  TAs:
-    - Dan Feltey, danielfeltey2015u
-    - Jiaju Ni, jiajuni2017@u
+  TA:
+    - Dan Feltey, daniel.feltey@eecs
 
 Homeworks:
   - Due every Tuesday evening
@@ -23,17 +22,17 @@ Homeworks:
   - Late homework won’t be accepted. Period.
   - Will be graded in codewalk on (probably) Wednesday
   - You will get check+, check, check-, or 0 in each of several categories
-  - Your whole homework grade comes from the codewalk
+  - Your whole homework grade comes from the codewalks
 
 Pair programming:
-  - You will have a partner, probably assigned.
+  - You will have a partner, assigned by the course staff.
   - Your partner will change several times.
   - You must do all work in this course with your partner, pair
     programming.
   - This means you’re in the same place, one person typing (the pilot)
-    and one person helping (the co-pilot). Switch frequently.
-  - You will present together, and each of you is responsible for all
-    the code.
+    and one person helping (the co-pilot). Switch roles frequently.
+  - You will present your code together, and each of you
+    is responsible for all the code.
 
 Grading (tentative):
   - code walks: 70%
@@ -42,13 +41,12 @@ Grading (tentative):
 Cheating
 --------
 
-  - You and your partner are jointly responsible for all code you turn
-    in.
-  - You cannot steal this code from other students or the web—you must
+  - You and your partner are jointly responsible for all code you turn in.
+  - You cannot use code from other students or the web--you must
     write it yourself.
   - If you turn in stolen code, both you and your partner are
     responsible, even if your partner stole it and you didn’t know.
   - If you allow someone to steal your code, you are equally
     responsible.
   - Possible penalties range from a 0 on the stolen assignment to
-    failing the class.
+    failing the class to being asked to leave the program.
