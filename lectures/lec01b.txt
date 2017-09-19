@@ -194,10 +194,8 @@ How about a function?
 
   (define (anonymize i)
     (overlay
-     i
-     (circle (image-width i)
-             "solid"
-             "blue")))
+     (circle (image-width i) "solid" "blue")
+     i))
 
 What does that do?
 
