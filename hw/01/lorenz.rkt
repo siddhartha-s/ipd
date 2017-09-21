@@ -32,14 +32,14 @@ don’t worry; the assignment explains how to use them.)
   (+ x (* time-step (* sigma (- y x)))))
 
 ; Number Number Number -> Number
-; Computes the next x coordinate given the x, y, and z coordinates.
+; Computes the next y coordinate given the x, y, and z coordinates.
 ;
 ; Strategy: domain knowledge
 (define (next-y x y z)
   (+ y (* time-step (- (* x (- rho z)) y))))
 
 ; Number Number Number -> Number
-; Computes the next x coordinate given the x, y, and z coordinates.
+; Computes the next z coordinate given the x, y, and z coordinates.
 ;
 ; Strategy: domain knowledge
 (define (next-z x y z)
