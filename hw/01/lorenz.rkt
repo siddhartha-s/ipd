@@ -75,7 +75,7 @@ namely the point where x=1, y=1, and z=1.
 To model the Lorenz attractor, you need to track the position in three
 dimensional space, but to draw it, you need to map that two dimensions.
 Do that by discarding the ‘z’ coordinate, multiplying the ‘x’ and ‘y’
-coordinates by 10 and then adding 300 to them. Use a blank canvas of
+coordinates by 10 and then adding 300 to them. Use an empty scene of
 size 600x600 to draw the image.
 
 The Wikipedia page (https://en.wikipedia.org/wiki/Lorenz_system, near
