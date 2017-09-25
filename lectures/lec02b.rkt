@@ -47,7 +47,7 @@ Choices of strategy:
 
     Translating non-programming knowledge into code.
 
-Note that functional/structural decomposition are specific kinds
+Note that interval and structural decomposition are specific kinds
 of decision trees. And note that domain knowledge may take the
 form of function composition or a decision tree. However, we should
 write down the strategy that actually informs our design, which is
