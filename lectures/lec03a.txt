@@ -73,28 +73,31 @@ Structs as Boxes
 ----------------
 
 define-struct makes up a new kind of box.
-(define-struct snake (name weight food))
+
+(define-struct hms (hr min sec))
   ==> box with 3 compartments
 
-(define-struct ant (weight dist))
+(define-struct frozen (timer displayed))
   ==> box with 2 compartments
 
 The compartments each hold only 1 thing:
 
-  snake box: 
-   +------------------------------+
-   |  'asp  |   12   | 'cleopatra |
-   +------------------------------+
+  hms box: 
+   +------------------+
+   | 11  |  25  | 30  |
+   +------------------+
 
 but they stretch to fit big things:
 
-  ant box
+  frozen box
 
-   +--------------------+
-   |       | +-------+  |
-   |  0.01 | | 2 | 3 |  |
-   |       | +-------+  |
-   +--------------------+
+  +----------------------------------------------------+
+  |                          |                         |
+  |   +------------------+   |   +------------------+  |
+  |   | 11  |  25  | 30  |   |   | 10  |  45  | 00  |  |
+  |   +------------------+   |   +------------------+  |
+  |                          |                         |
+  +----------------------------------------------------+
 
 Still, only a fixed number of slots.
 
