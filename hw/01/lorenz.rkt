@@ -84,4 +84,11 @@ should look something like the dot that moves around, except instead
 of showing the entire picture in the background, it should show the
 only the four most recent points, connected by three lines.
 
+Putting all of these pieces together, the first three line segments
+you see should have (approximately) these coordinates:
+
+ (310,310)       -> (310,312.6)
+ (310,312.6)     -> (310.26,315.18)
+ (310.26,315.18) -> (310.75,317.8)
+
 |#
