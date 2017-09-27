@@ -16,6 +16,8 @@ you think a different number makes more sense, go
 for it.) When changing from one state to the next,
 either the light color should change or the
 walk/don’t-walk status should change, never both.
+Note that each state should show both the traffic
+light and the walk sign.
 
 Write functions to support a big-bang program that
 draws a traffic light that cycles appropriately.
