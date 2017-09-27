@@ -118,7 +118,7 @@ and then using, you know, math, we know it is the same as this:
 10+ \     4*i + \    2
     /           /
     ----        ----
-     i=0         i=0
+v     i=0         i=0
 
 
 and after some more simplification steps, 
@@ -154,13 +154,13 @@ So we want to collapse all functions with the same running time into a
 certain class that represents all of the ones where varying the speed
 of the computer doesn't matter. So, we write:
 
- O(n)   -- set of all functions that grow linearly (or faster)
- O(n^2) -- set of all functions that grow quadratically (or faster)
+ O(n)   -- set of all functions that grow linearly (or slower)
+ O(n^2) -- set of all functions that grow quadratically (or slower)
 
 And, in general:
 
  O(f) -- set of all functions that grow with the same
-         speed as `f` or faster
+         speed as `f` or slower
 
 Here's the mathematically precise definition:
 
@@ -215,8 +215,24 @@ but in general it is the case that
 
 And, in fact, we can ignore any of the terms in a polynomial except
 the first one (the one with highest degree) and we can ignore any
-constant factors, and we will tell you about more relationships as they
-come up.
+constant factors, and we will tell you about more relationships as
+they come up. There are a number of other identities that you can use
+to simplify reasoning about big O:
+
+   O(f(n) + c) = O(f(n))
+
+   O(cf(n)) = O(f(n))
+
+   O(log_k f(n)) = O(log_j f(n))
+
+   O(f(n) + g(n)) = O(f(n)), if g is in O(f(n))
+
+   n^i is in O(n^j) if i <= j
+
+   i^n is in O(j^n) if i <= j
+   
+
+
 
 Lets look at the running time of one more function. But first, we should
 design it. It needs a slightly different data definition:
@@ -294,3 +310,4 @@ Both tests passed!
 And don't be confused: something taking "exponential time" means that
 when you make the input one bigger, the time doubles (or triples or
 quadruples, etc).
+
