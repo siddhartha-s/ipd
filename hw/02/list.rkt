@@ -11,7 +11,7 @@ Design the following functions:
 (define (squares l) ...)
 
 ;; contains-telephone : [listof String] -> Boolean
-;; returns #true if 'l' contains the symbol 'telephone, #false otherwise
+;; returns #true if 'l' contains the string "telephone", #false otherwise
 (define (contains-telephone l) ...)
 
 
