@@ -133,7 +133,7 @@ We need to rename when lifting. This is what we should do:
   (define x 1)
   (define x1 2)
   (define y1 (+ x1 2))
-= (+ (+ y 2) x)
+= (+ (+ y1 2) x)
 
 In general, make up a new suffix for each of the defined
 names in a local, rename the local and then do the lifting.
