@@ -1,5 +1,8 @@
-data abstraction (and performance)
-----------------------------------
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname lec05b) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;; data abstraction (and performance)
+;; ----------------------------------
 
 ; a person is
 ;   - (make-person number string)
@@ -10,7 +13,7 @@ data abstraction (and performance)
 (define Betsy (make-person 2 "betsy"))
 (define Claire (make-person 3 "claire"))
 
-What if I told you to implement the following
+;; What if I told you to implement the following functions:
 
 ;; lookup : number database -> person or #false
 ;; to see if a person is in the database
@@ -21,17 +24,15 @@ What if I told you to implement the following
 ;; start : database
 ;; an empty database
 
-What would you say?  "What is database?" I hope!
+;; What would you say?  "What is database?" I hope!
 
-Does it really matter what a database is?
+;; Does it really matter what a database is?
 
-Yes and no.
- Yes: we can use the functions without it.
+;; Yes and no.
+;;   - Yes: we can use the functions without it.
+;;   - No: we need to know to be able to implement the functions.
 
-  No: we need to know to be able to implement the functions.
-
-Lets explore what happens when we use various definitions for
-database.
+;; Lets explore what happens when we use various definitions for database.
 
 ; database: revision 0
 
@@ -39,12 +40,18 @@ database.
 ;   - '()
 ;   - (cons person database)
 
+;; Strategy: function composition
 (define (add person database) (cons person database))
 (define start '())
 
+(check-expect (add Adam start) (cons Adam start))
+
 ; lookup : number database -> person or #false
 
+;; Strategy: structural decomposition
+
 ; template:
+#;
 (define (lookup ssn database)
   (cond
     [(empty? database) ...]
@@ -52,7 +59,6 @@ database.
      (fun-for-person (first database) ssn) ...
      (lookup ssn (rest database)) ...]))
 
-;; function:
 (define (lookup ssn database)
   (cond
     [(empty? database) #false]
@@ -72,6 +78,7 @@ database.
 
 (check-expect (lookup 2 '()) #false)
 
+#|
 Lets talk asymptotic analysis for a moment. Consider a sequenece of
 adds, like this:
 
@@ -100,6 +107,8 @@ Is there anything we can do about that?
 What if we changed the data definition for database? Lets
 try this one and see if we can do better:
 
+|#
+
 ; a database is
 ;   - "leaf"
 ;   - (make-db person 
@@ -107,7 +116,8 @@ try this one and see if we can do better:
 ;              database)
 (define-struct db (person left right))
 
-How many self-references in this data definition?
+#|
+How many self-references in this data definition? (two! exciting.)
 
 (define start "leaf")
 
@@ -213,6 +223,8 @@ Is that a change to our function, or to the data?
 
 the data, of course. So, we have to reflect that change into
 our data definition for database:
+|#
+
 
 ; a database is
 ;   - "leaf"
@@ -221,8 +233,8 @@ our data definition for database:
 ;              database[right])
 ;     where everyone in [left] has a smaller ssn than person
 ;       and everyone in [right] has a larger ssn than person
-(define-struct db (person left right))
 
+#|
 This is an _invariant_. A well-known one, with the name "the binary
 search tree invariant".
 
@@ -258,17 +270,42 @@ The entire subtree has to be considered.
 
 Okay, so now that we have a new data definition, lets write
 the function lookup that works on it.
+|#
 
+;; lookup3 : number database -> person or #false
+;; strategy: structural decomposition
 (define (lookup3 ssn database)
   (cond
     [(equal? database "leaf") #false]
     [else
      (cond
-       [(matches? (bst-node-person) ssn)
-        (bst-node-person)]
-       [(smaller? (bst-node-person) ssn)
-        (lookup3 ssn (bst-node-right database))]
-       [(bigger? (bst-node-person) ssn)
-        (lookup3 ssn (bst-node-left database))])]))
+       [(person-matches? (db-person database) ssn)
+        (db-person database)]
+       [(smaller? (db-person database) ssn)
+        (lookup3 ssn (db-right database))]
+       [else
+        (lookup3 ssn (db-left database))])]))
 
+;; smaller? : person ssn -> boolean
+(define (smaller? person n)
+  (< (person-ssn person) n))
 
+(define balanced-db
+  (make-db Betsy
+           (make-db Adam "leaf" "leaf")
+           (make-db Claire "leaf" "leaf")))
+
+(define unbalanced-db
+  (make-db Adam "leaf"
+           (make-db Betsy "leaf"
+                    (make-db Claire "leaf" "leaf"))))
+
+(check-expect (lookup3 0 "leaf") #false)
+(check-expect (lookup3 0 balanced-db) #false)
+(check-expect (lookup3 1 balanced-db) Adam)
+(check-expect (lookup3 2 balanced-db) Betsy)
+(check-expect (lookup3 3 balanced-db) Claire)
+(check-expect (lookup3 0 unbalanced-db) #false)
+(check-expect (lookup3 1 unbalanced-db) Adam)
+(check-expect (lookup3 2 unbalanced-db) Betsy)
+(check-expect (lookup3 3 unbalanced-db) Claire)
