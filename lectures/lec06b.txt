@@ -57,6 +57,10 @@ representation.
 
 What’s the time complexity of our queue operations?
 
+If we have n operations, how long does it take? Naïvely, O(n²). The
+length of the queue is bounded by the number of operations, hence we
+have O(n) operations each of worst-case O(n).
+
 Well, `enqueue` just does a cons and make-bq, each of which is O(1), so
 `enqueue` is O(1). But both `dequeue` and `get-head` occasionally have
 to reverse a list, making them O((bq-back q)).
@@ -72,9 +76,30 @@ For our analysis, we make two assumptions:
 
 (Are these realistic assumptions? Consider graph BFS.)
 
+So we can think of sequences of operations like so:
+
+    (enqueue | (get-head; dequeue))*
+
+This means any number (*) of either (|) enqueue or get-head followed by
+(;) dequeue. (Actually, we'll just ignore the get-heads, as they do the
+same work as the dequeues.)
+
 Then we can show that while some individual queue operations are linear
-time, any sequence of k queue operations is just O(k), not O(k^2). This
+time, any sequence of k queue operations is just O(k), not O(k²). This
 is because each list node, by the linearity condition, is subject to
 reversal at most twice (once for get-head and once for dequeue). In k
 steps we can enqueue at most k element, which means we can take at most
 2k reversal steps.
+
+Let’s consider a simple example of starting with an empty queue,
+enqueueing k times and then dequeueing k times. So we have:
+
+ + enqueue k times O(k)
+ + dequeue once O(k)
+ + dequeue again O(1)
+ + dequeue k - 2 more times O(k)
+--------------------------------
+whole sequence together = O(k)
+
+If we divide the total time (O(k)) by the number of operations (O(1)),
+we get an *amortized time* of O(1) for each operation.
