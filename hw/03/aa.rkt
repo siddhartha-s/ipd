@@ -63,7 +63,7 @@ And, of course, the binary search tree invariant also holds:
   - the values of all nodes in a left child are less than the value in
     the node
 
-  - the values of all nodes in a right child are less than the value
+  - the values of all nodes in a right child are greater than the value
     in that node
 
 |#
