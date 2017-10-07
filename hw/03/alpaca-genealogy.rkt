@@ -184,7 +184,7 @@ Hint: In order to do so, you will need a data definition for
 a list of alpacas (the conventional one will do), and you
 will likely need a helper function merge-alpacas that, given
 two sorted lists of alpacas, merges them into a single
-sorted list of alpacas. See HTDP/2e section 26.5 for how
+sorted list of alpacas. See HTDP/2e section 23.5 for how
 to design a template for this:
 
   http://www.ccs.neu.edu/home/matthias/HtDP2e/part_four.html#%28part._sec~3atwo-inputs~3adesign%29
