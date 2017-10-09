@@ -1,7 +1,7 @@
 Binomial Heaps at Priority Queues
 ---------------------------------
 
-A priority queue is an ADT that looks like a bunch elements enclosed
+A priority queue is an ADT that looks like a bunch of elements enclosed
 in curly braces (meant to evoke a set), where we write the elements
 in sorted order, e.g.:
 
@@ -9,7 +9,7 @@ in sorted order, e.g.:
      {}
      {10, 11, 3151, 424242}
 
-   supporting these operations:
+A priority queue supports these operations:
 
   - empty-heap     -- gets us started
   - (is-empty? h)  -- still empty?
@@ -35,7 +35,7 @@ implementation of this ADT.
 
 We'll just stick with numbers in the trees to simplify the code for
 now, but you know how to generalize that -- just make the empty-heap
-function accept a comparison function.
+function accept a comparison function like the AA trees in the homework.
 
 There are two approaches to these: persistent or not?
 
@@ -192,27 +192,44 @@ if we'd had 7 elements.
 
 Here's the data definitions:
 
-;; a binomial-heap is:
-;;  (listof (or #f binomial-tree))
-;; invariant: each element of the list
-;; has the next largest rank from the
-;; previous element in the list, unless
-;; that element is #f, in which case it
-;; stands for an empty binomial-tree with
-;; the missing order.
 
-;; a binomial-tree is:
-;;  (make-node number (listof binomial-tree))
-;; invariant:
-;;  -- heap invariant
-;;  -- if 'children' is non-empty, then the first
-;;     element of 'children' has the same shape & size as
-;;     the tree you get by removing that first child
-;;     and making a new tree from the rest.
-;;
+;; A Binomial-Heap is a [Binomial-Heap-Ranked 0]
+
+;; A [Binomial-Heap-Ranked n] is either:
+;; - (cons [Or #false [Binomial-Tree-Ranked n]]
+;;         [Binomial-Heap-Ranked (add1 n)])
+;; - '()
+;; INVARIANT: the last element of the list is not #false
+
+;; A [Binomial-Tree-Ranked n] is
+;;   (make-node Number [Binomial-Tree-List n])
+;; INVARIANT: the number is smaller than any of
+;;            the numbers in the rest of the tree
+;; (this is the heap invariant)
+
+;; A [Binomial-Tree-List 0] is '()
+;; A [Binomial-Tree-List n], where n>0 is
+;;   (cons [Binomial-Tree-Ranked (sub1 n)]
+;;         [Binomial-Tree-List (sub1 n)])
+
 (define-struct node (value children))
 
-Lets see if we can implement these functions.
+This data definition is complex! We now have numbers in the arguments
+to the data definitions, not just signatures. Lets see if we can work
+out some examples.
+
+'() -- simplest binomial heap
+
+(cons #false '())  --- wrong! The last element of the list is #false.
+
+(cons (make-node 11 '()) '())
+
+(cons (make-node 11 '())
+      (cons (make-node 6 (cons (make-node 9 '()) '()))
+            '()))
+      
+Now, lets see if we can implement these functions.
+
 
 Lets start with empty-heap? and empty-heap.
 

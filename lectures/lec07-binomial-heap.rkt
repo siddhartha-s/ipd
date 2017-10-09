@@ -59,9 +59,9 @@
 ;;            the numbers in the rest of the tree
 
 ;; A [Binomial-Tree-List 0] is '()
-;; A [Binomial-Tree-List (add1 n)] is
-;;   (cons [Binomial-Tree-Ranked n]
-;;         [Binomial-Tree-List n])
+;; A [Binomial-Tree-List n], where n>0 is
+;;   (cons [Binomial-Tree-Ranked (sub1 n)]
+;;         [Binomial-Tree-List (sub1 n)])
 
 (define-struct node (value children))
 

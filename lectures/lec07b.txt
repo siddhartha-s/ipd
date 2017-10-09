@@ -8,7 +8,7 @@ data. This form of recursion is the simple kind. Sadly, it isn't the
 recursion.
 
 structural recursion: always recur on subparts of the input to the
-function.
+function. (AKA: always follow the template.)
 
 generative recursion: generate _new_ inputs to the function and recur
 on them. 
