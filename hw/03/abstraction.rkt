@@ -54,7 +54,7 @@
 
 ;; flatten-posns : (listof posn) -> (listof num)
 ;; constructs the list consisting of all the X and Y coordinates of each
-;; of the posns in lop, in order.
+;; of the posns in lop, in the order they appear in `lop`
 ;; e.g., (flatten-posns points)
 ;;       (list 1 0 1 1 2 2)
 ;; (define (flatten-posns lop) ...)
