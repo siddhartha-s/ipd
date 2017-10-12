@@ -1,3 +1,7 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname lec08a) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#|
 accumulators
 ------------
 
@@ -13,26 +17,33 @@ series of numbers from their relative positions:
 
 We can represent the positions (both relative and absolute) as lists
 of numbers:
+|#
 
-;; r2a : [Listof number] -> [Listof Number]
+;; r2a : [Listof Number] -> [Listof Number]
+(check-expect (r2a '()) '())
 (check-expect (r2a (list 0 50 40 70 30 30))
               (list 0 50 90 160 190 220))
+;; Strategy: structural decomposition
 (define (r2a l)
   (cond
     [(empty? l) l]
     [else  (cons (first l)
                  (add-to-each (first l) (r2a (rest l))))]))
 
+;; add-to-each : Number [Listof Number] -> [Listof Number]
+(check-expect (add-to-each 1 '()) '())
+(check-expect (add-to-each 1 (list 2 3 4)) (list 3 4 5))
 (define (add-to-each n l)
   (map (λ (x) (+ x n)) l))
 
-Lets look at the hand evaluation:
+;; Lets look at the hand evaluation:
 
 (r2a (list 1 2 3))
 = (cons 1 (add-to-each 1 (r2a (list 2 3))))
 = (cons 1 (add-to-each 1 (cons 2 (add-to-each 2 (r2a (list 3))))))
 = (cons 1 (add-to-each 1 (cons 2 (add-to-each 2 (cons 3 (add-to-each 3 empty))))))
 
+#|
 Now, when you do each of those add-to-each's, the first one will walk
 over 0 elements. The second one will walk over 1 element. The third
 will walk over 2 elements. What if we had 4 elements in the list? The
@@ -51,22 +62,32 @@ function that does track this information?
 
 What if we were to make up an additional parameter to the function?
 Could that help us? What would that parameter be?
+|#
 
+;; r2a-acc : [Listof Number] Number -> [Listof Number]
 (define (r2a-acc l sofar)
   (cond
     [(empty? l) empty]
     [else (cons (+ sofar (first l))
                 (r2a-acc (rest l) (+ sofar (first l))))]))
 
-(define (r2a l) (r2a-acc l 0))
+;; r2a-2 : [Listof Number] -> [Listof Number]
+(define (r2a-2 l) (r2a-acc l 0))
 
+(check-expect (r2a-2 '()) '())
+(check-expect (r2a-2 (list 0 50 40 70 30 30))
+              (list 0 50 90 160 190 220))
+
+
+#|
 Now, if you analyze the running time of this algorithm, you'll find
 that it is linear (ie, it only looks at each element once).
+|#
 
-------------------------------------------------------------
 
-Lets write a function that converts a binary search tree into a
-sorted list.
+;; ------------------------------------------------------------
+;; Lets write a function that converts a binary search tree into a
+;; sorted list.
 
 
 ;; a [BT X] is either:
@@ -107,15 +128,18 @@ sorted list.
      (cons (first l1)
            (concat (rest l1) l2))]))
 
-
+#|
 What is the running time of in-order?
 
 Lets say we have a tree that's out of balance, like this:
+|#
 
+#;
 (make-node 100 (make-node 99 (make-node 98 (make-node 97 ... #false) #false) #false) #false)
 
-what are the concat calls going to look like?
+;; what are the concat calls going to look like?
 
+#|
   (in-order (make-node 100 ...))
 = (concat (in-order (make-node 99 ...)) (concat (list 100) (concat #false)))
 = (concat (in-order (make-node 99 ...)) (list 100))
@@ -124,6 +148,7 @@ what are the concat calls going to look like?
 = (concat (concat (in-order (make-node 98 ...)) (list 99)) (list 100))
 = (concat (concat (concat (in-order (make-node 97 ...)) (list 98)) (list 99)) (list 100))
 = (concat (concat (concat (concat ... (list 97)) (list 98)) (list 99)) (list 100))
+
 
 So: the innermost concat is going to have a list of length 1 as its
     first argument, the second one is going to have a list of length 2
@@ -160,12 +185,13 @@ y, z, and all of the elements in B, C, and D.
 
 Okay, so to design this function, we have to write down a contract for
 it that describes the accumulator and its invariant.
+|#
 
-Here's the invariant and the template.
 
 ;; accumulator invariant: all of the elements of the tree
 ;; in the sorted order for all of the parts of the tree to the right
 ;; of the node we're currently processing, in the original tree.
+#;
 (define (in-order/acc bt sofar)
   (cond
     [(node? bt)
@@ -178,11 +204,11 @@ Here's the invariant and the template.
 
      (in-order/acc
       (node-right bt)
-      ?)
+      ?)]
 
     [else ?]))
 
-
+#|
 In each place we have a ? we have to figure out how to either exploit
 or maintain the invariant.
 
@@ -192,6 +218,7 @@ what to do in the base case, the result of the function isn't just the
 numbers in the given tree -- it has to be the numbers in the given
 tree as well as the numbers in the original tree that are above and
 to the right of the given tree.
+|#
 
 ;; in-order2 : [BT X] -> [Listof X]
 (check-expect (in-order2 #false) '())
@@ -224,8 +251,9 @@ to the right of the given tree.
         sofar)))]
     [else sofar]))
 
-------------------------------------------------------------
+;;;; ------------------------------------------------------------
 
+#|
 Okay, now we've seen that we need accumulators and two
 examples, but we still need some way to codify *how* to
 write accumulators.
@@ -269,20 +297,22 @@ value.
    - r2a: the distance back to the first point processed
    - in-order: the sorted elements to the right
      and above in the original tree
+|#
 
 
-------------------------------------------------------------
-practicing accumulators
+;; ------------------------------------------------------------
+;; practicing accumulators
 
+#|
 Reverse's running time can be improved to linear using
 accumulators. Here's how:
 
-;; reverse : (listof X) -> (listof X)
+;; reverse : [Listof X] -> [listof X]
 (define (rev l)
   (cond
     [(empty? l) empty]
-    [else   (add-at-end (first l)
-                        (rev (rest l))) ...]))
+    [else (add-at-end (first l)
+                      (rev (rest l)))]))
 
 1. what should the accumulator be?
 
@@ -309,7 +339,7 @@ accumulators. Here's how:
 
 (define (rev l) (rev-a l empty))
 
-hand evals:
+hand evaluation:
 
   (rev (list 1 2 3))
 = (rev-a (list 1 2 3) empty)
@@ -319,10 +349,13 @@ hand evals:
 = (list 3 2 1)
 
 voila.
+|#
 
 
+#|
 In the binomial heap, the "add" operation's carry is a ripe spot for
 an accumulator. Fix the code so that it adds an accumulator whose
 value is the "carry in", i.e., it will be a tree that was produced
 from the preceding digit, if there was one, or #false if there wasn't
 one. See lec08-binomial-heap-acc.rkt for the solution.
+|#
