@@ -135,7 +135,16 @@ Lets say we have a tree that's out of balance, like this:
 |#
 
 #;
-(make-node 100 (make-node 99 (make-node 98 (make-node 97 ... #false) #false) #false) #false)
+(make-node
+ 100
+ (make-node
+  99
+  (make-node
+   98
+   (make-node 97 ... #false)
+   #false)
+  #false)
+ #false)
 
 ;; what are the concat calls going to look like?
 

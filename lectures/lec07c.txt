@@ -1,4 +1,4 @@
-generative recursion, cotd: quicksort
+Igenerative recursion, cotd: quicksort
 --------------------------------------------------
 
 basic idea: split the list into two sublists: one with all
