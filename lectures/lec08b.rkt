@@ -57,6 +57,7 @@ So, how would we write a template for that:
 (check-expect (build-a-list 3 (λ (x) "doll"))
               (list '"doll" "doll" "doll"))
 
+;; NOTE: this test case fails!
 (check-expect (build-a-list 4 (λ (x) (* x x)))
               (list 0 1 4 9))
 
