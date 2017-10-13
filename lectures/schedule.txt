@@ -9,7 +9,7 @@
     [ISL+]
 07  10/10: binomial heap (R); generative recursion (R); sorting (R)
 08  10/12: accumulators (R); nats (R); graph representations (R)
-    [DSSL]
+    [DSSL2]
 09  10/17: laziness/streams (R); state, vectors (R)
 10  10/19: graph search (J); Bellman–Ford and Dijkstra’s algorithms (J)
 11  10/24: union-find (J); Kruskal’s algorithm (J); slack
