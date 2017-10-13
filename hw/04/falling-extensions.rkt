@@ -31,4 +31,6 @@ change is implemented and tested, then change the behavior in a second
 of passing tests and, even better, check each change in to git so you
 can exploit the 'git diff' command.
 
+Feel free to change the data definition of world to accomplish these changes.
+
 |#
