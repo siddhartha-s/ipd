@@ -26,7 +26,7 @@ defstruct WGraph(nodes: nat?, edges: proc?)
 ## an undirected graph as a special case of that. The algorithms below
 ## work on both, but our example is an undirected graph.)
 
-# build_wdigraph : nat? VectorOf[Vector[Nat, Number, Nat]] -> WGraph
+# build_wdigraph : nat? VectorOf[Vector[nat?, num?, nat?]] -> WGraph
 # Builds a directed graph with `nodes` nodes and the edges specified
 # by `edges`.
 def build_wdigraph(nodes, edges):
@@ -75,11 +75,11 @@ defstruct sssp(preds, weights)
 #   - num?
 #   - inf
 
-def new_sssp(size: nat?) -> sssp?:
-    sssp([ False; size ], [ inf; size ])
-    
+# new_sssp_from : nat? nat? -> sssp?    
+# Creates a new SSSPResult for `size` vertices, initializing it for starting
+# the search at `start_node`
 def new_sssp_from(size: nat?, start_node: nat?) -> sssp?:
-    let result = new_sssp(size)
+    let result = sssp([ False; size ], [ inf; size ])
     result.preds[start_node] = True
     result.weights[start_node] = 0
     result
@@ -161,38 +161,12 @@ def dijkstra(a_graph: WGraph?, start_node: nat?) -> sssp?:
 
     result
     
-#(define (dijkstra a-graph start-node)
-#  (define visited (make-vector (wgraph-nodes a-graph) #false))
-#  (define result  (make-sssp (make-vector (wgraph-nodes a-graph) #false)
-#                             (make-vector (wgraph-nodes a-graph) 'inf)))
-#  ; : Nat [Or Nat #false] -> [Or Nat #false]
-#  (define (find-nearest-unvisited current best-so-far)
-#    (if (= current (wgraph-nodes a-graph)) best-so-far
-#      (if (and (not (vector-ref visited current))
-#               (or (false? best-so-far)
-#                   (weight< (vector-ref (sssp-weights result) current)
-#                            (vector-ref (sssp-weights result) best-so-far))))
-#        (find-nearest-unvisited (add1 current) current)
-#        (find-nearest-unvisited (add1 current) best-so-far))))
-#
-#  (vector-set! (sssp-preds result) start-node #true)
-#  (vector-set! (sssp-weights result) start-node 0)
-#  (let loop ()
-#    (define u (find-nearest-unvisited 0 #false))
-#    (unless (false? u)
-#      (for ([edge ((wgraph-edges a-graph) u)])
-#        (relax result u (wedge-weight edge) (wedge-dst edge)))
-#      (vector-set! visited u #true)
-#      (loop)))
-#
-#  result)
-#
-#(check-expect (dijkstra A-GRAPH 1)
-#              (make-sssp (vector #f #t 1 1 3 6 3)
-#                         (vector 'inf 0 7 9 20 20 11)))
-#(check-expect (dijkstra A-GRAPH 3)
-#              (make-sssp (vector #f 3 3 #t 3 6 3)
-#                         (vector 'inf 9 10 0 11 11 2)))
-#
-#;; What’s the time complexity of our implementation of Dijkstra’s algorithm?
-#;; How might we improve it?
+test 'dijkstra tests':
+    let F = False; let T = True
+    assert_eq dijkstra(A_GRAPH, 1), sssp([F, T, 1, 1, 3, 6, 3],
+                                         [inf, 0, 7, 9, 20, 20, 11])
+    assert_eq dijkstra(A_GRAPH, 3), sssp([F, 3, 3, T, 3, 6, 3],
+                                         [inf, 9, 10, 0, 11, 11, 2])
+
+## What’s the time complexity of our implementation of Dijkstra’s algorithm?
+## How might we improve it?
