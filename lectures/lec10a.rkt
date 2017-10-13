@@ -164,13 +164,13 @@ def container_example(factory: ContainerFactoryC, elements: list?) -> list?:
 
 def ListStack() -> Container?:
     let list = nil()
-    
+
     def empty?():
         nil?(list)
-    
+
     def add!(element):
         list = cons(element, list)
-        
+
     def remove!():
         if cons?(list):
             let result = list.car
@@ -226,25 +226,24 @@ test 'generic_search A_GRAPH with stack':
 def BankersQueue() -> Container?:
     let front = nil()
     let back = nil()
-    
+
     def empty?():
         nil?(front) and nil?(back)
-    
+
     def add!(element):
         back = cons(element, back)
-    
+
     def remove!():
-        if cons?(front):
-            let result = front.car
-            front = front.cdr
-            result
-        elif cons?(back):
-            let reversed = rev_cons(back)
-            front = reversed.cdr
-            back = nil()
-            reversed.car
-        else: error('BankersQueue::remove!: empty')
-    
+        if nil?(front):
+            if nil?(back):
+                error('BankersQueue::remove!: empty')
+            while cons?(back):
+                front = cons(back.car, front)
+                back = back.cdr
+        let result = front.car
+        front = front.cdr
+        result
+
     Container { empty?, add!, remove! }
 
 test 'container_example test with BankersQueue':
