@@ -48,7 +48,7 @@ It depends on how long the various operations take:
     two nodes in the forest we are building are connected. This yields a
     total time complexity of O(E² + E log E) = O(E²).
 
-We can do better that O(E²) by maintaining an auxiliary data structure
+We can do better than O(E²) by maintaining an auxiliary data structure
 to keep track of which vertices are in the same tree. Think of it as
 having all the vertices in disjoint sets. We start with each in its own
 set, and then we can union two sets to combine their elements into one.
@@ -56,14 +56,14 @@ There’s an ADT for this:
 
 Union-Find ADT
 
-  - new-uf : Nat -> UnionFind
+  - new_uf : Nat -> UnionFind
     Creates a new disjoint set structure for the given number of
     vertices.
 
   - union! : UnionFind Nat Nat -> Void
     Joins together the sets containing the given vertices.
 
-  - same-set? : UnionFind Nat Nat -> Bool
+  - same_set? : UnionFind Nat Nat -> Bool
     Determines whether two vertices are in the same set.
 
 How might we implement this efficiently?

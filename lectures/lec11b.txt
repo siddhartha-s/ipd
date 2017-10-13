@@ -3,14 +3,14 @@ Implementing Union-Find
 
 Union-Find ADT
 
-  - new-uf : Nat -> UnionFind
+  - new_uf : Nat -> UnionFind
     Creates a new disjoint set structure for the given number of
     vertices.
 
   - union! : UnionFind Nat Nat -> Void
     Joins together the sets containing the given vertices.
 
-  - same-set? : UnionFind Nat Nat -> Bool
+  - same_set? : UnionFind Nat Nat -> Bool
     Determines whether two vertices are in the same set.
 
 How might we implement this efficiently? We’re going to pursue a set of
@@ -23,8 +23,8 @@ an operation:
 
 Then
 
-  (define (same-set? uf u v)
-    (= (find uf u) (find uf v)))
+    def same_set?(uf: UnionFind?, u: nat?, v: nat?) -> bool?:
+        find(uf, u) == find(uf, v)
 
 How might we implement these efficiently?
 
