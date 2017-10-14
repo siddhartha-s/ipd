@@ -12,7 +12,8 @@ filter, and other such higher-order functions.
 1) make objects that would be touching the paddle, if they were
    at the bottom of the screen, look different. That is, help the
    player to understand the extent of the paddle with a subtly
-   different faller image.
+   different faller image. (This applies to the new types of fallers
+   you add for the second part of the homework too.)
 
 2) make a new type of faller, such that, when it touches the paddle,
    the paddle gets wider and another such that, when it touches the
