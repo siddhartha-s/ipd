@@ -1,338 +1,186 @@
-Functions are not Elephants
-===========================
+Streams
+=======
 
-Up until now, any function that we wrote always returns the same
-answer if it gets the same inputs. Indeed, it always runs exactly the
-same computational steps to get that same answer, no matter how many
-times we call it.
+DSSL
 
-Do all programming languages behave this way? NO.
+what if I wrote this data definition:
 
-What we've done so far is program with immutable values. This is also
-called "pure"; we've programmed in a pure programming language. There
-are many advantages to this kind of programming: it is easier to
-understand in a very technical sense: there are fewer things that can
-happen. If you want to figure out what a function does, you don't have
-to worry about the history of calls to it. Which is a lot less to
-worry about in general!
+  a Listof-numbers is:
+   (cons Number List-of-numbers)
 
-But, of course, all "real" programming languages have mutable
-values. That is, you can program in a *state*ful way.
+what would you say?
 
-So we're going to introduce stateful, or imperative programming now.
+lets make some examples: what happens?
 
-How many of you can write a function that accepts a number and returns
-the sum of all of the arguments it has ever received? Lets try to do
-that in DSSL.
+What if we tried this:
 
-In DSSL, the only thing we are going to mutate are struct fields. So
-in order to have any memory of anything, we have to put that thing
-into a struct.
+  (define ones (cons 1 ones))
 
---------------------------------------------------
-#lang dssl
+that should work, in principle -- why doesn't it? 
 
-(define-struct count (num))
-(define the-count (make-count 0))
+hand evaluation tells us: since we are working on the
+definition for `ones' we cannot yet look up the definition
+for ones.
 
-(define (sum-args x)
-  (set-count-num! the-count (+ x (count-num the-count)))
-  (count-num the-count))
+What are we hinting at, tho? (infinite list of ones)
 
-(sum-args 1)
-(sum-args 2)
-(sum-args 3)
-(sum-args 4)
-(sum-args 5)
---------------------------------------------------
+new data definition:
 
-There are two new things here:
+;; a Stream is
+;;   (make-stream Number (-> Stream))
 
-1) set-count-num! -- this is the operator that changes a struct,
-updating its num field (in this case). The actual mutation is wrapped
-up into a convenient little function in DSSL. The function accepts the
-`count` struct to mutate and the new value of the `num` field. It then
-mutates it, and returns nothing.
+(define-struct stream (num rest))
 
-2) sequencing -- now that we are changing things, we wish to take
-multiple steps before computing some result value. So in the body of a
-function (and in the branches of a `cond` and in a few other places)
-if we put multiple expressions, the language just runs all of them and
-then evaluates to the value of the last one.
+Look at this for a moment. We've got a function that takes
+no arguments. Strange, no? Hm. Can we make an example?
 
-Here is another program. Can you tell me what it does?
+  (define ones (make-stream 1 (lambda () ones)))
 
---------------------------------------------------
-#lang dssl
+this time, the definition of ones is already done -- there's
+nothing to be done for either argument of make-stream, so we're
+done.
 
-(define-struct count (num))
+Now we're getting closer to that infinite list!
 
-(define (f a b)
-  (set-count-num! a (* 2 (count-num b))))
+What's really going on with this function of no arguments?
+Functions really do two things: first they are
+parameterized. But secondly, they make things wait (until
+arguments show up). So far, we haven't focused on that
+aspect of functions, but this example really brings that
+out!
 
-(define a-count (make-count 2))
-(define another-count (make-count 3))
-(define a-third-count (make-count 4))
+In this case, we want to wait to lookup the ones until it
+has been defined.
 
-(f a-count another-count)
-(f another-count a-count)
-(f a-third-count another-count)
---------------------------------------------------
+Using our hand-evaluation rules, we can do this now:
 
-a-count ==> 6 inside
-another-count ==> 12 inside
-a-third-count ==> 24 inside
+  (stream-num ones) = 1
+  (stream-num ((stream-rest ones))) = 1
+  (stream-num ((strem-rest ((stream-rest ones))))) = 1
 
-Here's a challenge: without using any arithmetic operators and using
-only the number zero, can you make a call to this function that
-returns 12345?
+Each time we take `rest' we have to add an extra pair of
+parens to actually extract or "force" the function to give
+us our result.
 
---------------------------------------------------
-#lang dssl
+So, what about the template?
 
-(define-struct count (num))
+  no condition in the data, so no conditions here! (weird,
+  huh? :)
 
-(define (f a b)
-  (set-count-num! a 12345)
-  (count-num b))
---------------------------------------------------
+(define (stream-template stream)
+ .. (stream-num stream)
+ .. (stream-template ((stream-rest stream))))
 
-Does this work:
+Lets try to write a function on streams, called add1-stream:
 
-   (f (make-count 0) (make-count 0))
+(define (add1-stream stream)
+  (make-stream (add1 (stream-num stream))
+               (lambda () (add1-stream ((stream-rest stream))))))
 
-No. How about this?
+(define twos (add1-stream ones))
 
-   (define the-count (make-count 0))
-   (f the-count the-count)
-
-what is going on here? In the past, we said that you could always
-replace global variables with their values and, indeed, that's how
-computation proceeds. But clearly if you take the second program and
-do that, you get the first one. But they produce different results!
-
-This is, in some sense, the essence of why mutation is complex and why
-we postponed talking about it until now. To understand mutation of
-objects, you really must understand a different notion of
-"same"ness. Two different structs / values are the same if they
-contain the same elements but also the same 
-
-If I show you a book and then I take it away and I show you another
-book, can you tell if the two books are the same book? You could use
-your phone to take a picture of each page and then check the second
-one against each page. That would tell you if they were the same book
-in some sense. But maybe it is another copy of that book and not the
-same book. How can you tell that?
-
-Right: you change the book by writing your special secret mark on page
-42 and then when I give you the book later, you check to see if your
-mark is on page 42.
-
-That is the same thing with these structs. We have two different
-notions of "the same struct" now. Before we had only one. But now that
-we can mutate particular structs, we have two different notions of
-what it means to be "the same struct".
-
-It is time to talk about semantics. What is the right way to figure
-out how these programs run?
-
-The way we do that is to change the way constructors work. We used to
-say that:
-
-   (make-count 1)
-
-was a value. But now it isn't anymore. Instead, there is a step of
-computation associated with it. Each time we encounter a call to a
-constructor that has all values as arguments, we lift it out to the
-top of the program in its own special area and give it a special
-kind of name. I'll use a suffix ^ to indicate these names. The idea
-with this is that these names are different than other names we might
-write in the program so there can never be an overlap with them. Then,
-those names become the values. So: if we have this program:
-
-
-(define x (make-count 1))
-(set-count-num! x 2)
-(count-num x)
-
-==> it steps first to this; we call this the "allocation" step.
-
-x^ = (make-count 1)
-(define x x^)
-(set-count-num! x 2)
-(count-num x)
-
-==> now, we treat x^ as a value, so the next step is to look up x.
-
-x^ = (make-count 1)
-(define x x^)
-(set-count-num! x^ 2)
-(count-num x)
-
-==>  then we can do the set! operation; it needs a "hat" variable
-     as its first argument; we modify the definition to
-     account for the mutation
-
-x^ = (make-count 2)
-(define x x^)
-(count-num x)
-
-==>  now we look up "x" a second time, and we still get x^:
-
-x^ = (make-count 2)
-(define x x^)
-(count-num x^)
-
-==>  and struct selectors now operate on "hat" variables too.
-
-x^ = (make-count 2)
-(define x x^)
-2
-
-
-Importantly, these "hat" variable are bound only to structs, since
-structs are the only things that we mutate.
-
-Have you heard of "the heap" before? That's what we're doing here. The
-set of definitions at the top of the program that bind the hat
-variables *is* the heap. In a "real" heap, we don't use variables to
-track the values, we use addresses (i.e., numbers). But you don't
-usually program directly with these numbers (adding them or
-multiplying them); instead you think of them as opaque, just as we'll
-do here.
-
-Getting back to our earlier discussion, can we implement
-those two forms of equality?
-
---------------------------------------------------
-#lang dssl
-
-;; a count is (make-count number)
-(define-struct count (num))
-
-(define c1 (make-count 0))
-(define c2 (make-count 1))
-(define c3 (make-count 0))
-
-;; extensionally-equal? : count count -> boolean
-(check-expect (extensionally-equal? c1 c2) #false)
-(check-expect (extensionally-equal? c1 c3) #true)
-(check-expect (extensionally-equal? c1 c1) #true)
-(check-expect (extensionally-equal? c2 c2) #true)
-(define (extensionally-equal? c1 c2)
-  (= (count-num c1) (count-num c2)))
-
-;; intentionally-equal? : count count -> boolean
-(check-expect (intentionally-equal? c1 c2) #false)
-(check-expect (intentionally-equal? c1 c3) #false)
-(check-expect (intentionally-equal? c1 c1) #true)
-(check-expect (intentionally-equal? c2 c2) #true)
-(define (intentionally-equal? c1 c2)
-  (local [(define c1-val (count-num c1))
-          (define c2-val (count-num c2))]
-    (set-count-num! c1 (+ (max c1-val c2-val) 1))
-    (local [(define answer (= (count-num c2) (+ (max c1-val c2-val) 1)))]
-      (set-count-num! c1 c1-val)
-      answer)))
---------------------------------------------------
-
-It turns out that it is possible to implement intentionally-equal?
-more efficiently (but still constant time) if you have access to
-lower-level representations. Racket provides this via the `eq?`
-function. (Roughly speaking, it compares the "names" of the
-variables in the heap or, if you know something about heaps,
-it compares the addresses.)
-
-==== cycles ======================================================
-
-Using mutation, it now possible to create cyclic structures, something
-that we could not have done before. Check out this program:
-
---------------------------------------------------
-#lang dssl
-
-;; a linked-list is either:
-;;   (make-link number linked-list)
-;;   #false
-(define-struct link (num next))
-
-(define a (make-link 0 #false))
-(define b (make-link 1 #false))
-(define c (make-link 2 #false))
-(define d (make-link 3 #false))
-
-(set-link-next! a b)
-(set-link-next! b c)
-(set-link-next! c d)
-
-a
---------------------------------------------------
-
-No cycles yet, right? But what happens if I add this line:
-
-  (set-link-next! d a)
-  
-to the program?
-
-Will this print out? What will happen?
-
-What happens if I try to write a function that will sum up the
-elements in the list after making that cyclic link? Lets try it.
-
---------------------------------------------------
-;; sum : linked-list -> number
-;; computes the sum of the numbers in `l`
-(define (sum l)
+;; take : Nat Stream -> (Listof Numbers)
+;; to find the nth element of the stream.
+;; structural template on Nat.
+(define (take n stream)
   (cond
-    [(false? l) 0]
-    [else (+ (link-num l) (sum (link-next l)))]))
+    [(zero? n) '()]
+    [else (cons (stream-num stream)
+                (take (- n 1) ((stream-rest stream))))]))
 
-(check-expect (sum a) +inf.0)
---------------------------------------------------
+This one is mostly useful to test our streams.
 
-It loops! And runs out of memory! Why? Well, lets try hand evaluation
-with this program to see.
+Can we now define a stream that isn't constant?
 
- a^ = (make-link 0 b^)
- b^ = (make-link 0 c^)
- c^ = (make-link 0 d^)
- d^ = (make-link 0 a^)
+How about this:
 
-(sum a^)
-=
-(+ 0 (sum b^))
-=
-(+ 0 (+ 1 (sum c^)))
-=
-(+ 0 (+ 1 (+ 2 (sum d^))))
-=
-(+ 0 (+ 1 (+ 2 (+ 3 (sum a^)))))
+  (define nats (make-stream 0 (add1-stream nats)))
 
- ... uh oh.
+wrong!
 
-Is this fixable? Is there a way we can tell that we've gotten back to
-a place we started from?
+The second argument to make-stream is _not_ a stream, but it should be
+a function that returns a stream.
 
-Recall we talked about different notions of equality earlier? If we
-had an accumulator that had all the places we've been in it and we use
-that other notion of equality, then we could solve this problem, right?
+  (define nats (make-stream 0 (lambda () (add1-stream nats))))
 
-Lets try it. But first, one note about design.
+Lets generalize add1-stream to map-stream:
 
-Lets talk about design. When we write a mutable function, we should
-record what it mutates as part of the contract/purpose/header
-step. For example, this is the way to write the first mutation program
-we looked at:
+;; map-stream : (Number -> Number) Stream -> Stream
+(define (map-stream f stream)
+  (make-stream (f (stream-num stream))
+               (lambda () (map-stream f ((stream-rest stream))))))
 
-(define the-count (make-count 0))
+How would we make a stream of the perfect squares?
 
-;; sum-args : number -> number
-;; EFFECT: mutates `the-count`'s `num` field, adding `x` to it.
-(define (sum-args x)
-  (set-count-num! the-count (+ x (count-num the-count)))
-  (count-num the-count))
+(define (square x) (* x x))
+
+(define squares (map-stream square nats))
+
+How about filtering a stream:
+
+(define (filter-stream p stream)
+  (cond
+    [(p (stream-num stream))
+     (make-stream (stream-num stream)
+                  (lambda ()
+                    (filter-stream p ((stream-rest stream)))))]
+    [else (filter-stream p ((stream-rest stream)))]))
+
+(take 5 (filter-stream odd? nats))
+
+How about prime numbers?
+
+Anyone know the Sieve of Eratosthenes?
+
+how does it work?
+
+[ draw grid for the first 25 numbers and filter out the
+  first few. ]
+
+so, how would we implement this?
+
+we can filter out numbers that are divisible by a particular
+number, right?
+
+;; remove-div : number stream -> stream
+(define (remove-div n stream)
+  (filter-stream (lambda (x) (not (zero? (modulo x n))))
+                 stream))
+
+(take 5 (remove-div 2 nats))
+
+now, we just need a function that does this process for the
+entire stream:
 
 
-Okay, now try to implement something that sums up the numbers in a
-potentially cyclic list. Restrict the elements to integers and we can
-do 0, -inf.0 and +inf.0 for the sum.
+(define (sieve stream)
+  (make-stream (stream-num stream)
+               (lambda ()
+                 (remove-div (stream-num stream)
+                             (sieve ((stream-rest stream)))))))
+
+then, the first prime number is 2, so we need
+the nats starting from 2:
+
+(define nats-from-2 (make-stream 2 (lambda () (map-stream add1 nats-from-2))))
+
+and we sieve that for the primes:
+
+(take 9 (sieve nats-from-2)) ;; and we get the chart back
+
+
+There is a performance problem here. In order to see it, lets stick a
+printf into the code:
+
+(define (add1-stream stream)
+  (make-stream (add1 (stream-num stream))
+               (lambda ()
+                 (printf "~a\n" (stream-num stream))
+                 (add1-stream ((stream-rest stream))))))
+
+We really don't want to compute that add1-stream so many times. But it
+gets computed EACH TIME we call the function. What can we do about it?
+Get rid of the function? No.... that didn't work at the beginning of
+lecture.
+
+So: we need something else. A new tool.
