@@ -255,12 +255,13 @@ a
 
 # --------------------------------------------------
 # 
-# No cycles yet, right? But what happens if I add this line:
+# No cycles yet, right? But what happens if we do this:
 # 
-#   d.next=a
-#   
-# to the program and then try to print out a?
-# 
+
+d.next=a
+
+a
+
 # Will this print out? What will happen?
 # 
 # What happens if I try to write a function that will sum up the
@@ -274,17 +275,17 @@ def sum(l : linked_list) -> num? :
     else :
         l.num + sum(l.next)
         
-assert_eq sum(a),1+2+3
+assert_eq sum(False),0
+assert_eq sum(link(1,link(2,link(3,False)))), 6
 
-# and if we run d.next=a in the interactions window and then
-# try sum(a) again, it loops! And runs out of memory! Why?
+# If we try sum(a), tho, it loops! And runs out of memory! Why?
 # Well, lets try hand evaluation with this program to see.
 # 
-#  a☺ ≡ link(0,b☺)
-#  b☺ ≡ link(1,c☺)
-#  c☺ ≡ link(0,d☺)
-#  d☺ ≡ link(0,a☺)
-
+# a☺ ≡ link(0,b☺)
+# b☺ ≡ link(1,c☺)
+# c☺ ≡ link(0,d☺)
+# d☺ ≡ link(0,a☺)
+#
 # sum(a☺)
 # =
 # 0 + sum(b☺)
