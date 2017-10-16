@@ -1,6 +1,12 @@
 #lang racket/base
 (require racket/runtime-path)
 
+#|
+
+This is the same code
+
+|#
+
 ;; a Stream is
 ;;   (make-stream Number (-> Stream))
 (define-struct stream (num [rest #:mutable]))
@@ -46,10 +52,10 @@
 
 (define nats-from-2 (make-stream 2 (lambda () (map-stream add1 nats-from-2))))
 
-(define-runtime-path lec09a-timing-data.rktd "lec09a-timing-data.rktd")
+(define-runtime-path lec09b-timing-data.rktd "lec09b-timing-data.rktd")
 (cond
-  [(file-exists? lec09a-timing-data.rktd)
-   (define data (call-with-input-file lec09a-timing-data.rktd read))
+  [(file-exists? lec09b-timing-data.rktd)
+   (define data (call-with-input-file lec09b-timing-data.rktd read))
    (define plot (dynamic-require 'plot 'plot))
    (define points (dynamic-require 'plot 'points))
    (define (subtract-em data)
@@ -81,5 +87,5 @@
        (printf "~s -> ~s\n" initial cpu)
        (begin0 (list initial cpu)
                (set! initial (+ initial step)))))
-   (call-with-output-file lec09a-timing-data.rktd
+   (call-with-output-file lec09b-timing-data.rktd
      (λ (port) (write table port)))])
