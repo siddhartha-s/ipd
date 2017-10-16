@@ -3,7 +3,20 @@
 
 #|
 
-This is the same code
+This is the same code as in DSSL, but written in
+plain racket (to avoid some overheads that give good
+error checking in DSSL and can make the timing numbers
+noisy)
+
+The first plot shows the raw data, how many seconds it takes
+to get each of the first N prime numbers from the sieve.
+The second plot is the difference between each adjaent
+entry, and you can see it looks like a line. The third plot
+is the the same process, but applied to the second plot
+and you can see that that looks basically constant (less
+than 20 milliseconds; see the plot bounds).
+
+Thus, this looks a lot like an O(n^2) algorithm.
 
 |#
 
