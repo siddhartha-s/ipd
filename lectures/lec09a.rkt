@@ -3,10 +3,25 @@
 # Intro to DSSL2
 # --------------
 #
+# Today we switch to a new language, dssl2. To install it, in DrRacket
+# choose the File | Install Package... menu item. Type “dssl2” into the
+# dialog that appears and click “Install”. Wait. When the “close” button
+# appears, click it. 
+#
+# Next, choose the “Language | Choose Language...” menu item. Select
+# “The Racket Language” and then hit “OK” and type “#lang dssl2” as the
+# first line in the file. Congrats! You are now in the data-structures
+# student language, version 2.
+#
 # DSSL2 is a language whose syntax follows python, including being
 # whitespace sensitive. Also unlike BSL and ISL, it has signatures
 # and data definitions as actual constructs in the language.
 #
+# Read the documentation for the language. To do so, type F1 and then
+# type “dssl2” into the resulting search (or go to https://docs.racket-lang.org
+# in your browser and type “dssl2” there). There are also some examples
+# of the syntax below.
+
 # To get us started, lets do binary search trees again, but this time
 # to explore DSSL.
 
@@ -19,7 +34,7 @@
 # INVARIANT: num < smallest number in `right`
 #            and larger than largest in `left`
 #
-# New data definition (now with 50% more code!)
+# New data definition (now with 50% fewer comments!)
 let binary_search_tree = OrC(False,node?)
 defstruct node (num   : num?, 
                 left  : binary_search_tree, 

@@ -3,22 +3,6 @@
 # Functions are not Elephants
 # ===========================
 
-# Today we switch to a new language, dssl2. To install it, in DrRacket
-# choose the File | Install Package... menu item. Type “dssl2” into the
-# dialog that appears and click “Install”. Wait. When the “close” button
-# appears, click it. 
-
-# Next, choose the “Language | Choose Language...” menu item. Select
-# “The Racket Language” and then hit “OK” and type “#lang dssl2” as the
-# first line in the file. Congrats! You are now in the data-structures
-# student language, version 2.
-
-# Read the documentation for the language. To do so, type F1 and then
-# type “dssl2” into the resulting search (or go to https://docs.racket-lang.org
-# in your browser and type “dssl2” there). There are also some examples
-# of the syntax below.
-
-# ---------------------------------------------------------------------
 # Up until now, any function that we wrote always returns the same
 # answer if it gets the same inputs. Indeed, it always runs exactly the
 # same computational steps to get that same answer, no matter how many
