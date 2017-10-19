@@ -93,7 +93,7 @@ value_ptr Value::operator()(const std::vector<value_ptr>&) const
 class Boolean : public Value
 {
 public:
-    Boolean(bool val) : val_(val) { }
+    explicit Boolean(bool val) : val_(val) { }
 
     virtual bool as_bool() const override;
 
@@ -141,7 +141,7 @@ bool Boolean::equal(const value_ptr& other) const
 class Integer : public Value
 {
 public:
-    Integer(int val) : val_(val) { }
+    explicit Integer(int val) : val_(val) { }
 
     virtual int as_int() const override;
 
@@ -186,7 +186,7 @@ std::ostream& Integer::display(std::ostream& o) const
 class String : public Value
 {
 public:
-    String(const std::string& val) : val_(val) { }
+    explicit String(const std::string& val) : val_(val) { }
 
     virtual const std::string& as_string() const override;
 
@@ -231,7 +231,7 @@ std::ostream& String::display(std::ostream& o) const
 class Symbol_value : public Value
 {
 public:
-    Symbol_value(const Symbol& val) : val_(val) { }
+    explicit Symbol_value(const Symbol& val) : val_(val) { }
 
     virtual const Symbol& as_symbol() const override;
 
