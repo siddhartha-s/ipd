@@ -203,7 +203,6 @@ We went off into fraction land, never to return.
 
 ============================================================
 
-
 The chaos game.
 
 1- pick a triangle (three verticies)
@@ -262,3 +261,15 @@ Lets code this up. Generative recursion produces strange things!
       (make-posn (- size 1) (- size 1))
       5000)
       
+
+
+============================================================
+
+Generative recursion in the design recipe:
+
+  - generative recursion is a new strategy; it means the
+    function is recursive, but the recursion does not come
+    from the template
+
+  - when you use generative recursion, always explain why the function
+    terminates as part of the strategy and code step
