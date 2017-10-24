@@ -43,7 +43,7 @@ let ones : stream? = stream(1, λ : ones)
 # What's really going on with this function of no arguments?
 # Functions really do two things: first they are
 # parameterized. But secondly, they make things wait (until
-# arguments show up). So far, we haven't focused on that
+# the function is called). So far, we haven't focused on that
 # aspect of functions, but this example really brings that
 # out!
 # 
