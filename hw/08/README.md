@@ -1,6 +1,6 @@
 # IPD Homework 8: Huffman Coding
 
-  - **Due: Tuesday, November 22 at 11:59 PM**
+  - **Due: Tuesday, November 21 at 11:59 PM**
 
 ## Summary
 

@@ -1,6 +1,6 @@
 # IPD Homework 6
 
-  - **Due: Tuesday, November 8 at 11:59 PM**
+  - **Due: Tuesday, November 7 at 11:59 PM**
 
 ## Summary
 

@@ -16,8 +16,8 @@ defstruct WEdge(src: nat?, weight: num?, dst: nat?)
 # Interpretation: an edge exists from `src` to `dst` with weight
 # `weight`.
 
-# A WGraph is WGraph(nat?, [nat? -> ListOf[WEdge]])
-defstruct WGraph(nodes: nat?, edges: proc?)
+# A WGraph is WGraph(nat?, (nat?) -> ListOf[WEdge])
+defstruct WGraph(nodes: nat?, edges: FunC(nat?, list?))
 # Interpretation: `nodes` gives the number of nodes in the graph, and
 # the function `edges` is a function that, given a node, returns a
 # list of all departing edges.

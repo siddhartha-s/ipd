@@ -1,6 +1,6 @@
 # IPD Homework 7: Hexapawn
 
-  - **Due: Tuesday, November 15 at 11:59 PM**
+  - **Due: Tuesday, November 14 at 11:59 PM**
 
 ## Summary
 
