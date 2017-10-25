@@ -1,5 +1,6 @@
 #pragma once
 
+// Represents a 2-D position.
 struct posn
 {
     double x;
