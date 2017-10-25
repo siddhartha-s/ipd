@@ -11,11 +11,15 @@
 ;;     pre: not is-empty?
 ;;  meld : Abstract-Heap Abstract-Heap -> Abstract-Heap
 
+;; insert-nums : [Listof Number] -> Binomial-Heap
+;; to create a binomial heap containing the numbers in `nums`
 (define (insert-nums nums)
   (cond
     [(empty? nums) empty-heap]
     [else (insert (insert-nums (rest nums)) (first nums))]))
 
+;; remove-mins : Binomial-Heap -> [Listof Number]
+;; to return all of the numbers in `h`, from smallest to largest
 (define (remove-mins h)
   (cond
     [(empty-heap? h) '()]
