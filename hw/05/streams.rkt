@@ -15,7 +15,7 @@
 #   defstruct cons(car, cdr)
 #
 #   cons_of_vec : VectorOf[X] -> ListOf[X]
-#   (List ISL's `list` function, but takes a vector)
+#   (Like ISL's `list` function, but takes a vector)
 import cons
 
 # A Stream is:
