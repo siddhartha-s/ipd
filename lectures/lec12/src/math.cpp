@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 
+// Strategy: function composition
 int main()
 {
     std::cout << "Please enter a floating-point number:\n> ";

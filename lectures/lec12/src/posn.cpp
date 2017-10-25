@@ -1,6 +1,7 @@
 #include "posn.h"
 #include <cmath>
 
+// Strategy: domain knowledge
 double distance(posn a, posn b)
 {
     double dx = a.x - b.x;

@@ -2,6 +2,7 @@
 
 double f2c(double);
 
+// Strategy: sequential composition
 int main()
 {
     std::cout << "Enter the temperature in °F:\n> ";

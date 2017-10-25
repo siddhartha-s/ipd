@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 
+// Strategy: domain knowledge
 int main()
 {
     std::cout << "Please enter the radius:\n> ";
