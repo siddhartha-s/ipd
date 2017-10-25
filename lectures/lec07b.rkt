@@ -1,3 +1,7 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname lec07b) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#|
 generative recursion
 --------------------
 
@@ -23,21 +27,23 @@ generative recursion -- usually you find it in an algorithms text book
 that some smart person that came before you figured out.)
 
 Lets try an example.
+|#
 
-;; make-secret : nat -> (nat -> symbol)
+;; make-secret : nat -> (nat -> string)
 ;; makes up a secret and then returns
 ;; a function that lets you guess the secret
 (define (make-secret n)
   (local [(define secret (random n))]
     (lambda (guess)
       (cond
-        [(= guess secret) 'yes]
-        [else 'no]))))
+        [(= guess secret) "yes"]
+        [else "no"]))))
 
-What does this function do?
+;; What does this function do?
 
-Lets just try it:
+;; Lets just try it:
 
+#|
 (define my-secret (make-secret 100))
 =
 (define my-secret 
@@ -55,25 +61,28 @@ Lets just try it:
 (define my-secret
   (lambda (guess)
      ...))
+|#
 
-Okay. Lets say that we wanted to write a secret guessing function:
+;; Okay. Lets say that we wanted to write a secret guessing function:
 
-;; guess-secret : (nat -> symbol) -> nat
-(define (guess-secret secret)
-  ...)
+;; guess-secret : (nat -> string) -> nat
+;; (define (guess-secret secret)
+;;   ...)
 
-Now, we know that secrets are always numbers bigger than or equal to
-0.
+;; Now, we know that secrets are always numbers bigger than or equal to 0.
 
-So, we can write this:
+;; So, we can write this:
 
-;; guess-helper : (number -> symbol) number -> number
+;; guess-helper : (number -> string) number -> number
 ;; guesses a secret, assuming that the secret is at least n
 (define (guess-helper secret n)
   (cond
-    [(symbol=? (secret n) 'yes) n]
+    [(string=? (secret n) "yes") n]
     [else (guess-helper secret (+ n 1))]))
 
+(define (guess-secret secret) (guess-helper secret 0))
+
+#|
 How did we recur here? We just made up another number!
 
 How do we know that this function terminates?
@@ -85,20 +94,31 @@ break your template)
 
 With generative recursion, termination is not guaranteed. If you mess
 up your recursive calls, watch out.
+|#
 
+;; here are a few examples showing how the guess helper can guess well
+(guess-secret (make-secret 10))
+(guess-secret (make-secret 10))
+(guess-secret (make-secret 10))
+(guess-secret (make-secret 10))
+
+
+#|
 That's probably the best we can do with this secret generator. But,
 lets say we have a more informative secret generator. How about this
 one:
+|#
 
-;; make-secret : number -> (number -> symbol)
-(define (make-secret n)
+;; make-secret2 : number -> (number -> symbol)
+(define (make-secret2 n)
   (local [(define secret (random n))]
     (lambda (guess)
       (cond
-        [(< guess secret) 'toosmall]
-        [(= guess secret) 'yes]
-        [(> guess secret) 'toobig]))))
+        [(< guess secret) "toosmall"]
+        [(= guess secret) "yes"]
+        [(> guess secret) "toobig"]))))
 
+#|
 It works just like the one before, but it tells us if the number is
 too big or too small.
 
@@ -112,9 +132,9 @@ Say we guess 5,000:
  0                        5,000                      10,000
 -----------------------------|-----------------------------
 
-If it is 'toosmall, we've eliminated half of the possibilities!
+If it is too small, we've eliminated half of the possibilities!
 
-If it is 'toobig, we've also eliminated half of the possibilities.
+If it is too big, we've also eliminated half of the possibilities.
 
 So, can we use this insight?
 
@@ -122,20 +142,25 @@ Well, first we have to find a number that is bigger. How can we do
 that?
 
 Lets start by writing the contract purpose and header:
+|#
 
-;; find-upper-bound : (number -> symbol) number -> number
+
+;; find-upper-bound : (number -> string) number -> number
 ;; to find a number that is bigger than the secret number
 ;; assume that `n' is smaller than the secret number
-(define (find-bound secret n)
-  ...)
+;; (define (find-bound secret n) ...)
 
+#|
 What do we want to do? How about we double the number each time?
+|#
 
+;; find-bound : (number -> string) number -> number
 (define (find-bound secret n)
   (cond
-   [(symbol=? 'toobig (secret (* 2 n))) (* 2 n)]
+   [(string=? "toobig" (secret (* 2 n))) (* 2 n)]
    [else (find-bound secret (* 2 n))]))
 
+#|
 Okay, now we're getting even fancier. Our recursion is doubling the
 number each time.
 
@@ -148,13 +173,16 @@ Okay, lets say that we have a lower bound and an upper bound
 on the secret number. Now we can take advantage of that
 earlier trick:
 
-(define (guess-helper secret below above)
+;; guess-helper : (number -> string) number number -> number
+;; to try to guess the secret (NB: this function fails to terminate often)
+(define (guess-helper.BAD secret below above)
   (local [(define guess (/ (+ below above) 2))
           (define ans (secret guess))]
     (cond
-      [(symbol=? ans 'yes) guess]
-      [(symbol=? ans 'toolow) (guess-helper secret guess above)]
-      [(symbol=? ans 'toohigh) (guess-helper secret below guess)])))
+      [(string=? ans "yes") guess]
+      [(string=? ans "toosmall") (guess-helper.BAD secret guess above)]
+      [(string=? ans "toobig") (guess-helper.BAD secret below guess)])))
+
 
 Okay, lets try this out with a secret of 3:
 
@@ -186,20 +214,32 @@ Okay, lets try this out with a secret of 3:
 Yikes.
 
 We went off into fraction land, never to return.
+|#
 
-
-(define (guess-helper secret below above)
+(define (guess-helper2 secret below above)
   (local [(define guess (quotient (+ below above) 2))
           (define ans (secret guess))]
     (cond
-      [(symbol=? ans 'yes) guess]
-      [(symbol=? ans 'toolow) (guess-helper secret guess above)]
-      [(symbol=? ans 'toohigh) (guess-helper secret below guess)])))
+      [(string=? ans "yes") guess]
+      [(string=? ans "toosmall") (guess-helper2 secret guess above)]
+      [(string=? ans "toobig") (guess-helper2 secret below guess)])))
 
+#|
   (guess-helper (fixed-secret 3) 1 4) ;; guess 2, not 2.5
 = (guess-helper (fixed-secret 3) 2 4) ;; guess 3.
 = 3
+|#
 
+(define (guess-secret2 secret) (guess-helper2 secret 0 (find-bound secret 1)))
+
+
+;; (we cannot use this large a bound with the other secret guesser)
+(guess-secret2 (make-secret2 10000000))
+(guess-secret2 (make-secret2 10000000))
+(guess-secret2 (make-secret2 10000000))
+(guess-secret2 (make-secret2 10000000))
+
+#|
 
 ============================================================
 
@@ -213,7 +253,7 @@ The chaos game.
 
 
 Lets code this up. Generative recursion produces strange things!
-
+|#
 
 (require 2htdp/image)
 (define size 200)
@@ -262,6 +302,7 @@ Lets code this up. Generative recursion produces strange things!
       5000)
       
 
+#|
 
 ============================================================
 
@@ -273,3 +314,5 @@ Generative recursion in the design recipe:
 
   - when you use generative recursion, always explain why the function
     terminates as part of the strategy and code step
+
+|#
