@@ -32,7 +32,7 @@ the data to the stream.
     std::cout << "Please enter your name:\n> ";
 ```
 
-When we want to use a variable in C++, we first need to declare, which
+When we want to use a variable in C++, we first need to declare it, which
 tells C++ that we intend to use it, and what type of thing we intend to
 store in it. In this case, we intend to use a string.
 
@@ -59,7 +59,7 @@ the first word. That’s because reading into a string using `>>` only
 reads up to the first space. (We’ll see later how to overcome this
 limitation.)
 
-Let’s write a second program, which reads two piece of data from the
+Let’s write a second program, which reads two pieces of data from the
 user. See `src/age.cpp`.
 
 ## Integers and numbers
