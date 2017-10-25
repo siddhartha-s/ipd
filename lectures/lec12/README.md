@@ -25,7 +25,7 @@ int main()
 
 Here we print text to the screen. `std::cout` is the name of the
 character output stream that we want to print to, and `<<` is the
-stream insertion operator. It takes a string and some data, and sends
+stream insertion operator. It takes a stream and some data, and sends
 the data to the stream.
 
 ```
