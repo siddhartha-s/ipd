@@ -13,6 +13,7 @@
 
 ;; insert-nums : [Listof Number] -> Binomial-Heap
 ;; to create a binomial heap containing the numbers in `nums`
+;; running time: O(length(nums) * log(length(nums)))
 (define (insert-nums nums)
   (cond
     [(empty? nums) empty-heap]
@@ -20,6 +21,7 @@
 
 ;; remove-mins : Binomial-Heap -> [Listof Number]
 ;; to return all of the numbers in `h`, from smallest to largest
+;; running time: O(size(h) * log(size(h)))
 (define (remove-mins h)
   (cond
     [(empty-heap? h) '()]
@@ -69,7 +71,32 @@
 
 (define-struct node (value children))
 
+;; size : Binomial-Heap -> Number
+;; to determine how many elements are in `h`
+;; running time: O(log(size(b)))
+(define (size b)
+  (cond
+    [(empty? b) 0]
+    [else
+     (+ (* 2 (size (rest b)))
+        (cond
+          [(node? (first b)) 1]
+          [else 0]))]))
+
+(check-expect (size (insert-nums (list))) 0)
+(check-expect (size (insert-nums (list 0))) 1)
+(check-expect (size (insert-nums (list 0 1))) 2)
+(check-expect (size (insert-nums (list 0 1 2))) 3)
+(check-expect (size (insert-nums (list 0 1 2 3))) 4)
+(check-expect (size (insert-nums (list 0 1 2 3 4))) 5)
+(check-expect (size (insert-nums (list 0 1 2 3 4 5))) 6)
+(check-expect (size (insert-nums (list 0 1 2 3 4 5 6))) 7)
+(check-expect (size (insert-nums (list 0 1 2 3 4 5 6 7))) 8)
+(check-expect (size (insert-nums (list 0 1 2 3 4 5 6 7 8))) 9)
+
+
 ;; find-min : Binomial-Heap -> [Or Number #f]
+;; running time: O(log(size(b)))
 (define (find-min b)
   (cond
     [(empty? b) #f]
@@ -81,6 +108,7 @@
                       (find-min (rest b)))])]))
 
 ;; pick-smaller : Number [Or Number #f] -> Number
+;; running time: O(1)
 (define (pick-smaller n1 n2/f)
   (cond
     [(number? n2/f) (min n1 n2/f)]
@@ -90,11 +118,13 @@
 (define (empty-heap? b) (empty? b))
 
 ;; insert : Binomial-Heap Number -> Binomial-Heap
+;; running time: O(log(size(b))))
 (define (insert b n)
   (add (list (make-node n '())) b))
 
 ;; remove-min : [Binomial-Heap-Ranked n] -> [Binomial-Heap-Ranked m]
 ;; n = m, or n-1 = m
+;; running time: O(log(size(b)))
 (define (remove-min b)
   (local [(define small-root (find-min b))
           (define heap-without-small-root
@@ -105,6 +135,7 @@
          (reverse (node-children node-with-small-root)))))
 
 ;; remove-tree-with-root : [Binomial-Tree-List n] Number -> [Binomial-Tree-List n]
+;; running time: O(log(size(b)))
 (define (remove-tree-with-root b v)
   (cond
     [(empty? b) (error 'ack)]
@@ -120,6 +151,7 @@
 
 ;; find-tree-with-root : [Binomial-Tree-List n] Integer -> [Binomial-Tree m]
 ;;  n >= m
+;; running time: O(log(size(b)))
 (define (find-tree-with-root b v)
   (cond
     [(empty? b) (error 'ack)]
@@ -133,9 +165,11 @@
 
 
 ;; meld : Binomial-Heap Binomial-Heap -> Binomial-Heap
+;; running time: O(log(max(size(h1),size(h2))))
 (define (meld h1 h2) (add h1 h2))
 
 ;; add : [Binomial-Heap-Ranked n] [Binomial-Heap-Ranked n] -> [Binomial-Heap-Ranked n]
+;; running time: O(log(max(size(h1),size(h2))))
 (define (add h1 h2)
   (cond
     [(and (empty? h1) (empty? h2))
@@ -156,6 +190,7 @@
                        (add (rest h1) (rest h2))))])]))
 
 ;; add-one : [Binomial-Tree-Ranked n] [Binomial-Heap-Ranked n] -> [Binomial-Heap-Ranked n]
+;; running time: O(log(size(h)))
 (define (add-one t h)
   (cond
     [(empty? h) (list t)]
@@ -168,6 +203,7 @@
                               (rest h)))])]))
 
 ;; join : [Binomial-Tree-Ranked n] [Binomial-Tree-Ranked n] -> [Binomial-Tree-Ranked (add1 n)]
+;; running time: O(1)
 (define (join t1 t2)
   (cond
     [(< (node-value t1) (node-value t2))
