@@ -109,7 +109,7 @@ lets say we have a more informative secret generator. How about this
 one:
 |#
 
-;; make-secret2 : number -> (number -> symbol)
+;; make-secret2 : number -> (number -> string)
 (define (make-secret2 n)
   (local [(define secret (random n))]
     (lambda (guess)

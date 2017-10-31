@@ -32,7 +32,7 @@ So, how would we write a template for that:
 ;; So, lets use this to write a function:
 
 ;; build-strs : Natural String -> [Listof String]
-;; to construct a list of the symbols s 
+;; to construct a list of the strings s
 ;; with length `n'.
 (check-expect (build-strs 0 "chair") '())
 (check-expect (build-strs 3 "doll")
