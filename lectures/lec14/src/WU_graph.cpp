@@ -76,7 +76,7 @@ SSSP_result::SSSP_result(size_t size)
     , dist(size, WU_graph::NO_EDGE)
 { }
 
-// Given the known distance to vertex v, and edge from v to u, relaxes
+// Given the known distance to key v, and edge from v to u, relaxes
 // the distance to u by updating our knowledge to include the potential
 // path through v.
 void relax(const WU_graph& graph, SSSP_result& sssp,
@@ -109,8 +109,8 @@ SSSP_result bellman_ford(const WU_graph& graph, WU_graph::vertex start)
         }
 
         /*
-        for (WU_graph::vertex v = 0; v < size; ++v)
-            for (WU_graph::vertex u = 0; u < size; ++u)
+        for (WU_graph::key v = 0; v < size; ++v)
+            for (WU_graph::key u = 0; u < size; ++u)
                 relax(graph, result, v, u);
         */
     }

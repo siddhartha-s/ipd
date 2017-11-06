@@ -5,20 +5,38 @@
 
 using namespace ipd;
 
-TEST(Insert5Remove5)
+TEST(Update5Remove5)
 {
     Dist_heap_map h;
-    h.insert({0, 4});
-    h.insert({0, 6});
-    h.insert({0, 0});
-    h.insert({0, 8});
-    h.insert({0, 2});
+    h.update({0, 4});
+    h.update({1, 6});
+    h.update({2, 0});
+    h.update({3, 8});
+    h.update({4, 2});
 
     CHECK_EQUAL(0, h.remove_min().w);
     CHECK_EQUAL(2, h.remove_min().w);
     CHECK_EQUAL(4, h.remove_min().w);
     CHECK_EQUAL(6, h.remove_min().w);
     CHECK_EQUAL(8, h.remove_min().w);
+}
+
+TEST(DecreaseKey)
+{
+    Dist_heap_map h;
+    h.update({0, 4});
+    h.update({1, 6});
+    h.update({2, 0});
+    h.update({3, 8});
+    h.update({4, 2});
+
+    h.update({3, 1});
+
+    CHECK_EQUAL(0, h.remove_min().w);
+    CHECK_EQUAL(1, h.remove_min().w);
+    CHECK_EQUAL(2, h.remove_min().w);
+    CHECK_EQUAL(4, h.remove_min().w);
+    CHECK_EQUAL(6, h.remove_min().w);
 }
 
 bool relaxH(const WU_graph& graph, SSSP_result& sssp,
@@ -45,7 +63,7 @@ SSSP_result dijkstraH(const WU_graph& graph, WU_graph::vertex start)
 
     result.pred[start] = start;
     result.dist[start] = 0;
-    heap.insert({start, 0});
+    heap.update({start, 0});
 
     while (!heap.empty()) {
         WU_graph::vertex v = heap.remove_min().v;
@@ -54,7 +72,7 @@ SSSP_result dijkstraH(const WU_graph& graph, WU_graph::vertex start)
         for (WU_graph::vertex u : graph.get_neighbors(v)) {
             if (!visited[u]) {
                 if (relaxH(graph, result, v, u)) {
-                    heap.insert({u, graph.get_edge(v, u)});
+                    heap.update({u, graph.get_edge(v, u)});
                 }
             }
         }

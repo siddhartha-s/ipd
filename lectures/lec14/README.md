@@ -10,10 +10,10 @@ like this:
       - pred[v] := undef
       - visited[v] := false
       
-2.  For the starting vertex s,
+2.  For the starting key s,
       - dist[s] := 0
       
-3.  Find the minimum distance unvisited vertex v; if there is no such vertex,
+3.  Find the minimum distance unvisited key v; if there is no such key,
     terminate.
     
 4.  Mark v as visited. Relax each outgoing edge of v.
@@ -23,9 +23,9 @@ like this:
 What is the time complexity of this algorithm?
 
 Well, step 1 takes O(V), proportional to the number of vertices. Step 2 is 
-constant time. Step 3 as we wrote it scans every vertex, making it O(V), but 
+constant time. Step 3 as we wrote it scans every key, making it O(V), but 
 let’s suppose we can do better, and for now call that step O(get_min(V)); 
-repeated at most once per vertex, it comes to O(V get_min(V)).
+repeated at most once per key, it comes to O(V get_min(V)).
 Step 4 happens once (or maybe twice) for each edge, for O(E). Thus, our total
 time is O(E + V get_min(V)). Using the linear scan, that means that 
 Dijkstra's algorithm takes O(E + V^2) = O(V^2). But do we know a way that we 
@@ -77,7 +77,7 @@ into the vector, returns the parent’s index? How about the children?
 ### Implementation
 
 The goal of the heap in Dijkstra’s algorithm is to keep vertices ordered by 
-distance, so we need a heap that stores pairs of each vertex with its best 
+distance, so we need a heap that stores pairs of each key with its best 
 known distance, and orders them by the distance. The interface for a 
 best-known distance heap appears in `src/Distance_heap.h`, and the 
 implementation appears in `src/Distance_heap.cpp`. Note that each is 
@@ -91,7 +91,7 @@ visit vertices in the right order.
 
 ## Generics
 
-The binary heap we just made stores pairs of a vertex and a distance,
+The binary heap we just made stores pairs of a key and a distance,
 ordered by 
 distance. But nothing about the generic description of it requires those 
 particular pieces of information. We could make a binary heap of anything, 

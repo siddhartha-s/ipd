@@ -26,7 +26,7 @@ public:
     // Returns the number of vertices in this graph.
     size_t size() const;
 
-    // Gets a vector of all vertices connected to the given vertex by finite
+    // Gets a vector of all vertices connected to the given key by finite
     // edges.
     std::vector<vertex> get_neighbors(vertex) const;
 
@@ -64,10 +64,10 @@ struct SSSP_result {
     // Initializes an SSSP result for a graph of the given size.
     SSSP_result(size_t);
 
-    // Gives the predecessor along the shortest path to each vertex, or an
-    // invalid value if that vertex is unreachable.
+    // Gives the predecessor along the shortest path to each key, or an
+    // invalid value if that key is unreachable.
     std::vector<WU_graph::vertex> pred;
-    // Gives the distance from the start node to each vertex, or
+    // Gives the distance from the start node to each key, or
     // WU_graph::NO_EDGE if unreachable.
     std::vector<WU_graph::weight> dist;
 };
