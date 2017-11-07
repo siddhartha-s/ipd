@@ -58,7 +58,7 @@ private:
         T           value;
         bool        valid;
     };
-    std::vector<Entry>  table_;
+    std::vector<std::vector<Entry>>  table_;
 
     // Hashes the given string and mods by the table size. This gives the
     // index into the table.
