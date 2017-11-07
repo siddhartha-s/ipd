@@ -1,4 +1,4 @@
-#include "Dist_heap_map.h"
+#include "Distance_heap.h"
 #include "WU_graph.h"
 
 #include <UnitTest++/UnitTest++.h>
@@ -7,7 +7,7 @@ using namespace ipd;
 
 TEST(Insert5Remove5)
 {
-    Dist_heap_map h;
+    Distance_heap h;
     h.insert({0, 4});
     h.insert({0, 6});
     h.insert({0, 0});
@@ -41,7 +41,7 @@ SSSP_result dijkstraH(const WU_graph& graph, WU_graph::vertex start)
     size_t size = graph.size();
     SSSP_result result(size);
     std::vector<bool> visited(size, false);
-    Dist_heap_map heap;
+    Distance_heap heap;
 
     result.pred[start] = start;
     result.dist[start] = 0;
@@ -49,13 +49,12 @@ SSSP_result dijkstraH(const WU_graph& graph, WU_graph::vertex start)
 
     while (!heap.empty()) {
         WU_graph::vertex v = heap.remove_min().v;
+        if (visited[v]) continue;
         visited[v] = true;
 
         for (WU_graph::vertex u : graph.get_neighbors(v)) {
-            if (!visited[u]) {
-                if (relaxH(graph, result, v, u)) {
-                    heap.insert({u, graph.get_edge(v, u)});
-                }
+            if (relaxH(graph, result, v, u)) {
+                heap.insert({u, result.dist[u]});
             }
         }
     }
