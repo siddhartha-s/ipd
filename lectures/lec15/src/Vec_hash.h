@@ -44,8 +44,8 @@ public:
 
     // Hashes a string to a 64-bit hash code.
     //
-    // This function really should be protected, but we made it public for
-    // testing.
+    // This function really should be protected,
+    // but we made it public for testing.
     virtual size_t hash(const std::string& s) const;
 
     // tell us about the collisions in the hash table
@@ -138,16 +138,16 @@ size_t Vec_hash<T>::table_size() const
 template<typename T>
 void Vec_hash<T>::how_are_we_doing()
 {
-    size_t ret           = 0;
-    size_t too_many      = 0;
-    size_t empty_buckets = 0;
+    size_t biggest_bucket = 0;
+    size_t too_many       = 0;
+    size_t empty_buckets  = 0;
     for (const auto& bucket : table_) {
-        ret = std::max<size_t>(ret, bucket.size());
+        biggest_bucket = std::max<size_t>(biggest_bucket, bucket.size());
         if (bucket.size() > 1)
             too_many += bucket.size() - 1;
         if (bucket.empty()) empty_buckets++;
     }
-    std::cout << "max size: " << ret
+    std::cout << "biggest_bucket: " << biggest_bucket
               << " too_many: " << too_many
               << " empty_buckets " << empty_buckets
               << "\n";

@@ -108,7 +108,7 @@
                        (unless (and cached-pict
                                     (equal? cw last-cw)
                                     (equal? ch last-ch))
-                         (set! cached-pict (time (freeze (scale-to-fit (build-pict) cw ch)))))
+                         (set! cached-pict (freeze (scale-to-fit (build-pict) cw ch))))
                        (draw-pict cached-pict dc
                                   (- (/ cw 2) (/ (pict-width cached-pict) 2))
                                   (- (/ ch 2) (/ (pict-height cached-pict) 2))))]))
