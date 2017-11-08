@@ -1,11 +1,11 @@
 #lang racket/gui
-(require pict math/base)
-(require profile)
+(require pict math/base racket/runtime-path)
 
 (define call-out? #t)
 
+(define-runtime-path here ".")
 (define hash-binaries
-  (for/list ([file (in-directory "/Users/robby/Library/Caches/CLion2016.2/cmake/generated/")]
+  (for/list ([file (in-directory (build-path here ".." "cmake-build-debug"))]
              #:when (equal? (path->string (last (explode-path file))) "avalanche"))
     file))
 (define hash-binary
