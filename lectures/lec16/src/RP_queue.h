@@ -15,6 +15,8 @@ public:
     Queue(const Queue&) = delete;
     Queue& operator=(const Queue&) = delete;
 
+    ~Queue();
+
 private:
     struct node_;
     using link_t = node_*;
@@ -35,6 +37,14 @@ struct Queue<T>::node_ {
     T element;
     link_t next;
 };
+
+template <typename T>
+Queue<T>::~Queue()
+{
+    while (!empty()) {
+        dequeue();
+    }
+}
 
 template <typename T>
 void Queue<T>::enqueue(const T& elt)
