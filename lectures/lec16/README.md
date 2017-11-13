@@ -13,7 +13,7 @@ a sequence of entries then it’s a looong linear scan. What if we want fast
 lookups? We could use a hash table, which lets us look up a URL in constant 
 time, and the size of the hash table will be about 1 GB.
 
-1 GB is a lot to download and hold in memory, so in face Google stores the 
+1 GB is a lot to download and hold in memory, so in fact Google stores the 
 hash table on a server, and browsers query it remotely. But that implies a 
 network request and response to check the blacklist for each web address that
 we load, which makes each load slower. What can we do? Store a *summary of 
