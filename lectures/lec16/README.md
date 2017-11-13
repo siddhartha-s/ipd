@@ -101,7 +101,7 @@ Then plugging in the numbers, we get 0.008, or about 1%.
   
 The optimal number of hash functions k = (m/n) ln 2. In that case, then using
 4.8 bits per entry gets us a false positive rate of 10%, 9.6 bits per entry 
-gets us a false positive rate of 1%, and so on for ever additional 4.8 bits 
+gets us a false positive rate of 1%, and so on for every additional 4.8 bits 
 per entry eliminates 90% of the remaining false positives.
 
 ## A linked list
