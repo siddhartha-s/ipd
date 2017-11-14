@@ -18,6 +18,8 @@ public:
     // Copy-assignment operator.
     My_vec& operator=(const My_vec&);
 
+    ~My_vec();
+
     // Is this vector empty?
     bool empty() const;
     // What is the size of this vector?
@@ -88,6 +90,12 @@ My_vec<T>& My_vec<T>::operator=(const My_vec& other)
         data_[i] = T{};
 
     return *this;
+}
+
+template <typename T>
+My_vec<T>::~My_vec()
+{
+    delete [] data_;
 }
 
 template <typename T>
