@@ -1,114 +1,93 @@
 # Final Project
 
-For the final project, you must work alone. Choose one of the two
-following options:
+For the final project, you must work alone. You will design a video game
+in ISL+λ. This must be a big-bang game in the same style as the falling
+game from assignment 4 (but not, obviously, the falling game).
 
-1. an ISL implementation of big-bang style game in the spirit of the
-   falling game from assignments 2 and 4 or, <!--- haridu -->
+There are three deliverables, each with its own due date, and two
+presentation events:
 
-2. a C++ implementation of two data structures from the list below
-  (unless you choose BWT, in which case that one is sufficient)
+ - The proposal: due by email between Fri., Nov 24 and Sun., Nov. 26
 
-If you choose option 1), your proposal must include a high-level
-English description of the game (what are the objectives and what
-style game is it), it must include at least 7 different features the
-game will have, and it must include your best, first guess as to what
-the data-definition will be for a `world`. (Note that this will
-probably be wrong, but for subtle reasons that you will not discover
-until you start working on the implementation of the game.)
+ - The check-in: due by handin server on Tue., Nov. 28
 
-If you choose option 2, you must choose two of the following data
-structures to implement in C++:
+ - The check-in code walk: in person on Wed., Nov. 29
 
-* [splay tree](http://www.cs.cmu.edu/~sleator/papers/self-adjusting.pdf)
-  <!--- relic -->
+ - The final code: due by handin server on Tue., Dec. 6
 
-* [treap](http://faculty.washington.edu/aragon/pubs/rst89.pdf)
-  <!--- siddharth -->
+ - The presentation: in person on Wed., Dec. 7
 
-* [beap](http://www.sciencedirect.com/science/article/pii/0022000080900379)
-  <!--- ismael -->
+## Proposal
 
-* [min-max heap](http://www.akira.ruc.dk/~keld/teaching/algoritmedesign_f03/Artikler/02/Atkinson86.pdf)
-  <!--- sangrin -->
+In the proposal, you will describe the game that you intend to build. In
+particular, you must list at least 8 *functional requirements* that your
+game will satisfy. These are things that the game does, explained as
+clearly and concisely as you can.
 
-* [B-tree](http://people.cs.aau.dk/~simas/aalg06/UbiquitBtree.pdf)
-  <!--- siddharth -->
+For example, for the faller game, you might write these requirements:
 
-* [Fibonacci heap](https://www.cs.princeton.edu/courses/archive/fall03/cs528/handouts/fibonacci%20heaps.pdf)
-  <!--- relic -->
+> 1. Objects fall from the top of the screen.
+>
+> 2. The user controls a continuously moving paddle at the bottom of the
+>    screen by hitting a key to change its direction.
+>
+> 3. A score is maintained and displayed.
+>
+> 4. Whenever the user changes directions of the paddle, the score
+>    decrements (but does not go negative).
+>
+> 5. Whenever an object strikes the paddle, it disappears and the score
+>    increases by 10.
+>
+> 6. Objects that are directly above the paddle (en route to hit it) are
+>    displayed differently than objects that aren't.
+>
+> 7. A special kind of object, displayed differently, causes the paddle
+>    to increase in size when caught.
+>
+> 8. A special kind of object, displayed differently, causes the paddle
+>    to decrease in size when caught.
 
-* [rope](http://citeseer.ist.psu.edu/viewdoc/download?doi=10.1.1.14.9450&rep=rep1&type=pdf)
-  <!--- michael -->
+You must have your proposal approved before you begin the next phase of
+your design. We will try to get you feedback as quickly as possible, but
+note that if you wait until Sun., Nov. 26 to turn it in, you will not
+have much time to work on the next step. Consequently, we *strongly
+suggest* you send us a first draft of your proposal as early as Fri.,
+Nov. 24. Then if there are problems you will have a chance to revise it.
 
-* [suffix trie](http://airelles.i3s.unice.fr/files/Weiner.pdf)
-  <!--- sangrin -->
+## Check-in
 
-* [robin-hood hashing](https://cs.uwaterloo.ca/research/tr/1986/CS-86-14.pdf)
-  <!--- michael -->
+One week before the final project is due, we will ask you to submit (on
+the handin server) steps 1 and 2 of the design recipe for your game. In
+particular, we want to see:
 
-* [suffix array](http://webglimpse.net/pubs/suffix.pdf)
-  <!--- ismael -->
+1. The data definition for your world and all its parts.
 
-* [karatsuba multiplication on arbitrarily sized integers](https://en.wikipedia.org/wiki/Karatsuba_algorithm)
-  <!--- yibing -->
+2. A wishlist of functions that you expect you will need to write, each
+   with a signature and purpose. (We expect this to be at least 10
+   functions, but if you think carefully, you may have many more. Some
+   will be obvious helpers for others. Please don’t include trivial
+   functions, however.)
 
-* [topological sort](https://en.wikipedia.org/wiki/Topological_sorting)
-  <!--- yibing -->
+The check-in is your chance to get feedback on the essentials of your
+design before you actually write all your code. Because the course staff
+are experience designers, we are likely to have suggestions for you that
+will improve your design, so if you work hard before the check-in, this
+will be very valuable to you, and may save you more trouble later.
 
-Or, you may choose to implement the [Burrows-Wheeler
-transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform)
-as an extenion to your compression project. (No second data structure is required in this case.)
+## Check-in code walk
 
-For your proposal, you must provide C++ class definitions, a
-description of the ADT (like we showed in class), and a few test cases
-(that will fail) that describe how the data structure works.
+At the check-in code walk, we will review your design for 10 minutes.
 
-For the C++ choice, no two students may choose the same data
-structures. Post your choices in Piazza; first come, first served.
+Bring something to write on, as we will probably suggest revisions that
+you will want to record.
 
-## Final Project Presentations
+## Final code
 
-### C++ Option
+This is the final code of your game. Not much to say here—follow the
+Design Recipe!
 
-Prepare PDF slideshows (like with Keynote or PowerPoint) to present your
-data structures. The outline for each is as follows:
-
-1. Purpose—What is the data structure for, and how does it compare to
-   similar data structures? Why would we choose this data structure over
-   one of the alternatives? This should be explained at a high level.
-   (For example, if your data structure were a binary heap, you would
-   explain that it implements the priority queue ADT compactly and
-   efficiently. with log-time insertion and removal.)
-
-2. Concept—Explain conceptually how the data structure works, probably
-   with pictures; what are the invariants? (For example, if your data
-   structure were a binary heap, you would show how the heap is
-   represented as a complete tree flattened into an array, and you would
-   explain the heap property that parents are no greater than children.
-   Then describe how bubbling up and percolating down restore the
-   invariant.)
-
-3. API—How is the data structure used? Show the list of interface
-   functions and their purposes, and give an example of client code that
-   uses it.
-
-4. Implementation—Show us 2–3 interesting parts of the implementation.
-   One part should be the private member variables, where you explain
-   how your concrete representation in C++ corresponds to the abstract
-   description from part 2. We probably don’t want to see more than
-   three slides of code. (For example, for a binary heap you would show
-   the private members, and then maybe the percolate-down procedure.)
-
-5. Questions from the audience. Be prepared to show and explain any of
-   your code.
-
-We may not get through both of your data structures. When it’s your
-turn, we will decide which data structure you should present first. If
-you don’t finish presenting the second data structure, that’s
-okay—we’ll still grade your slides and code.  
-
-### ISL Game Option
+## Presentation
 
 Prepare a PDF slideshow (like with Keynote or PowerPoint) to present
 your game. The outline is as follows:
