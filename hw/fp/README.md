@@ -55,6 +55,12 @@ have much time to work on the next step. Consequently, we *strongly
 suggest* you send us a first draft of your proposal as early as Fri.,
 Nov. 24. Then if there are problems you will have a chance to revise it.
 
+If you need inspiration, check out http://www.gamedesign.jp/. See also
+[Chat Noir](https://docs.racket-lang.org/games/chat-noir.html) in the
+PLT Games app that comes with Racket. This was a final project that one
+of the instructors implemented because he didn’t want only the students
+to have fun.
+
 ## Check-in
 
 One week before the final project is due, we will ask you to submit (on
@@ -71,9 +77,9 @@ particular, we want to see:
 
 The check-in is your chance to get feedback on the essentials of your
 design before you actually write all your code. Because the course staff
-are experience designers, we are likely to have suggestions for you that
-will improve your design, so if you work hard before the check-in, this
-will be very valuable to you, and may save you more trouble later.
+are experienced designers, we are likely to have suggestions for you
+that will improve your design. If you work hard before the check-in,
+this could be very valuable to you and may save you more trouble later.
 
 ## Check-in code walk
 
