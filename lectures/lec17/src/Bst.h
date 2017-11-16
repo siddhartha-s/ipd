@@ -49,8 +49,6 @@ private:
 
     bool bounded(node_* node, T lo, bool lo_inf, T hi, bool hi_inf);
 
-    static bool contains_ptr(const T& key, const ptr_& n);
-
     friend TestInsertFinds;
 };
 
@@ -87,21 +85,6 @@ template<typename T>
 size_t Bst<T>::size() const
 {
     return size_;
-}
-
-template<typename T>
-bool Bst<T>::contains_ptr(const T& key, const ptr_& n)
-{
-    if (n == nullptr)
-        return false;
-    else {
-        if (key < n->data)
-            return contains_ptr(key, n->left);
-        else if (n->data < key)
-            return contains_ptr(key, n->right);
-        else
-            return true;
-    }
 }
 
 template<typename T>
