@@ -71,9 +71,8 @@ template<typename T>
 size_t Sbox_hash<T>::hash(const std::string& s) const
 {
     size_t hash = 0;
-
-    for (size_t i = 0; i < s.length(); ++i) {
-        hash ^= sbox_[(unsigned char)s[i]];
+    for (char c : s) {
+        hash ^= sbox_[c];
         hash *= 3;
     }
 

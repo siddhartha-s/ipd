@@ -2,12 +2,12 @@
 #include "Various_hashes.h"
 #include "hamlet.h"
 
-void try_it(Vec_hash<size_t>& h)
+void try_it(Vec_hash<size_t>& ht)
 {
     for (std::string line : get_hamlet()) {
-        h.add(line, 0);
+        ht.add(line, 0);
     }
-    h.how_are_we_doing();
+    ht.how_are_we_doing();
 }
 
 int main()

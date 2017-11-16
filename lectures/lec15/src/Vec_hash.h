@@ -56,7 +56,6 @@ private:
     {
         std::string key;
         T           value;
-        bool        valid;
     };
     std::vector<std::vector<Entry>>  table_;
 
