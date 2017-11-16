@@ -80,7 +80,7 @@ lets write the function (see [`Bst.h`](src/Bst.h)).
 
 After that, lets write the `delete` function. There are multiple
 different ways to go about writing `delete`; we want an approach that
-minimizes the (imperative) changes to the tree. One way to do that is 
+minimizes the (imperative) changes to the tree.
 
 # Huffman Codes
 
@@ -182,9 +182,9 @@ the right edge as a "1", we get the code above.
             +--------+
             |        |
             +--------+
-           _/        \_
-         _/            \_
-        /                \
+             /      \
+            /        \
+           /          \
      +----+            +----+
      |    |            |    |
      +----+            +----+
