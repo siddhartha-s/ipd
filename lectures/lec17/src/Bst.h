@@ -39,6 +39,14 @@ public:
 private:
     struct node_;
     using ptr_ = std::unique_ptr<node_>;
+    struct node_ {
+        node_(const T& value)
+          : data(value), left(nullptr), right(nullptr) {}
+
+        T data;
+        ptr_ left;
+        ptr_ right;
+    };
 
     ptr_   root_;
     size_t size_;
@@ -52,16 +60,7 @@ private:
     friend TestInsertFinds;
 };
 
-template<typename T>
-struct Bst<T>::node_
-{
-    node_(const T& value)
-            : data(value), left(nullptr), right(nullptr) {}
 
-    T      data;
-    ptr_   left;
-    ptr_   right;
-};
 
 template<typename T>
 Bst<T>::Bst()
