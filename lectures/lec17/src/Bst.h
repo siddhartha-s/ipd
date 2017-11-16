@@ -75,6 +75,7 @@ Bst<T>::Bst(std::initializer_list<T> init)
 template<typename T>
 bool Bst<T>::empty() const
 {
+    assert ((size_ == 0) == (root_ == nullptr));
     return size_ == 0;
 }
 
@@ -114,7 +115,7 @@ void Bst<T>::insert(const T& key)
 }
 
 template<typename T>
-typename std::unique_ptr<typename Bst<T>::node_>* Bst<T>::find_to_remove(const T& key)
+std::unique_ptr<typename Bst<T>::node_>* Bst<T>::find_to_remove(const T& key)
 {
     std::unique_ptr<node_>* ret = &root_;
     while ((*ret) != nullptr) {
