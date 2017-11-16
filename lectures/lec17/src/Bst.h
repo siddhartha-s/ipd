@@ -49,7 +49,6 @@ private:
 
     bool bounded(node_* node, T lo, bool lo_inf, T hi, bool hi_inf);
 
-    bool contains_nontail(const T&) const;
     static bool contains_ptr(const T& key, const ptr_& n);
 
     friend TestInsertFinds;
@@ -88,12 +87,6 @@ template<typename T>
 size_t Bst<T>::size() const
 {
     return size_;
-}
-
-template<typename T>
-bool Bst<T>::contains_nontail(const T& key) const
-{
-    return contains_ptr(key, root_);
 }
 
 template<typename T>
