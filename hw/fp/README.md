@@ -15,7 +15,7 @@ presentation events:
 
  - The final code: due by handin server on Tue., Dec. 6
 
- - The presentation: in person on Wed., Dec. 7
+ - The final code walk: in person on Wed., Dec. 7
 
 ## Proposal
 
@@ -93,22 +93,6 @@ you will want to record.
 This is the final code of your game. Not much to say here—follow the
 Design Recipe!
 
-## Presentation
+## Final code walk
 
-Prepare a PDF slideshow (like with Keynote or PowerPoint) to present
-your game. The outline is as follows:
-
-1. Describe the concept behind your game and the rules. Show us some key
-   screenshots. List features/rules.
-
-2. Demo the game by running it in DrRacket. (I will have it ready to run
-   on my computer.) Try to demonstrate as many features as possible.
-   [This part obviously won’t be in your slides.]
-
-3. Explain the data definition for your world. How does it correspond to
-   the game as the player sees it?
-
-4. Show us 1–2 interesting parts of the code.
-
-5. Questions from the audience. Be prepared to show and explain any of
-   your code.
+We will do a code walk of your game, like you are accustomed to.

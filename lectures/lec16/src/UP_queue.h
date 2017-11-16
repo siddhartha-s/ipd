@@ -15,7 +15,7 @@ private:
     struct node_;
 
     std::unique_ptr<node_> head_;
-    node_* tail_;
+    node_* tail_ = nullptr;
 };
 
 template <typename T>
