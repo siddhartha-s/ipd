@@ -37,23 +37,21 @@ public:
     bool bst_invariant_holds();
 
 private:
-    struct node_;
-    using ptr_ = std::unique_ptr<node_>;
     struct node_ {
         node_(const T& value)
           : data(value), left(nullptr), right(nullptr) {}
 
         T data;
-        ptr_ left;
-        ptr_ right;
+        std::unique_ptr<node_> left;
+        std::unique_ptr<node_> right;
     };
 
-    ptr_   root_;
+    std::unique_ptr<node_>   root_;
     size_t size_;
 
-    ptr_* find_to_remove(const T& key);
+    std::unique_ptr<node_>* find_to_remove(const T& key);
 
-    static ptr_* find_next_largest(ptr_* to_remove);
+    static std::unique_ptr<node_>* find_next_largest(std::unique_ptr<node_>* to_remove);
 
     bool bounded(node_* node, T lo, bool lo_inf, T hi, bool hi_inf);
 
@@ -103,7 +101,7 @@ bool Bst<T>::contains(const T& key) const
 template<typename T>
 void Bst<T>::insert(const T& key)
 {
-    ptr_* curr = &root_;
+    std::unique_ptr<node_>* curr = &root_;
 
     while (*curr != nullptr) {
         if (key < (*curr)->data) curr = &(*curr)->left;
@@ -116,9 +114,9 @@ void Bst<T>::insert(const T& key)
 }
 
 template<typename T>
-typename Bst<T>::ptr_* Bst<T>::find_to_remove(const T& key)
+typename std::unique_ptr<typename Bst<T>::node_>* Bst<T>::find_to_remove(const T& key)
 {
-    ptr_* ret = &root_;
+    std::unique_ptr<node_>* ret = &root_;
     while ((*ret) != nullptr) {
         if ((*ret)->data < key)
             ret = &(*ret)->right;
@@ -133,10 +131,11 @@ typename Bst<T>::ptr_* Bst<T>::find_to_remove(const T& key)
 // right child of the given node. If there is no right child, then the input
 // node is the largest (so there is no next largest).
 template<typename T>
-typename Bst<T>::ptr_* Bst<T>::find_next_largest(ptr_* to_remove) {
+typename std::unique_ptr<typename Bst<T>::node_>*
+        Bst<T>::find_next_largest(std::unique_ptr<node_>* to_remove) {
     assert((*to_remove) != nullptr);
     assert((*to_remove)->right != nullptr);
-    ptr_* ret = &((*to_remove)->right);
+    std::unique_ptr<node_>* ret = &((*to_remove)->right);
     while ((*ret) -> left != nullptr)
         ret = &(*ret)->left;
     return ret;
@@ -145,7 +144,7 @@ typename Bst<T>::ptr_* Bst<T>::find_next_largest(ptr_* to_remove) {
 template<typename T>
 void Bst<T>::remove(const T& key)
 {
-    ptr_* to_remove = find_to_remove(key);
+    std::unique_ptr<node_>* to_remove = find_to_remove(key);
 
     // if the node wasn't in the tree, just return. nothing to remove
     if (*to_remove == nullptr) return;
@@ -158,7 +157,7 @@ void Bst<T>::remove(const T& key)
         // Otherwise, we find the successor node and then swap the contents with
         // the successor node and delete the successor by replacing it with
         // its right child.
-        ptr_* to_swap = find_next_largest(to_remove);
+        std::unique_ptr<node_>* to_swap = find_next_largest(to_remove);
         std::swap((*to_remove)->data, (*to_swap)->data);
         *to_swap = std::move((*to_swap)->right);
     }
