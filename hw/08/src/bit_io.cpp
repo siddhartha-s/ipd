@@ -17,6 +17,10 @@ namespace ipd {
         return *this;
     }
 
+    bistream::operator bool() const {
+        return good();
+    }
+
     bistringstream::bistringstream(std::vector<unsigned char> v)
             : bytes(v), bytes_index(0) {}
 
