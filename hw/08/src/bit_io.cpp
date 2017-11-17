@@ -12,7 +12,7 @@ namespace ipd {
         }
 
         --nbits;
-        bit = bitbuf >> nbits & 1;
+        bit = (bitbuf >> nbits & 1) == 1;
 
         return *this;
     }
