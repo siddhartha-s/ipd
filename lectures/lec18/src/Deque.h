@@ -154,10 +154,6 @@ private:
     friend class Deque_const_iterator<T>;
 };
 
-// Exchanges the contents of two deques without copying.
-template<typename T>
-void swap(Deque<T>& a, Deque<T>& b) noexcept;
-
 // Helper class for Deque<T>::iterator.
 template<typename T>
 class Deque_iterator : public std::iterator<
@@ -441,12 +437,6 @@ void Deque<T>::swap(Deque& other) noexcept
 }
 
 template<typename T>
-void swap(Deque<T>& a, Deque<T>& b) noexcept
-{
-    a.swap(b);
-}
-
-template<typename T>
 Deque<T>::~Deque()
 {
     clear();
@@ -638,6 +628,17 @@ template<typename T>
 bool operator!=(Deque_const_iterator<T> i, Deque_const_iterator<T> j) noexcept
 {
     return !(i == j);
+}
+
+}
+
+namespace std {
+
+// Exchanges the contents of two deques without copying.
+template<typename T>
+void swap(ipd::Deque <T>& a, ipd::Deque <T>& b) noexcept
+{
+    a.swap(b);
 }
 
 }
