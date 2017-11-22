@@ -297,7 +297,7 @@ namespace ipd {
         size_t bits_written() const;
 
     private:
-        int bits_written_ = 0;
+        size_t bits_written_ = 0;
         std::vector<unsigned char> data_;
 
     };
