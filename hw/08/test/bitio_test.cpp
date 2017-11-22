@@ -77,9 +77,9 @@ TEST(BISTREAM6) {
 TEST(BOSTREAM1) {
     bostringstream_ptr b(new bostringstream);
     bostream& br = *b;
-    CHECK_EQUAL(0, b->bits_written);
+    CHECK_EQUAL(0, b->bits_written());
     br.write(false);
-    CHECK_EQUAL(1, b->bits_written);
+    CHECK_EQUAL(1, b->bits_written());
     CHECK_EQUAL(0, b->get_data()[0]);
 }
 
@@ -94,6 +94,6 @@ TEST(BOSTREAM3) {
     bostringstream_ptr b(new bostringstream);
     bostream& br = *b;
     br.write_bits('a', 8);
-    CHECK_EQUAL(8, b->bits_written);
+    CHECK_EQUAL(8, b->bits_written());
     CHECK_EQUAL('a', b->get_data()[0]);
 }

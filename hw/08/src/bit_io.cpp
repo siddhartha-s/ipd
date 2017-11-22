@@ -38,6 +38,11 @@ namespace ipd {
         return nbits > 0 || bytes_index < bytes.size();
     }
 
+    size_t bostringstream::bits_written() const
+    {
+        return bits_written_;
+    }
+
     bool bistringstream::eof() const {
         return nbits == 0 && bytes_index == bytes.size();
     }
@@ -95,16 +100,17 @@ namespace ipd {
     }
 
     bostringstream &bostringstream::write(bool bit) {
-        int index = bits_written / 8;
-        int nbits = bits_written % 8;
-        if (index >= data.size()) data.push_back(0);
-        data[index] |= ((char) bit) << (7 - nbits);
-        bits_written++;
+        int index = bits_written_ / 8;
+        int nbits = bits_written_ % 8;
+        if (index >= data_.size()) data_.push_back(0);
+        data_[index] |= ((char) bit) << (7 - nbits);
+        bits_written_++;
         return *this;
     }
 
     std::vector<unsigned char> bostringstream::get_data() {
-        return data;
+        return data_;
     }
+
 }
 

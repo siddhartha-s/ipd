@@ -294,10 +294,11 @@ namespace ipd {
 
         virtual bool good() const override;
 
-        int bits_written = 0;
+        size_t bits_written() const;
 
     private:
-        std::vector<unsigned char> data;
+        int bits_written_ = 0;
+        std::vector<unsigned char> data_;
 
     };
 
