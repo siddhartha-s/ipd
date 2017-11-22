@@ -103,7 +103,7 @@ namespace ipd {
         auto index = bits_written_ / 8;
         auto nbits = bits_written_ % 8;
         if (index >= data_.size()) data_.push_back(0);
-        data_[index] |= ((char) bit) << (7 - nbits);
+        data_[index] |= ((unsigned char) bit) << (7 - nbits);
         bits_written_++;
         return *this;
     }
