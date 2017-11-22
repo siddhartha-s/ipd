@@ -13,7 +13,7 @@
 using namespace ipd;
 using namespace std;
 
-void decode(bifstream& in, ofstream& out);
+void decode(bistream& in, ofstream& out);
 
 int main(int argc, const char *argv[])
 {
@@ -31,7 +31,7 @@ int main(int argc, const char *argv[])
     decode(in, out);
 }
 
-void decode(bifstream& in, ofstream& out)
+void decode(bistream& in, ofstream& out)
 {
     char c;
 

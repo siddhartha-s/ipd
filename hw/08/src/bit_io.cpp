@@ -47,7 +47,6 @@ namespace ipd {
         return nbits == 0 && bytes_index == bytes.size();
     }
 
-
     bifstream::bifstream(const char *filespec)
             : stream(filespec, ios::binary) {}
 
