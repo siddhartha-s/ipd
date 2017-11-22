@@ -19,6 +19,9 @@ presentation events:
 
 ## Proposal
 
+**The proposal must be written in the text of an email. No attachments,
+please.**
+
 In the proposal, you will describe the game that you intend to build. In
 particular, you must list at least 8 *functional requirements* that your
 game will satisfy. These are things that the game does, explained as
