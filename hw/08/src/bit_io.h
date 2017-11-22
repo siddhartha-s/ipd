@@ -288,7 +288,7 @@ namespace ipd {
 
     class bostringstream : public bostream {
     public:
-        std::vector<unsigned char> get_data();
+        const std::vector<unsigned char>& data() const;
 
         virtual bostringstream &write(bool b) override;
 

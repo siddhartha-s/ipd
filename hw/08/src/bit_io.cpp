@@ -108,7 +108,7 @@ namespace ipd {
         return *this;
     }
 
-    std::vector<unsigned char> bostringstream::get_data() {
+    const std::vector<unsigned char>& bostringstream::data() const {
         return data_;
     }
 
