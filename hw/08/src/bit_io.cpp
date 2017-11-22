@@ -100,8 +100,8 @@ namespace ipd {
     }
 
     bostringstream &bostringstream::write(bool bit) {
-        int index = bits_written_ / 8;
-        int nbits = bits_written_ % 8;
+        auto index = bits_written_ / 8;
+        auto nbits = bits_written_ % 8;
         if (index >= data_.size()) data_.push_back(0);
         data_[index] |= ((char) bit) << (7 - nbits);
         bits_written_++;
