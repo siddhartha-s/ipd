@@ -12,7 +12,7 @@ void encode(istream& in, bostream& out)
     }
 }
 
-void decode(bistream& in, ofstream& out)
+void decode(bistream& in, ostream& out)
 {
     char c;
 

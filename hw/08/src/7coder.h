@@ -8,4 +8,4 @@
 void encode(std::istream& in, ipd::bostream& out);
 
 // Decodes the 7-bit-packed input stream from `in` onto `out`.
-void decode(ipd::bistream& in, std::ofstream& out);
+void decode(ipd::bistream& in, std::ostream& out);
