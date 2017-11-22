@@ -1,4 +1,4 @@
-#include "bit_io.h"
+#include "7coder.h"
 #include "common.h"
 
 #include <iostream>
@@ -12,8 +12,6 @@
 
 using namespace ipd;
 using namespace std;
-
-void encode(istream& in, bostream& out);
 
 int main(int argc, const char *argv[])
 {
@@ -31,11 +29,3 @@ int main(int argc, const char *argv[])
     encode(in, out);
 }
 
-void encode(istream& in, bostream& out)
-{
-    char c;
-
-    while (in.read(&c, 1)) {
-        out.write_bits(c, 7);
-    }
-}

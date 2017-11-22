@@ -4,8 +4,8 @@ include(.ipd/CMakeLists.txt)
 
 set(COMMON src/bit_io.h src/bit_io.cpp src/common.h)
 
-add_program(encode src/encode.cpp ${COMMON})
-add_program(decode src/decode.cpp ${COMMON})
+add_program(encode src/encode.cpp src/7coder.cpp ${COMMON})
+add_program(decode src/decode.cpp src/7coder.cpp ${COMMON})
 add_program(huff src/huff.cpp ${COMMON})
 add_program(puff src/puff.cpp ${COMMON})
 
