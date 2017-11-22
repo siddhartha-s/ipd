@@ -1,10 +1,15 @@
 #include "UnitTest++/UnitTest++.h"
 #include "bit_io.h"
 
+#include <memory>
+
 using namespace ipd;
 
+using bistream_ptr = std::unique_ptr<bistream>;
+using bostringstream_ptr = std::unique_ptr<bostringstream>;
+
 TEST(BISTREAM1) {
-    bistream *b = new bistringstream({0});
+    bistream_ptr b(new bistringstream({0}));
     bool bit;
 
     b->read(bit);
@@ -12,7 +17,7 @@ TEST(BISTREAM1) {
 }
 
 TEST(BISTREAM2) {
-    bistream *b = new bistringstream({255});
+    bistream_ptr b(new bistringstream({255}));
     bool bit;
 
     b->read(bit);
@@ -20,7 +25,7 @@ TEST(BISTREAM2) {
 }
 
 TEST(BISTREAM3) {
-    bistream *b = new bistringstream({128});
+    bistream_ptr b(new bistringstream({128}));
     bool bit;
 
     b->read(bit);
@@ -28,7 +33,7 @@ TEST(BISTREAM3) {
 }
 
 TEST(BISTREAM4) {
-    bistream *b = new bistringstream({1 << 6 | 1 << 5});
+    bistream_ptr b(new bistringstream({1 << 6 | 1 << 5}));
     bool bit;
 
     b->read(bit);
@@ -41,7 +46,7 @@ TEST(BISTREAM4) {
 
 
 TEST(BISTREAM5) {
-    bistream *b = new bistringstream({255, 1 << 6 | 1 << 5});
+    bistream_ptr b(new bistringstream({255, 1 << 6 | 1 << 5}));
     bool bit;
 
     for (int i = 0; i < 8; i++) {
@@ -58,7 +63,7 @@ TEST(BISTREAM5) {
 
 
 TEST(BISTREAM6) {
-    bistream *b = new bistringstream({255, 255});
+    bistream_ptr b(new bistringstream({255, 255}));
     bool bit;
 
     for (int i = 0; i < 16; i++) {
@@ -70,22 +75,25 @@ TEST(BISTREAM6) {
 
 
 TEST(BOSTREAM1) {
-    bostringstream *b = new bostringstream();
+    bostringstream_ptr b(new bostringstream);
+    bostream& br = *b;
     CHECK_EQUAL(0, b->bits_written);
-    b->write(false);
+    br.write(false);
     CHECK_EQUAL(1, b->bits_written);
     CHECK_EQUAL(0, b->get_data()[0]);
 }
 
 TEST(BOSTREAM2) {
-    bostringstream *b = new bostringstream();
-    b->write(true);
+    bostringstream_ptr b(new bostringstream);
+    bostream& br = *b;
+    br.write(true);
     CHECK_EQUAL(128, b->get_data()[0]);
 }
 
 TEST(BOSTREAM3) {
-    bostringstream *b = new bostringstream();
-    b->write_bits('a', 8);
+    bostringstream_ptr b(new bostringstream);
+    bostream& br = *b;
+    br.write_bits('a', 8);
     CHECK_EQUAL(8, b->bits_written);
     CHECK_EQUAL('a', b->get_data()[0]);
 }
