@@ -14,6 +14,7 @@
 #include <ostream>
 #include <fstream>
 #include <vector>
+#include <initializer_list>
 
 namespace ipd {
     /*
@@ -154,6 +155,9 @@ namespace ipd {
         //      bifstream bif(input_file_name);
         //
         explicit bistringstream(std::vector<unsigned char>);
+
+        // Creates a bit input stream containing exactly the given bits.
+        explicit bistringstream(std::initializer_list<bool>);
 
         bool eof() const override;
 

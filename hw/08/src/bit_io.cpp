@@ -24,6 +24,18 @@ namespace ipd {
     bistringstream::bistringstream(std::vector<unsigned char> v)
             : bytes(v), bytes_index(0) {}
 
+    static std::vector<unsigned char>
+    bits_to_chars(std::initializer_list<bool> bits)
+    {
+        bostringstream oss;
+        for (bool bit : bits) oss << bit;
+        return oss.data();
+    }
+
+    bistringstream::bistringstream(std::initializer_list<bool> bits)
+            : bistringstream(bits_to_chars(bits))
+    { }
+
     bool bistringstream::next_byte(char &bitbuf) {
         if (bytes_index < bytes.size()) {
             bitbuf = bytes[bytes_index];
