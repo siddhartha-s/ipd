@@ -10,4 +10,4 @@ add_program(huff src/huff.cpp ${COMMON})
 add_program(puff src/puff.cpp ${COMMON})
 
 add_test_program(bitio_test src/bit_io.cpp test/bitio_test.cpp)
-add_test_program(test_7coder test/test_7coder.cpp src/7coder.cpp src/bit_io.cpp)
+add_test_program(test_7coder test/7coder_test.cpp src/7coder.cpp src/bit_io.cpp)

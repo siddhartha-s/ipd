@@ -6,7 +6,7 @@
 using namespace std;
 using namespace ipd;
 
-void round_trip(string const& msg)
+static void round_trip(string const& msg)
 {
     istringstream is(msg);
     bostringstream boss;
