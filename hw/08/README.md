@@ -44,6 +44,14 @@ the Huffman tree, and you will think about how data structures can be
 serialized—that is, converted to a sequence of bits that can be written
 to a file.
 
+### Course policy review
+
+Please review [the collaboration
+policies](http://users.eecs.northwestern.edu/~jesse/course/ipd/#policies)
+for IPD before starting. In particular, note that you should not use
+code from outside sources, and if you look at code from outside
+sources then you must cite it.
+
 ## Getting started
 
 This homework assignment does not include reference material for Huffman
