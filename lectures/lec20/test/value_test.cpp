@@ -7,8 +7,8 @@ using namespace islpp;
 
 TEST(Boolean)
 {
-    value_ptr t = mk_boolean(true);
-    value_ptr f = mk_boolean(false);
+    value_ptr t = get_boolean(true);
+    value_ptr f = get_boolean(false);
 
     CHECK_EQUAL(true, t->as_bool());
     CHECK_EQUAL(false, f->as_bool());
