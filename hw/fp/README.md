@@ -13,9 +13,9 @@ presentation events:
 
  - The check-in code walk: in person on Wed., Nov. 29
 
- - The final code: due by handin server on Tue., Dec. 6
+ - The final code: due by handin server on Tue., Dec. 5
 
- - The final code walk: in person on Wed., Dec. 7
+ - The final code walk: in person on Wed., Dec. 6
 
 ## Proposal
 
