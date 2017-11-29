@@ -1,0 +1,11 @@
+symbol:
+struct: symbol
+value: struct symbol
+env: symbol
+primops: value env
+ast: symbol value env
+eval: value ast
+lexer:
+reader: lexer value
+parser: ast reader lexer
+repl: ast parser primops
