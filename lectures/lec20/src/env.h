@@ -64,7 +64,7 @@ env_ptr<V>::env_ptr(const Symbol& key, const V& value, const node_ptr& next)
 template<typename V>
 const V& env_ptr<V>::lookup(const Symbol& key) const
 {
-    for (node* curr = &*head_; curr != nullptr; curr = &*curr->next) {
+    for (node* curr = head_.get(); curr != nullptr; curr = curr->next.get()) {
         if (curr->key == key) return curr->value;
     }
 
