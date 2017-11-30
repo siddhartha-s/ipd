@@ -85,7 +85,7 @@ env_ptr<V> env_ptr<V>::extend(const std::string& key, const V& value) const {
 template<typename V>
 void env_ptr<V>::update(const Symbol& key, const V& value)
 {
-    for (node* curr = &*head_; curr != nullptr; curr = &*curr->next) {
+    for (node* curr = head_.get(); curr != nullptr; curr = curr->next.get()) {
         if (curr->key == key) {
             curr->value = value;
             return;

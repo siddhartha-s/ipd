@@ -224,7 +224,6 @@ public:
     virtual Environment extend(const Environment&) const override;
     virtual void eval(Environment&) const override;
     virtual std::ostream& display(std::ostream&) const override;
-
 private:
     Expr expr_;
 };

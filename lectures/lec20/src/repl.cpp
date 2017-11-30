@@ -12,7 +12,9 @@ int main()
     auto env = primop::environment;
 
     for (;;) {
-        std::cerr << "> ";
+        std::cout << "> ";
+        std::cout.flush();
+
         std::string entry;
         if (!std::getline(std::cin, entry)) break;
 
