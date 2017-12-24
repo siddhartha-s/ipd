@@ -55,7 +55,7 @@ note them in comments in your solution.
 
 Think carefully about what the World state should be. It
 needs to be some kind of a number, but not just any old number
-is allowed. 
+is allowed.
 
 |#
 
@@ -69,7 +69,7 @@ computers have one of those installed.) Below is a helper function that
 should do the trick on all platforms (but will look best on a mac)
 |#
 
-;; monspaced-text : string -> image
+;; monospaced-text : string -> image
 ;; the body of this function uses something called a "symbol"
 ;; it is a lot like a string, except it begins with a ' mark
 ;; and ends with whitespace. Don't worry about this too much;
