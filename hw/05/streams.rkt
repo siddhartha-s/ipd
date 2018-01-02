@@ -1,10 +1,10 @@
 #lang dssl2
 
-# To use the `dssl` language, use the "Language | Choose Language"
+# To use the `dssl2` language, use the "Language | Choose Language"
 # dialog to select "The Racket Language".
 #
 # You also need to install the language. Go to the "File | Install Package..."
-# menu item in DrRacket. Type "dssl" in the box and click "Install".
+# menu item in DrRacket. Type "dssl2" in the box and click "Install".
 
 # We import cons to get:
 #
