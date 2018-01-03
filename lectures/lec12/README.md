@@ -261,7 +261,7 @@ Some notes on C++ vectors:
   - There are two main ways to iterate. You can use a for-each loop like
     so:
 
-```c++
+    ```c++
     for (double f : v) ...
     ```
 
@@ -269,7 +269,7 @@ Some notes on C++ vectors:
 
     Or you can use an explicitly counted for loop, like so:
 
-```c++
+    ```c++
     for (int i = 0; i < v.size(); ++i) ...
     ```
 
