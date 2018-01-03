@@ -7,7 +7,7 @@ of the library that we’re going to use. In this case, we are going to do
 I/O (printing to the screen and reading from the keyboard), and we’re
 going to work with strings:
 
-```
+```c++
 #include <iostream>
 #include <string>
 ```
@@ -16,7 +16,7 @@ A C++ program is always a function called `main`, and this is how we
 declare a function of no parameters in C++. Don’t worry about the `int`
 for now:
 
-```
+```c++
 int main()
 {
     …
@@ -28,7 +28,7 @@ character output stream that we want to print to, and `<<` is the
 stream insertion operator. It takes a stream and some data, and sends
 the data to the stream.
 
-```
+```c++
     std::cout << "Please enter your name:\n> ";
 ```
 
@@ -36,7 +36,7 @@ When we want to use a variable in C++, we first need to declare it, which
 tells C++ that we intend to use it, and what type of thing we intend to
 store in it. In this case, we intend to use a string.
 
-```
+```c++
     std::string first_name;
 ```
 
@@ -44,13 +44,13 @@ Here we read from the standard input stream into `first_name`. C++ will
 wait for the user to enter a string, which it will store in the
 variable:
 
-```
+```c++
     std::cin >> first_name;
 ```
 
 Finally, we print a message on the output stream:
 
-```
+```c++
     std::cout << "Hello, " << first_name << '\n';
 ```
 
@@ -71,7 +71,7 @@ Let’s consider some operations.
 
 Suppose that `x` is declared to be an `int` or `double`. Then:
 
-```
+```c++
 std::cin >> x;       // reads a number into x
 std::cout << x;      // prints the number that’s in x
 x = x + x;           // doubles the value of x
@@ -80,7 +80,7 @@ x = x + x;           // doubles the value of x
 
 But suppose `x` were a `std::string`. Then:
 
-```
+```c++
 std::cin >> x;       // reads a word into x
 std::cout << x;      // prints the string that’s in x
 x = x + x;           // concatenates x to itself
@@ -102,7 +102,7 @@ Let’s write a program that reads the radius of a circle and then prints
 its circumference. Because we are going to do I/O and math, we need to
 include the headers for each:
 
-```
+```c++
 #include <iostream>
 #include <cmath>
 ```
@@ -110,21 +110,21 @@ include the headers for each:
 Then we write the `main` function, with a sequence of statements as its
 body. First we output the instructions to the user:
 
-```
+```c++
     std::cout << "Please enter the radius:\n> ";
 ```
 
 Then we declare a variable to store the input, and read the input into
 it:
 
-```
+```c++
     double r;
     std::cin >> r;
 ```
 
 Finally, we compute the answer and print it out:
 
-```
+```c++
     std::cout << "The circumference is " << 2 * M_PI * r << '\n';
 ```
 
@@ -133,7 +133,7 @@ Finally, we compute the answer and print it out:
 As in BSL/ISL/DSSL, we will want to factor our programs into functions.
 Here’s the definition of a simple C++ function:
 
-```
+```c++
 // Converts a temperature from Fahrenheit to Celsius.
 double f2c(double fahrenheit)
 {
@@ -184,7 +184,7 @@ there.
 
 Like BSL and friends, C++ has structures. You declare one like this:
 
-```
+```c++
 struct posn
 {
     double x;
@@ -198,14 +198,14 @@ This defines a new type `posn` that has two member variables, `x` and
 To create a `posn`, we can declare a `posn` variable, giving the values
 of the member variables in order, like so:
 
-```
+```c++
 posn my_posn{3, 4};
 ```
 
 Then `my_posn` is a variable of type `posn`. We can get the member
 variables out using the dot operator:
 
-```
+```c++
 CHECK_EQUAL(3, my_posn.x);
 CHECK_EQUAL(4, my_posn.y);
 ```
@@ -217,7 +217,7 @@ Note that unlike BSL etc., C++ passes arguments by copying them. So
 suppose you want to write a function that increments the `x` member of a
 `posn`, leaving the `y` alone:
 
-```
+```c++
 void shift(posn p)
 {
     ++p.x;
@@ -228,7 +228,7 @@ The above function changes a `posn`, but it changes *a copy* of the
 `posn` passed in by the caller. If we want the caller to see the change,
 one thing we can do is return the changed posn:
 
-```
+```c++
 posn shift(posn p)
 {
     ++p.x;
@@ -238,7 +238,7 @@ posn shift(posn p)
 
 Then a caller might do
 
-```
+```c++
 q = shift(q);
 ```
 
@@ -261,7 +261,7 @@ Some notes on C++ vectors:
   - There are two main ways to iterate. You can use a for-each loop like
     so:
 
-    ```
+```c++
     for (double f : v) ...
     ```
 
@@ -269,7 +269,7 @@ Some notes on C++ vectors:
 
     Or you can use an explicitly counted for loop, like so:
 
-    ```
+```c++
     for (int i = 0; i < v.size(); ++i) ...
     ```
 

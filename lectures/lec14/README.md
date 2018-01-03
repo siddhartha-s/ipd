@@ -108,7 +108,7 @@ declare types for the member variables (fields). We can have posns of ints,
 and we can have posns of doubles, but we need to declare each separately, 
 right?:
 
-```
+```c++
 struct int_posn
 {
     int x;
@@ -124,7 +124,7 @@ struct double_posn
 
 And then if we want operations, we have to implement them for each type:
 
-```
+```c++
 double distance(const int_posn& p, const int_posn& q)
 {
     int dx = p.x - q.x;
@@ -143,13 +143,13 @@ double distance(const double_posn& p, const double_posn& q)
 But we don’t actually have to do it twice, because C++ *templates* let us 
 abstract over types. We prefix a decaration with a line like this:
 
-```
+```c++
 template <typename T>
 ```
 
 And then we can use `T` as a type in the declaration:
 
-```
+```c++
 template <typename T>
 struct posn
 {
@@ -161,7 +161,7 @@ struct posn
 Now when we write `posn<SomeType>` we get the definition of `posn` with 
 `SomeType` substituted for `T`. It’s as if we wrote:
 
-```
+```c++
 struct posn<int>
 {
     int x;
@@ -175,7 +175,7 @@ And if we refer to `posn<double>` then it generates the `double` version.
 In addition to generic structs/classes, we can write generic functions, using
 the same `template` syntax. For example:
 
-```
+```c++
 template <typename T>
 double distance(const posn<T>& p, const posn<T>& q)
 {
@@ -196,7 +196,7 @@ square root is or coerces to a `double`.)
 
 Here’s how we templatize the `Heap` class:
 
-```
+```c++
 template <typename Element>
 class Heap
 {

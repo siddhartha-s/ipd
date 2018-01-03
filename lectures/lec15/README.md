@@ -62,7 +62,7 @@ its first letter in ASCII, and let's say that these calls happen:
 Then we would get a vector like this (using `[,]` to notate the vectors
 and `<,>` to notate the key/value pairs):
 
-```
+```c++
   [[<"dog",3>],
    [<"aorta",0>],
    [<"bob",1>],
@@ -72,7 +72,7 @@ and `<,>` to notate the key/value pairs):
 But, if our hashing function instead used the second letter of the
 key, in ASCII, we would get this:
 
-```
+```c++
   [[],
    [],
    [],
@@ -175,7 +175,7 @@ most part, be half of the available bits.
 Here is the add1-mod-16 function, written out on the binary
 representation of four-bit numbers:
 
-```
+```c++
 0000  -->  0001
 0001  -->  0010
 0010  -->  0011
@@ -197,7 +197,7 @@ representation of four-bit numbers:
 and we can build a table that tells us, for each bit we might flip in
 the input, how many times does an output bit flip?
 
-```
+```c++
      output flip:  0   1   2   3
 input flip:
  0                 8   8   4   2
@@ -213,7 +213,7 @@ criterion.
 Here's another function (that I cannot describe easily, except by
 writing it down):
 
-```
+```c++
 0000 -> 1111
 0001 -> 1010
 0010 -> 0000
@@ -234,7 +234,7 @@ writing it down):
 
 This one achieves perfect avalanche:
 
-```
+```c++
      output flip:  0   1   2   3
 input flip:
  0                 4   4   4   4

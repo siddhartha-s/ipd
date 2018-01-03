@@ -9,7 +9,7 @@ do this in C++, using a pair of vectors (since STL vector operations include
 `push_back` and `pop_back` to add to and remove from the end of the vector).
 We can group the two vectors together in a struct:
 
-```
+```c++
 struct Queue
 {
     std::vector<std::string> front;
@@ -19,7 +19,7 @@ struct Queue
 
 And we can implement the queue operations using the struct:
 
-```
+```c++
 void enqueue(Queue& q, const std::string& element)
 {
     q.back.push_back(element);
@@ -53,14 +53,14 @@ code that has access to a `Queue` can see that it’s made of two vectors, and
 can manipulate those vectors directly. For example, suppose you have some 
 code that wants to empty a queue:
 
-```
+```c++
     while (!empty(q)) pop(q);
 ```
 
 Knowing that the queue is actually two vectors, you realize that you can clear 
 the queue faster this way:
 
-```
+```c++
     q.front.clear();
     q.back.clear();
 ```
@@ -84,7 +84,7 @@ interface become *member functions*. These are functions that are declared
 inside a class, just like data members are variables declared inside a class.
 Here is the queue class declaration (from `src/Queue.h`):
 
-```
+```c++
 class Queue
 {
 public:
@@ -110,7 +110,7 @@ The member functions are implemented in `src/Queue.cpp`. Here, for example,
 is the implementation of `Queue::size()` (meaning class `Queue`’s member 
 function `size`):
 
-```
+```c++
 size_t Queue::size() const
 {
     return front.size() + back.size();
@@ -125,7 +125,7 @@ to the members of the same queue object on which it was called.
 
 That is, suppose we make two `Queue objects`:
 
-```
+```c++
     Queue q1;
     q1.enqueue("a");
     
@@ -137,14 +137,14 @@ That is, suppose we make two `Queue objects`:
 When we call `size` on `q1`, then within `size`, `front` and `back` refer to 
 `q1.front` and `q1.back`, respectively:
 
-```
+```c++
     CHECK_EQUAL(1, q1.size());
 ```
 
 And when we call `q2.size()`, the unqualified member names refer to members 
 of `q2`:
 
-```
+```c++
     CHECK_EQUAL(2, q2.size());
 ```
 
@@ -159,7 +159,7 @@ See `src/Queue.cpp` for the rest of the queue implementation.
 Suppose we want to represent a bank account, with an account number, and 
 owner, and a balance. We might define a struct like this:
 
-```
+```c++
 struct Bank_account
 {
     unsigned long id;
@@ -170,13 +170,13 @@ struct Bank_account
 
 Now you can create an account like so:
 
-```
+```c++
 Bank_account acct{1, "Robby", 50};
 ```
 
 And you can write functions on accounts:
 
-```
+```c++
 deposit(Bank_account& account, unsigned long amount)
 {
     account.balance += amount;
@@ -185,7 +185,7 @@ deposit(Bank_account& account, unsigned long amount)
 
 And then use them like so:
 
-```
+```c++
 deposit(acct, 50);
 ```
 
@@ -198,7 +198,7 @@ To do this for our `Bank_account` structure, we instead make it a `class`,
 and we make the member variables `private`. Then we access them through 
 public *member functions*. Here's a start:
 
-```
+```c++
 class Bank_account
 {
 private:
@@ -227,7 +227,7 @@ The class declaration, like a struct declaration, goes in the header file.
 The implementation of the member function, like other functions, goes in a `
 .cpp` file. It looks like this:
 
-```
+```c++
 void Bank_account::deposit(unsigned long amount)
 {
     balance_ += amount;
@@ -243,7 +243,7 @@ function.
 
 To use the deposit function, we use the member function call syntax:
 
-```
+```c++
 acct.deposit(5);
 ```
 
@@ -254,7 +254,7 @@ to get at them directly. Instead, we add to the `Bank_account` class a
 special kind of member function called a *constructor*, which is called every
 time a `Bank_account` object is created. The declaration now looks like this:
 
-```
+```c++
 class Bank_account
 {
 public:
@@ -277,7 +277,7 @@ but not a balance, since the initial balance will always be 0. The definition
 of the constructor, in `src/Bank_account.cpp`, is responsible for doing the 
 work of initializing the class. It looks like this:
 
-```
+```c++
 Bank_account::Bank_account(unsigned long id, const std::string& owner)
     : id_{id}, owner_{owner}, balance_{0}
 { }
@@ -288,7 +288,7 @@ First, note that the constructor is also qualified by the class name
 one difference is that *initialization* list that follows the parameters 
 before the function body:
 
-```
+```c++
     : id_{id}, owner_{owner}, balance_{0}
 ```
 
@@ -301,7 +301,7 @@ See `src/Bank_account.h` for the full declaration of the `Bank_account`
 class, including a number of member functions. Let’s look at two particular 
 member functions from the class:
 
-```
+```c++
     const std::string& owner() const;
     void change_owner(const std::string& new_owner);
 ```
@@ -319,7 +319,7 @@ which it is called.
 Next, let’s look at the member functions concerning the member ID. There is 
 only one:
 
-```
+```c++
     unsigned long id() const;
 ```
 
@@ -328,7 +328,7 @@ change it, because there are no member functions for doing so.
 
 Finally, let’s look at the member functions that involve the balance:
 
-```
+```c++
     unsigned long balance() const;
     void deposit(unsigned long);
     bool withdraw(unsigned long);
@@ -394,7 +394,7 @@ that takes two `const WU_graph&`s. However, it needs to see the
 private representation of graphs in order to do the comparison. A friend 
 declaration inside the `WU_graph` class gives it this permission:
 
-```
+```c++
     friend bool operator==(const WU_graph&, const WU_graph&);
 ```
 
