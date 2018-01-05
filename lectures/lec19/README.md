@@ -10,7 +10,7 @@ and playing. We can combine their common behavior into a *base class* and then
 
 Let’s call the base class `Animal`. We’ll initially define it as follows:
 
-```
+```c++
 class Animal
 {
 public:
@@ -31,7 +31,7 @@ private:
 That is, every animal has a name and a weight, and has operations to eat and 
 to play. Here are the implementations of the operations:
 
-```
+```c++
 Animal::Animal(const std::string& name, unsigned int weight)
         : name_{name}, weight_{weight}
 { }
@@ -51,7 +51,7 @@ We then *derive* other classes from the `Animal` class. Deriving makes the
 new class like the old class, but then lets us add to or change it. Here’s 
 `Cat`:
 
-```
+```c++
 class Cat : public Animal
 {
 public:
@@ -82,7 +82,7 @@ some number of bones, and each time we play the dog gets a new bone. And then
 when the dog speaks, it says “woof” repeatedly, once for each of its bones.
 Here’s the definition of the `Dog` class:
 
-```
+```c++
 class Dog : public Animal
 {
 public:
@@ -121,7 +121,7 @@ member function `speak`, and replaces the generic `play` function with a
 
 Now we can write a program involving cats and dogs, and their behaviors:
 
-```
+```c++
     Dog willie("Willie");
     Cat vinny("Vinny");
     Cat francie("Francie");
@@ -133,7 +133,7 @@ Now we can write a program involving cats and dogs, and their behaviors:
 
 Output:
 
-```
+```c++
 Willie plays.
 Vinny plays.
 ```
@@ -146,7 +146,7 @@ forms. In this case, the polymorphism is that a reference or pointer whose
 type says it’s of the base class can actually refer to an object of any 
 derived class. Here we have a function that takes an `Animal` reference:
 
-```
+```c++
 void play_twice(Animal& an)
 {
     an.play();
@@ -158,7 +158,7 @@ We can use the reference according to the public interface of `Animal`, but
 at run time, the actual object the reference points to is allowed to be any 
 derived class of `Animal`:
 
-```
+```c++
     play_twice(willie);
     play_twice(vinny);
 ```
@@ -181,7 +181,7 @@ The solution to these problems is a *virtual function*. Declaring a function
 with working with a base class reference. To do this, we change the 
 declaration of `Animal::play` to be virtual:
 
-```
+```c++
 class Animal
 {
 public:
@@ -194,7 +194,7 @@ public:
 Then in `Dog`, we redefine `play` and indicate that we are overriding the 
 base definition of `play`:
 
-```
+```c++
 class Dog
 {
     …
@@ -221,7 +221,7 @@ because there’s no guarantee of every derived class of `Animal` will define
 `Animal` *must* define `speak`. We do this by declaring `speak` to be *pure 
 virtual*:
  
-```
+```c++
 class Animal
 {
     …
@@ -236,7 +236,7 @@ because its definition is incomplete, and this prevents `Animal` objects from
 being instantiated. However, we define (override) `speak` in `Cat` and `Dog`,
 and this makes those classes *concrete* and instantiable:
 
-```
+```c++
 class Cat : public Animal
 {
     …

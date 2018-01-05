@@ -113,7 +113,7 @@ And now for something completely different...
 C++ classes and structs have a *fixed size*. For example, here is our 
 two-fish aquarium:
 
-```
+```c++
 struct aquarium
 {
     fish fst;
@@ -125,7 +125,7 @@ How do you think we would make an aquarium that holds a variable number of
 fish? (Assume we can’t use `std::vector` because that uses the mechanism 
 we’re exploring right now.) We might use the BSL linked list solution, like so:
 
-```
+```c++
 struct aquarium
 {
     fish first;
@@ -136,7 +136,7 @@ struct aquarium
 The problem with this is that unlike BSL boxes, C++ boxes don’t grow. How big
 is aquarium in bytes? Well, it's the size of fish plus the size of aquarium:
 
-```
+```c++
     sizeof(aquarium) == sizeof(fish) + sizeof(aquarium)
 ```
     
@@ -144,7 +144,7 @@ This has no solutions if `sizeof(fish)` is non-zero. Instead, we add an
 indirection using a *pointer*, which is a fixed-size object that can refer to
 another (often larger) object:
 
-```
+```c++
 struct aquarium
 {
     fish first;
@@ -155,7 +155,7 @@ struct aquarium
 A `std::shared_ptr` has a size that does not depend on the size of 
 `aquarium`, so now
 
-```
+```c++
     sizeof(aquarium) == sizeof(fish) + sizeof(shared_ptr)
 ```
 
@@ -170,7 +170,7 @@ end of the list? Well, `shared_ptr` includes a special value `nullptr` that
 refers to nothing. So that’s what we put in the rest field for the last node 
 of the list.
 
-```
+```c++
 std::shared_ptr<aquarium> a = make_shared<aquarium>(one_fish, nullptr);
 std::shared_ptr<aquarium> b = make_shared<aquarium>(two_fish, a);
 std::shared_ptr<aquarium> c = make_shared<aquarium>(red_fish, b);
@@ -181,7 +181,7 @@ std::shared_ptr<aquarium> d = make_shared<aquarium>(blue_fish, c);
 
 C++ variable declarations have *block scope*:
 
-```
+```c++
 void f(int x)
 {
     std::string y;
@@ -196,7 +196,7 @@ void f(int x)
 Variable `x` lasts longer then `y` which lasts longer than `i` which lasts 
 longer than `d`, so we can allocate them on a stack:
 
-```
+```c++
 (old end)
 [  x  ]
 [  y  ]
@@ -214,7 +214,7 @@ exists, it will keep the variable on the heap alive as well.
 See `src/Cons_list.h` for a minimal, BSL-like linked-list class. The main 
 definition of the struct is something like:
 
-```
+```c++
 struct Int_cons
 {
     const int first;
@@ -228,7 +228,7 @@ struct Int_cons
 call.) In order to avoid referring to the long name 
 `std::shared_ptr<Int_cons>` repeatedly, we use a type alias:
 
-```
+```c++
 using Int_list = std::shared_ptr<Int_cons>;
 
 struct Int_cons
@@ -246,7 +246,7 @@ this cycle, we *forward declare* the existence of `Int_cons` before defining
 `Int_list`, which tells C++ that `Int_cons` will be defined in the future, 
 but doesn’t define it just yet:
 
-```
+```c++
 struct Int_cons;
 
 using Int_list = std::shared_ptr<Int_cons>;
@@ -262,7 +262,7 @@ struct Int_cons
 
 In order to work with lists, we declare three helper functions following BSL:
 
-```
+```c++
 Int_list cons(int, const Int_list&);
 int first(const Int_list&);
 const Int_list& rest(const Int_list&);
@@ -280,7 +280,7 @@ operations. See `src/SP_queue.h` for an example. The `Queue` class defines a
 private member class `node_` to hold the data. Then the private members of 
 `Queue` are:
 
-```
+```c++
     struct node_;
     using link_t = std::shared_ptr<node_>;
 
@@ -295,7 +295,7 @@ lets us remove elements at the head and add new nodes at the tail.
 Note, next, how `node_` is defined outside the `Queue` class, but qualified 
 by it:
 
-```
+```c++
 template <typename T>
 struct Queue<T>::node_ {
     node_(const T& e) : element(e), next(nullptr) { }

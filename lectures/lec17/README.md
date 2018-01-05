@@ -31,7 +31,7 @@ function in ISL+λ, this one will find a spot in the tree to update and
 then will change the tree, adding a node into that spot. Here is a way
 to think about this, in pictures:
 
-```
+```c++
 +-------+
 | Bst   |
 +-------+      +-------+------+------+-------+
@@ -58,7 +58,7 @@ So, in all cases, we're going to way to have a pointer to one of those
 left or right fields? .... almost. What if the tree was empty, like
 this:
 
-```
+```c++
 +---------+
 | Bst     |
 +---------+
@@ -93,13 +93,13 @@ A standard way to encode an English text is to use ASCII. It takes 8
 bits for each letter (using only 7 of them, the last bit is always 0)
 and then concatenates them together. For example, to encode the text:
 
-```
+```c++
 axyzzyzzzz
 ```
 
 we'd use the mapping:
 
-```
+```c++
 a -> 97  = 01100001 (in binary)
 x -> 120 = 01111000
 y -> 121 = 01111001
@@ -108,7 +108,7 @@ z -> 122 = 01111010
 
 and this is the encoded text:
 
-```
+```c++
 01100001011110000111100101111010011110100111100101111010011110100111101001111010
 ```
 
@@ -123,7 +123,7 @@ each different symbol in the input. Once you do that, however, you
 have to be careful about concatenating the codes to make a
 message. For example, lets say we used these codes:
 
-```
+```c++
 a -> 0
 x -> 1
 y -> 01
@@ -132,14 +132,14 @@ z -> 10
 
 And then we encoded our message:
 
-```
+```c++
 axy z z y z z z z
 010110100110101010
 ```
 
 That same sequence of bits could also have been this message:
 
-```
+```c++
 y axz z y z z z z
 010110100110101010
 ```
@@ -153,7 +153,7 @@ prefix of any other symbol. In the codes just above, we can see that
 
 If we change the code to this:
 
-```
+```c++
 a -> 00
 x -> 11
 y -> 01
@@ -164,7 +164,7 @@ then we have that no code is a prefix of the other and, as long as we
 start at the beginning of the stream, there is only one way to decode
 the encoded text:
 
-```
+```c++
 a x y z z y z z z z
 00110110100110101010
 ```
@@ -178,7 +178,7 @@ symbol that is a prefix of another one.
 For example, with this tree, if we treat the left edge as a "0" and
 the right edge as a "1", we get the code above.
 
-```
+```c++
             +--------+
             |        |
             +--------+
@@ -204,7 +204,7 @@ build up the tree.
 
 Lets consider the example input:
 
-```
+```c++
 axyzzyzzzz
 ```
 
@@ -219,7 +219,7 @@ and then we create the leaf nodes of the tree, with no interior nodes
 (yet).  So here are the start with four leaf nodes:
 
 
-```
+```c++
 +-----+  +-----+  +-----+  +-----+
 | a:1 |  | x:1 |  | y:2 |  | z:6 |
 +-----+  +-----+  +-----+  +-----+
@@ -229,7 +229,7 @@ Next we find the two nodes that have the lowest frequencies, in this
 case `a` and `x`, and we join them together to make an interior node,
 with a frequency that is the sum of the two frequencies:
 
-```
+```c++
      +-----+
      |  2  |
      +-----+
@@ -245,7 +245,7 @@ them together. In the next step we'll connect our newly created 2 node
 with the `y` leaf node:
 
 
-```
+```c++
            +-----+
            |  4  |
            +-----+
@@ -262,7 +262,7 @@ with the `y` leaf node:
 and then one more and we have the complete tree:
 
 
-```
+```c++
                 +-----+
                 |  7  |
                 +-----+
@@ -292,13 +292,13 @@ of the symbols:
 
 and this is the encoded message:
 
-```
+```c++
 a   x   y  z z y  z z z z
 000 001 01 1 1 01 1 1 1 1
 ```
 
 or, in (unsigned) bytes:
-```
+```c++
 00000101 11011111
 5        223
 ```
@@ -322,7 +322,7 @@ Note we kept adding leaves directly to the top of the tree in this
 process, but that doesn't always have to happen. For example, if the
 frequences in the original input led to these leaves:
 
-```
+```c++
 +-----+  +-----+  +-----+  +-----+
 | a:2 |  | x:2 |  | y:2 |  | z:2 |
 +-----+  +-----+  +-----+  +-----+
@@ -330,7 +330,7 @@ frequences in the original input led to these leaves:
 
 then we would get a tree that's balanced like this:
 
-```
+```c++
 
             +--------+
             |    8   |
