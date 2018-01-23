@@ -8,12 +8,12 @@ using std::ios;
 
 bistream &bistream::read(bool &bit) {
     if (nbits == 0) {
-        if (!next_byte(bitbuf)) return *this;
+        if (!next_byte(bitbuf_)) return *this;
         nbits = 8;
     }
 
     --nbits;
-    bit = (bitbuf >> nbits & 1) == 1;
+    bit = (bitbuf_ >> nbits & 1) == 1;
 
     return *this;
 }
@@ -25,7 +25,7 @@ bistream::operator bool() const {
 bistream_adaptor::bistream_adaptor(std::istream& is) : stream_(is)
 { }
 
-bool bistream_adaptor::next_byte(char &bitbuf) {
+bool bistream_adaptor::next_byte(uint8_t& bitbuf) {
     return (bool) stream_.read(&bitbuf, 1);
 }
 
@@ -38,7 +38,7 @@ bool bistream_adaptor::eof() const {
 }
 
 bistringstream::bistringstream(std::vector<unsigned char> v)
-        : bytes(v), bytes_index(0) {}
+        : bytes_(v), bytes_index_(0) {}
 
 static std::vector<unsigned char>
 bits_to_chars(std::initializer_list<bool> bits)
@@ -52,10 +52,10 @@ bistringstream::bistringstream(std::initializer_list<bool> bits)
         : bistringstream(bits_to_chars(bits))
 { }
 
-bool bistringstream::next_byte(char &bitbuf) {
-    if (bytes_index < bytes.size()) {
-        bitbuf = bytes[bytes_index];
-        bytes_index++;
+bool bistringstream::next_byte(uint8_t& bitbuf) {
+    if (bytes_index_ < bytes_.size()) {
+        bitbuf = bytes_[bytes_index_];
+        bytes_index_++;
         return true;
     }
     bitbuf = 0;
@@ -63,7 +63,7 @@ bool bistringstream::next_byte(char &bitbuf) {
 }
 
 bool bistringstream::good() const {
-    return nbits > 0 || bytes_index < bytes.size();
+    return nbits > 0 || bytes_index_ < bytes_.size();
 }
 
 size_t bostringstream::bits_written() const
@@ -72,12 +72,12 @@ size_t bostringstream::bits_written() const
 }
 
 bool bistringstream::eof() const {
-    return nbits == 0 && bytes_index == bytes.size();
+    return nbits == 0 && bytes_index_ == bytes_.size();
 }
 
 bifstream::bifstream(const char *filespec)
-        : stream(filespec, ios::binary)
-        , bistream_adaptor(stream)
+        : base_(filespec, ios::binary)
+        , bistream_adaptor(base_)
 {}
 
 bostream_adaptor::bostream_adaptor(std::ostream& os)
@@ -85,9 +85,9 @@ bostream_adaptor::bostream_adaptor(std::ostream& os)
 {}
 
 bostream_adaptor &bostream_adaptor::write(bool bit) {
-    bitbuf |= ((char) bit) << (7 - nbits);
+    bitbuf_ |= ((char) bit) << (7 - nbits_);
 
-    if (++nbits == 8) write_out();
+    if (++nbits_ == 8) write_out_();
 
     return *this;
 }
@@ -96,16 +96,16 @@ bool bostream_adaptor::good() const {
     return stream_.good();
 }
 
-void bostream_adaptor::write_out() {
-    if (stream_.write(&bitbuf, 1)) {
-        bitbuf = 0;
-        nbits = 0;
+void bostream_adaptor::write_out_() {
+    if (stream_.write(&bitbuf_, 1)) {
+        bitbuf_ = 0;
+        nbits_ = 0;
     }
 }
 
 bostream_adaptor::~bostream_adaptor() {
-    if (nbits) {
-        write_out();
+    if (nbits_) {
+        write_out_();
     }
 }
 
@@ -114,8 +114,8 @@ bostream::operator bool() const {
 }
 
 bofstream::bofstream(const char *filespec)
-        : stream(filespec, ios::binary | ios::trunc)
-        , bostream_adaptor(stream)
+        : base_(filespec, ios::binary | ios::trunc)
+        , bostream_adaptor(base_)
 {}
 
 bool bostringstream::good() const {

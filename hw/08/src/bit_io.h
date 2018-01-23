@@ -10,6 +10,7 @@
  * simple sequence of bits rather than bytes.
  */
 
+#include <cstdint>
 #include <istream>
 #include <ostream>
 #include <fstream>
@@ -21,7 +22,7 @@ namespace ipd {
  * INPUT
  */
 
-// Bit input stream, for reading individual bits from a file or a std::vector<unsigned char>
+// Bit input stream, for reading individual bits from a file or a std::vector<uint8_t>
 class bistream {
 public:
     // Reads a bit from this bit input stream into the given bool
@@ -105,13 +106,13 @@ public:
 
 protected:
 
-    virtual bool next_byte(char &) = 0;
+    virtual bool next_byte(uint8_t&) = 0;
 
-    short nbits = 0;
+    size_t nbits = 0;
 
 private:
 
-    char bitbuf = 0;
+    uint8_t bitbuf_ = 0;
 
 };
 
@@ -142,8 +143,7 @@ public:
 private:
     std::istream& stream_;
 
-    virtual bool next_byte(char &) override;
-
+    virtual bool next_byte(uint8_t&) override;
 };
 
 class bifstream : public bistream_adaptor {
@@ -163,7 +163,7 @@ public:
     bifstream(const bifstream &) = delete;
 
 private:
-    std::ifstream stream;
+    std::ifstream base_;
 };
 
 class bistringstream : public bistream {
@@ -178,7 +178,7 @@ public:
     //
     //      bifstream bif(input_file_name);
     //
-    explicit bistringstream(std::vector<unsigned char>);
+    explicit bistringstream(std::vector<uint8_t>);
 
     // Creates a bit input stream containing exactly the given bits.
     explicit bistringstream(std::initializer_list<bool>);
@@ -190,11 +190,10 @@ public:
     bistringstream(const bistringstream &) = delete;
 
 private:
-    size_t bytes_index;
-    std::vector<unsigned char> bytes;
-    size_t total_bits;
+    size_t bytes_index_;
+    std::vector<uint8_t> bytes_;
 
-    virtual bool next_byte(char &) override;
+    virtual bool next_byte(uint8_t&) override;
 
 };
 
@@ -308,11 +307,11 @@ public:
     bostream_adaptor(const bostream_adaptor &) = delete;
 
 private:
-    char bitbuf;
-    short nbits;
+    char bitbuf_;
+    short nbits_;
     std::ostream& stream_;
 
-    void write_out();
+    void write_out_();
 };
 
 class bofstream : public bostream_adaptor {
@@ -332,12 +331,12 @@ public:
     bofstream(const bofstream &) = delete;
 
 private:
-    std::ofstream stream;
+    std::ofstream base_;
 };
 
 class bostringstream : public bostream {
 public:
-    const std::vector<unsigned char>& data() const;
+    const std::vector<uint8_t>& data() const;
 
     virtual bostringstream &write(bool b) override;
 
@@ -347,7 +346,7 @@ public:
 
 private:
     size_t bits_written_ = 0;
-    std::vector<unsigned char> data_;
+    std::vector<uint8_t> data_;
 
 };
 
