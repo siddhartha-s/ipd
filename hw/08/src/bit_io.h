@@ -75,7 +75,7 @@ public:
     //          ...
     //      }
     //
-    virtual bool eof() const = 0;
+    virtual bool eof() const;
 
     // Determines the status of the bit input stream.
     //
@@ -89,7 +89,7 @@ public:
     //          // we know the read succeeded
     //      }
     //
-    virtual bool good() const = 0;
+    virtual bool good() const;
 
     // The bit input stream boolean coercion operator, inserted, for
     // example, when a `bifstream` is used as a condition for an
@@ -108,13 +108,10 @@ public:
     operator bool() const;
 
 protected:
-
-    virtual bool next_byte(uint8_t&) = 0;
-
-    size_t nbits = 0;
+    virtual bool get_next_byte(uint8_t&) = 0;
 
 private:
-
+    uint_fast8_t nbits_ = 0;
     uint8_t bitbuf_ = 0;
 
 };
@@ -146,7 +143,7 @@ public:
 private:
     std::istream& stream_;
 
-    virtual bool next_byte(uint8_t&) override;
+    virtual bool get_next_byte(uint8_t&) override;
 };
 
 class bifstream : public bistream_adaptor {
@@ -196,7 +193,7 @@ private:
     size_t bytes_index_;
     std::vector<uint8_t> bytes_;
 
-    virtual bool next_byte(uint8_t&) override;
+    virtual bool get_next_byte(uint8_t&) override;
 
 };
 
@@ -310,8 +307,8 @@ public:
     bostream_adaptor(const bostream_adaptor &) = delete;
 
 private:
-    char bitbuf_;
-    short nbits_;
+    uint8_t bitbuf_;
+    size_t nbits_;
     std::ostream& stream_;
 
     void write_out_();

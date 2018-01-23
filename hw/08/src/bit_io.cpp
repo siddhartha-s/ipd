@@ -7,13 +7,13 @@ namespace ipd {
 using std::ios;
 
 bistream &bistream::read(bool &bit) {
-    if (nbits == 0) {
-        if (!next_byte(bitbuf_)) return *this;
-        nbits = 8;
+    if (nbits_ == 0) {
+        if (!get_next_byte(bitbuf_)) return *this;
+        nbits_ = 8;
     }
 
-    --nbits;
-    bit = (bitbuf_ >> nbits & 1) == 1;
+    --nbits_;
+    bit = (bitbuf_ >> nbits_ & 1) == 1;
 
     return *this;
 }
@@ -22,26 +22,36 @@ bistream::operator bool() const {
     return good();
 }
 
+bool bistream::eof() const
+{
+    return nbits_ == 0;
+}
+
+bool bistream::good() const
+{
+    return nbits_ > 0;
+}
+
 bistream_adaptor::bistream_adaptor(std::istream& is) : stream_(is)
 { }
 
-bool bistream_adaptor::next_byte(uint8_t& bitbuf) {
+bool bistream_adaptor::get_next_byte(uint8_t& bitbuf) {
     return (bool) stream_.read((char *)&bitbuf, 1);
 }
 
 bool bistream_adaptor::good() const {
-    return nbits > 0 || stream_.good();
+    return bistream::good() || stream_.good();
 }
 
 bool bistream_adaptor::eof() const {
-    return nbits == 0 && stream_.eof();
+    return bistream::eof() && stream_.eof();
 }
 
-bistringstream::bistringstream(std::vector<unsigned char> v)
+bistringstream::bistringstream(std::vector<uint8_t> v)
         : bytes_(v), bytes_index_(0) {}
 
-static std::vector<unsigned char>
-bits_to_chars(std::initializer_list<bool> bits)
+static std::vector<uint8_t>
+bits_to_bytes(std::initializer_list<bool> bits)
 {
     bostringstream oss;
     for (bool bit : bits) oss << bit;
@@ -49,10 +59,10 @@ bits_to_chars(std::initializer_list<bool> bits)
 }
 
 bistringstream::bistringstream(std::initializer_list<bool> bits)
-        : bistringstream(bits_to_chars(bits))
+        : bistringstream(bits_to_bytes(bits))
 { }
 
-bool bistringstream::next_byte(uint8_t& bitbuf) {
+bool bistringstream::get_next_byte(uint8_t& bitbuf) {
     if (bytes_index_ < bytes_.size()) {
         bitbuf = bytes_[bytes_index_];
         bytes_index_++;
@@ -63,7 +73,7 @@ bool bistringstream::next_byte(uint8_t& bitbuf) {
 }
 
 bool bistringstream::good() const {
-    return nbits > 0 || bytes_index_ < bytes_.size();
+    return bistream::good() || bytes_index_ < bytes_.size();
 }
 
 size_t bostringstream::bits_written() const
@@ -72,7 +82,7 @@ size_t bostringstream::bits_written() const
 }
 
 bool bistringstream::eof() const {
-    return nbits == 0 && bytes_index_ == bytes_.size();
+    return bistream::eof() && bytes_index_ == bytes_.size();
 }
 
 bifstream::bifstream(const char *filespec)
@@ -85,7 +95,7 @@ bostream_adaptor::bostream_adaptor(std::ostream& os)
 {}
 
 bostream_adaptor &bostream_adaptor::write(bool bit) {
-    bitbuf_ |= ((char) bit) << (7 - nbits_);
+    bitbuf_ |= ((uint8_t) bit) << (7 - nbits_);
 
     if (++nbits_ == 8) write_out_();
 
@@ -97,7 +107,7 @@ bool bostream_adaptor::good() const {
 }
 
 void bostream_adaptor::write_out_() {
-    if (stream_.write(&bitbuf_, 1)) {
+    if (stream_.write((char*)&bitbuf_, 1)) {
         bitbuf_ = 0;
         nbits_ = 0;
     }
@@ -126,12 +136,12 @@ bostringstream &bostringstream::write(bool bit) {
     auto index = bits_written_ / 8;
     auto nbits = bits_written_ % 8;
     if (index >= data_.size()) data_.push_back(0);
-    data_[index] |= ((unsigned char) bit) << (7 - nbits);
+    data_[index] |= ((uint8_t) bit) << (7 - nbits);
     bits_written_++;
     return *this;
 }
 
-const std::vector<unsigned char>& bostringstream::data() const {
+const std::vector<uint8_t>& bostringstream::data() const {
     return data_;
 }
 
