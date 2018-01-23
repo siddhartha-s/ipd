@@ -21,6 +21,21 @@ namespace ipd {
         return good();
     }
 
+    bistream_adaptor::bistream_adaptor(std::istream& is) : stream_(is)
+    { }
+
+    bool bistream_adaptor::next_byte(char &bitbuf) {
+        return (bool) stream_.read(&bitbuf, 1);
+    }
+
+    bool bistream_adaptor::good() const {
+        return nbits > 0 || stream_.good();
+    }
+
+    bool bistream_adaptor::eof() const {
+        return nbits == 0 && stream_.eof();
+    }
+
     bistringstream::bistringstream(std::vector<unsigned char> v)
             : bytes(v), bytes_index(0) {}
 
@@ -60,21 +75,15 @@ namespace ipd {
     }
 
     bifstream::bifstream(const char *filespec)
-            : stream(filespec, ios::binary) {}
+            : stream(filespec, ios::binary)
+            , bistream_adaptor(stream)
+    {}
 
-    bool bifstream::next_byte(char &bitbuf) {
-        return (bool) stream.read(&bitbuf, 1);
-    }
+    bostream_adaptor::bostream_adaptor(std::ostream& os)
+            : stream_(os)
+    {}
 
-    bool bifstream::good() const {
-        return nbits > 0 || stream.good();
-    }
-
-    bool bifstream::eof() const {
-        return nbits == 0 && stream.eof();
-    }
-
-    bofstream &bofstream::write(bool bit) {
+    bostream_adaptor &bostream_adaptor::write(bool bit) {
         bitbuf |= ((char) bit) << (7 - nbits);
 
         if (++nbits == 8) write_out();
@@ -82,29 +91,31 @@ namespace ipd {
         return *this;
     }
 
-    bostream::operator bool() const {
-        return good();
+    bool bostream_adaptor::good() const {
+        return stream_.good();
     }
 
-    bofstream::bofstream(const char *filespec)
-            : bitbuf(0), nbits(0), stream(filespec, ios::binary | ios::trunc) {}
-
-    bool bofstream::good() const {
-        return stream.good();
-    }
-
-    void bofstream::write_out() {
-        if (stream.write(&bitbuf, 1)) {
+    void bostream_adaptor::write_out() {
+        if (stream_.write(&bitbuf, 1)) {
             bitbuf = 0;
             nbits = 0;
         }
     }
 
-    bofstream::~bofstream() {
+    bostream_adaptor::~bostream_adaptor() {
         if (nbits) {
             write_out();
         }
     }
+
+    bostream::operator bool() const {
+        return good();
+    }
+
+    bofstream::bofstream(const char *filespec)
+            : stream(filespec, ios::binary | ios::trunc)
+            , bostream_adaptor(stream)
+    {}
 
     bool bostringstream::good() const {
         return true;

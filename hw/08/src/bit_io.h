@@ -21,7 +21,7 @@ namespace ipd {
      * INPUT
      */
 
-    // A bit input stream, for reading individual bits from a file or a std::vector<unsigned char>
+    // Bit input stream, for reading individual bits from a file or a std::vector<unsigned char>
     class bistream {
     public:
         // Reads a bit from this bit input stream into the given bool
@@ -115,7 +115,38 @@ namespace ipd {
 
     };
 
-    class bifstream : public bistream {
+    // Adapts any `std::istream&` for use as a bit input stream.
+    class bistream_adaptor : public bistream {
+    public:
+        // Constructs a bit input stream on top of an input stream. Does not
+        // take ownership of the `std::istream`. However, using the `istream`
+        // while also using the adaptor, or adapting the same `istream`
+        // twice, will give strange results.
+        //
+        // Parameters:
+        //
+        //      input_stream - the input stream to adapt
+        //
+        // Example:
+        //
+        //      bistream_adaptor bis(input_stream);
+        //
+        explicit bistream_adaptor(std::istream&);
+
+        bool eof() const override;
+
+        bool good() const override;
+
+        bistream_adaptor(const bistream_adaptor &) = delete;
+
+    private:
+        std::istream& stream_;
+
+        virtual bool next_byte(char &) override;
+
+    };
+
+    class bifstream : public bistream_adaptor {
     public:
         // Constructs a bit input stream to read from the given file.
         //
@@ -129,17 +160,10 @@ namespace ipd {
         //
         explicit bifstream(const char *filespec);
 
-        bool eof() const override;
-
-        bool good() const override;
-
         bifstream(const bifstream &) = delete;
 
     private:
         std::ifstream stream;
-
-        virtual bool next_byte(char &) override;
-
     };
 
     class bistringstream : public bistream {
@@ -260,7 +284,38 @@ namespace ipd {
 
     };
 
-    class bofstream : public bostream {
+    // Adapts any `std::ostream&` for use as a bit output stream.
+    class bostream_adaptor : public bostream {
+    public:
+        // Constructs a bit output stream to write to the given output stream.
+        //
+        // Parameters:
+        //
+        //      output_stream - the byte output stream to adapt
+        //
+        // Example:
+        //
+        //      bostream_adaptor bos(output_stream);
+        //
+        explicit bostream_adaptor(std::ostream&);
+
+        virtual bostream_adaptor &write(bool b) override;
+
+        virtual bool good() const override;
+
+        ~bostream_adaptor();
+
+        bostream_adaptor(const bostream_adaptor &) = delete;
+
+    private:
+        char bitbuf;
+        short nbits;
+        std::ostream& stream_;
+
+        void write_out();
+    };
+
+    class bofstream : public bostream_adaptor {
     public:
         // Constructs a bit output stream to write to the given file.
         //
@@ -274,20 +329,10 @@ namespace ipd {
         //
         explicit bofstream(const char *filespec);
 
-        virtual bofstream &write(bool b) override;
-
-        virtual bool good() const override;
-
-        ~bofstream();
-
         bofstream(const bofstream &) = delete;
 
     private:
-        char bitbuf;
-        short nbits;
         std::ofstream stream;
-
-        void write_out();
     };
 
     class bostringstream : public bostream {
