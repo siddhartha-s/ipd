@@ -23,6 +23,9 @@ namespace ipd {
  */
 
 // Bit input stream, for reading individual bits from a file or a std::vector<uint8_t>
+// This is an abstract base class for the concrete derived classes
+// `bistream_adaptor`, `bifstream`, and `bistreamstream` defined below. It
+// defines the common interface for those classes.
 class bistream {
 public:
     // Reads a bit from this bit input stream into the given bool

@@ -26,7 +26,7 @@ bistream_adaptor::bistream_adaptor(std::istream& is) : stream_(is)
 { }
 
 bool bistream_adaptor::next_byte(uint8_t& bitbuf) {
-    return (bool) stream_.read(&bitbuf, 1);
+    return (bool) stream_.read((char *)&bitbuf, 1);
 }
 
 bool bistream_adaptor::good() const {
