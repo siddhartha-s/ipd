@@ -168,15 +168,16 @@ private:
 
 class bistringstream : public bistream {
 public:
-    // Constructs a bit input stream to read from the given file.
+    // Constructs a bit input stream from the given vector of bytes.
     //
     // Parameters:
     //
-    //      filespec - name of the file to open
+    //      bytes - the vector of bytes
     //
     // Example:
     //
-    //      bifstream bif(input_file_name);
+    //      std::vector<uint8_t> v{255};
+    //      bifstream bif(v);
     //
     explicit bistringstream(std::vector<uint8_t>);
 

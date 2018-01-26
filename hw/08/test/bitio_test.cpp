@@ -8,8 +8,14 @@ using namespace ipd;
 using bistream_ptr = std::unique_ptr<bistream>;
 using bostringstream_ptr = std::unique_ptr<bostringstream>;
 
+using bytes_t = std::vector<uint8_t>;
+
+static bistream_ptr make_bistringstream(std::vector<uint8_t> bytes) {
+    return bistream_ptr(new bistringstream(bytes));
+}
+
 TEST(BISTREAM1) {
-    bistream_ptr b(new bistringstream({0}));
+    auto b = make_bistringstream({0});
     bool bit;
 
     b->read(bit);
@@ -17,7 +23,7 @@ TEST(BISTREAM1) {
 }
 
 TEST(BISTREAM2) {
-    bistream_ptr b(new bistringstream({255}));
+    auto b = make_bistringstream({255});
     bool bit;
 
     b->read(bit);
@@ -25,7 +31,7 @@ TEST(BISTREAM2) {
 }
 
 TEST(BISTREAM3) {
-    bistream_ptr b(new bistringstream({128}));
+    auto b = make_bistringstream({128});
     bool bit;
 
     b->read(bit);
@@ -33,7 +39,7 @@ TEST(BISTREAM3) {
 }
 
 TEST(BISTREAM4) {
-    bistream_ptr b(new bistringstream({1 << 6 | 1 << 5}));
+    auto b = make_bistringstream({1 << 6 | 1 << 5});
     bool bit;
 
     b->read(bit);
@@ -46,7 +52,7 @@ TEST(BISTREAM4) {
 
 
 TEST(BISTREAM5) {
-    bistream_ptr b(new bistringstream({255, 1 << 6 | 1 << 5}));
+    auto b = make_bistringstream({255, 1 << 6 | 1 << 5});
     bool bit;
 
     for (int i = 0; i < 8; i++) {
@@ -63,7 +69,7 @@ TEST(BISTREAM5) {
 
 
 TEST(BISTREAM6) {
-    bistream_ptr b(new bistringstream({255, 255}));
+    auto b = make_bistringstream({255, 255});
     bool bit;
 
     for (int i = 0; i < 16; i++) {
