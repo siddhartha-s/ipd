@@ -24,7 +24,7 @@ On Windows, you need to install MinGW-w64 (the C++ compiler) and Git separately:
 
   - MinGW-w64 with SDL2
 
-    1.  Download and run [our custom installer](https://users.eecs.northwestern.edu/~jesse/course/ipd/MinGW-SDL2.exe).
+    1.  Download and run [our custom installer](https://users.eecs.northwestern.edu/~jesse/MinGW-SDL2.exe).
     2.  Follow the prompts to install MinGW—w64. You should usually install it to <tt>C:\MinGW</tt>, but wherever you install it, take note, as you will have to configure CLion to find it.
 
   - Git
