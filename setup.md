@@ -20,12 +20,12 @@ and press return. If it prints `clang: error: no input files` then you have it i
 
 #### Windows
 
-On Windows, you need to install MinGW (the C++ compiler) and Git separately:
+On Windows, you need to install MinGW-w64 (the C++ compiler) and Git separately:
 
-  - MinGW
+  - MinGW-w64 with SDL2
 
-    1.  Download and run the 64-bit installer from [mingw.org](http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/mingw-w64-install.exe/download).
-    2.  Follow the prompts to install MinGW—all the default options should suffice. Take note of where you install it, as you will have to configure CLion to find it.
+    1.  Download and run [our custom installer](https://users.eecs.northwestern.edu/~jesse/course/ipd/MinGW-SDL2.exe).
+    2.  Follow the prompts to install MinGW—w64. You should usually install it to <tt>C:\MinGW</tt>, but wherever you install it, take note, as you will have to configure CLion to find it.
 
   - Git
 
@@ -34,7 +34,9 @@ On Windows, you need to install MinGW (the C++ compiler) and Git separately:
 
 #### Linux, etc.
 
-Make sure you have Git and a working C++14 toolchain installed.
+Make sure you have Git and a working C++14 toolchain installed. You
+should also install the development packages for SDL2, SDL2_image,
+SDL2_ttf, and SDL2_mixer.
 
 ### CLion (all platforms)
 
@@ -47,20 +49,4 @@ Make sure you have Git and a working C++14 toolchain installed.
 4.  Run the installer—defaults should be fine. (Windows: check all of the “Create associations” boxes when they appear.)
 
 5.  Windows only: Set the toolchain in CLion to the location where you installed MinGW. The folder you select should contain subfolders with names like `bin` and `lib`. Ignore the warnings about version numbers.
-
-## GitHub Setup
-
-Git is a source control tool that you’ll be learning more about later in this lab. In short, it keeps track of each version of your files, so that you can:
-
-  - Go back to any previous version. This is useful because it means that mistakes are easy to undo, and it’s safe to experiment.
-
-  - Have multiple versions (*branches*) simultaneously. You may use separate branches for different features you are developing or ideas you are trying, so that you can switch between them without them interfering with one another. This also allows multiple developers to work on the same project concurrently without stepping on each other’s toes.
-
-  - Copy changes from one version to another. For example, if you are happy with a feature that you developed in a *feature branch*, then you can copy the changes into the main (*master*) branch.
-
-GitHub is a service that hosts Git repositories (where all the versions are stored) online to facilitate collaboration. In particular, you will (probably) use GitHub when handing in your homework. Thus, you will need a GitHub account, and we will need to know your username:
-
-1.  If you don’t already have a GitHub account, go to [github.com](https://github.com/) and sign up for one.
-
-2.  Let us know your GitHub username by [TBD].
 
