@@ -14,7 +14,7 @@ Course staff:
     - Robby Findler, robby@eecs
 
   TA:
-    - Dan Feltey, daniel.feltey@eecs
+    - Lukas Lazarek, LukasLazarek2018@u.northwestern.edu
 
 Homeworks:
   - Due every Tuesday evening

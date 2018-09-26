@@ -124,7 +124,9 @@ new keyword: define
 
   f(x) = x * (x + 1)
 
-  (define (f x) (* x (+ x 1)))
+  (define f
+    (lambda (x)
+      (* x (+ x 1))))
 
   paren, define, "function call skeleton", body, paren
 
@@ -271,11 +273,11 @@ Signature, purpose, and header:
 
  ; f2c : Number -> Number
  ; to determine a Celsius temp from a Fahrenheit one
- (define (f2c f) ...)
+ (define f2c (lambda (f) ...))
 
  ; is-milk? : String -> Boolean
  ; determines if `s' is "milk":
- (define (is-milk? s) ...)
+ (define is-milk? (lambda (s) ...))
 
 Examples:
 
@@ -294,10 +296,12 @@ Body:
   This is where the creativity comes in. How do you get
   from the inputs to the outputs?
 
-  (define (f2c f)
-    (* 9/5 (- f 32)))
-  (define (is-milk? s)
-    (string=? s "milk"))
+  (define f2c
+    (lambda (f)
+      (* 9/5 (- f 32))))
+  (define is-milk?
+    (lambda (s)
+      (string=? s "milk")))
 
 Tests:
 
