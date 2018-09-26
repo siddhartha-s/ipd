@@ -16,7 +16,7 @@
    Click "Web" in the top of the resulting dialog and
    paste this into the dialog:
 
-http://www.eecs.northwestern.edu/~jesse/course/ipd/nwu-ipd-2017.plt
+http://www.eecs.northwestern.edu/~jesse/course/ipd/nwu-ipd-2018.plt
 
    Hit OK and wait until the "Close" button is enabled;
    click it.
