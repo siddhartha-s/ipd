@@ -15,7 +15,7 @@ write.
 
 #|
 1. Data def'n
-2. S/P/H
+2. Signature/Purpose/Header
 3. Examples
 4. Strategy
 5. Coding
@@ -37,7 +37,7 @@ Choices of strategy:
 
     Choosing between alternatives based on a sequence of questions.
     (Note that functional/structural decomposition are specific kinds
-    of decision trees.
+     of decision trees.)
 
   Function composition:
 
@@ -47,11 +47,14 @@ Choices of strategy:
 
     Translating non-programming knowledge into code.
 
-Note that interval and structural decomposition are specific kinds
-of decision trees. And note that domain knowledge may take the
-form of function composition or a decision tree. However, we should
-write down the strategy that actually informs our design, which is
-usually the most specific strategy that applies.
+Note that interval is a specific kind ofdecision trees. And structral
+decomposition has an element that looks very much like a decision tree.
+And domain knowledge may even take the form of function composition or
+a decision tree. However, we should write down the strategy that actually
+informs our design, which is usually the most specific strategy that applies.
+If both ways of thinking about the function seem helpful, use both (except
+if you use structural decomposition, then you should not combine it with
+another one; use a helper function instead).
 |#
 
 #|
@@ -61,6 +64,7 @@ Making a template for an enumeration or itemization:
   II. Add a question to each clause to distinguish it.
 
 During coding, multiple clauses with the same answer may be collapsed.
+
 |#
 
 ;;
@@ -68,13 +72,13 @@ During coding, multiple clauses with the same answer may be collapsed.
 ;;
 
 ; Constants
-(define SIZE        400)    ; height and width of scene
-(define SHRINK-RATE 3)      ; radius decrease at each time step
-(define FONT-SIZE 20)       ; size of text
-(define TEXT-COLOR "black")      ; the color for text
-(define SAFE-COLOR "green")      ; large circle color
+(define SIZE           400)      ; height and width of scene
+(define SHRINK-RATE    3)        ; radius decrease at each time step
+(define FONT-SIZE      20)       ; size of text
+(define TEXT-COLOR     "black")  ; the color for text
+(define SAFE-COLOR     "green")  ; large circle color
 (define MARGINAL-COLOR "yellow") ; medium circle color
-(define DANGER-COLOR "red")      ; small circle color
+(define DANGER-COLOR   "red")    ; small circle color
 
 ; Derived constants
 (define CCX         (/ SIZE 2))      ; x coord
